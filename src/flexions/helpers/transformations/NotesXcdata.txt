@@ -1,0 +1,21 @@
+Modeling tool constraint :
+--------------------------------
+
+"1-N relationship" will generate intermediary collection entity.
+"1-1 relationship" will reference to an entity
+
+You can also reference conventionnaly out of the graph object by storing a reference to its UID:
+Sample : "Element" can reference its "Library" by defining a property  "libraryUID"
+
+NOT SUPPORTED :  reciprocity of relationship is currently  supported ? 
+we should allow a referencing process ( if A<->B ) A should deserialze B that should reference A.
+
+
+Modeling tool extended types :
+--------------------------------------
+
+If an entity has a userInfos dictionary : 
+"type:array" will cast to the native type NSArray
+Sample : "Activity" references "librariesList" an array/
+
+Any of the ObjectiveCHelper->getSupportedNativeTypes() types should work.
