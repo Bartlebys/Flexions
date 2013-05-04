@@ -56,11 +56,15 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 }
 
 + (<?php echo $collectionClassName;?>*)instanceFromDictionary:(NSDictionary *)aDictionary{
-<?php echoindent( "$collectionClassName* instance = [[$collectionClassName alloc] init];\n",1);?>
-	[instance setAttributesFromDictionary:aDictionary];
+	<?php echo $collectionClassName;?>*instance = nil;
+	if([aDictionary objectForKey:@"className"] && [aDictionary objectForKey:@"values"]){
+		Class theClass=NSClassFromString([aDictionary objectForKey:@"className"]);
+		id unCasted= [[theClass alloc] init];
+		[unCasted setAttributesFromDictionary:[aDictionary objectForKey:@"values"]];
+		instance=(<?php echo $collectionClassName;?>*)unCasted;
+	}
 	return instance;
 }
-
 
 - (void)setAttributesFromDictionary:(NSDictionary *)aDictionary{
 	if (![aDictionary isKindOfClass:[NSDictionary class]]) {
@@ -76,6 +80,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 
 
 - (NSDictionary*)dictionaryRepresentation{
+	NSMutableDictionary *wrapper = [NSMutableDictionary dictionary];
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     NSMutableArray *array=[NSMutableArray array];
     for (<?php echo $className;?> *o in _collection) {
@@ -83,7 +88,9 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
         [array addObject:oDictionary];
     }
     [dictionary setValue:array forKey:@"collection"];
-	return dictionary;
+	[wrapper setObject:NSStringFromClass([self class]) forKey:@"className"];
+    [wrapper setObject:dictionary forKey:@"values"];
+    return dictionary;
 }
 
 

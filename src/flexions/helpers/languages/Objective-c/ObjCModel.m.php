@@ -61,8 +61,13 @@ while ( $d ->iterateOnProperties() === true ) {
 ?>
 
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)instanceFromDictionary:(NSDictionary *)aDictionary{
-<?php echoIndent( getCurrentClassNameFragment($d,$f->prefix)."*instance = [[".getCurrentClassNameFragment($d,$f->prefix)." alloc] init];\n",1);?>
-	[instance setAttributesFromDictionary:aDictionary];
+	<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*instance = nil;
+	if([aDictionary objectForKey:@"className"] && [aDictionary objectForKey:@"values"]){
+		Class theClass=NSClassFromString([aDictionary objectForKey:@"className"]);
+		id unCasted= [[theClass alloc] init];
+		[unCasted setAttributesFromDictionary:[aDictionary objectForKey:@"values"]];
+		instance=(<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)unCasted;
+	}
 	return instance;
 }
 
@@ -96,7 +101,8 @@ while ( $d ->iterateOnProperties() === true ) {
 }
 
 - (NSDictionary*)dictionaryRepresentation{
-	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+	NSMutableDictionary *wrapper = [NSMutableDictionary dictionary];
+    NSMutableDictionary *dictionary=[NSMutableDictionary dictionary];
 <?php
 	while ( $d ->iterateOnProperties() === true ) {
 		$property = $d->getProperty();
@@ -110,7 +116,9 @@ while ( $d ->iterateOnProperties() === true ) {
 		}
 	}
  ?>
-	return dictionary;
+	[wrapper setObject:NSStringFromClass([self class]) forKey:@"className"];
+    [wrapper setObject:dictionary forKey:@"values"];
+    return dictionary;
 }
 
 -(NSString*)description{
@@ -121,7 +129,7 @@ while ( $d ->iterateOnProperties() === true ) {
 	    $type=$languageHelper->nativeTypeForProperty($property,$allowScalars);
 	    $name=$property->name;
 	    $s=$languageHelper->objectFromExpression("self.$name", $type);
-	    echoIndent("[s appendFormat:@\"$name : %@\",$s];\n",1);
+	    echoIndent("[s appendFormat:@\"$name : %@\\n\",$s];\n",1);
 	}
  ?>
 	return s;
