@@ -62,10 +62,10 @@ while ( $d ->iterateOnProperties() === true ) {
 
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)instanceFromDictionary:(NSDictionary *)aDictionary{
 	<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*instance = nil;
-	if([aDictionary objectForKey:@"className"] && [aDictionary objectForKey:@"values"]){
+	if([aDictionary objectForKey:@"className"] && [aDictionary objectForKey:@"properties"]){
 		Class theClass=NSClassFromString([aDictionary objectForKey:@"className"]);
 		id unCasted= [[theClass alloc] init];
-		[unCasted setAttributesFromDictionary:[aDictionary objectForKey:@"values"]];
+		[unCasted setAttributesFromDictionary:[aDictionary objectForKey:@"properties"]];
 		instance=(<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)unCasted;
 	}
 	return instance;
@@ -117,8 +117,8 @@ while ( $d ->iterateOnProperties() === true ) {
 	}
  ?>
 	[wrapper setObject:NSStringFromClass([self class]) forKey:@"className"];
-    [wrapper setObject:dictionary forKey:@"values"];
-    return dictionary;
+    [wrapper setObject:dictionary forKey:@"properties"];
+    return wrapper;
 }
 
 -(NSString*)description{
