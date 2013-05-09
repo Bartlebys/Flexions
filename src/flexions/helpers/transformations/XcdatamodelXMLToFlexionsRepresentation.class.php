@@ -98,6 +98,13 @@ class XCDDataXMLToFlexionsRepresentation {
 				} else {
 					throw new Exception ( 'property with no name' );
 				}
+				
+				if ($attribute->hasAttribute ( "attributeType" )) {
+					$property->type = $attribute->getAttribute ( "attributeType" );
+				} else {
+					$property->type = ObjectiveCHelper::UNDEFINED_TYPE;
+				}
+				
 				$userInfos = $attribute->getElementsByTagName ( 'entry' );
 				foreach ( $userInfos as $userInfo ) {
 						if ($userInfo->hasAttribute ( "key" ) && rtrim ( $userInfo->getAttribute ( "key" ) ) == "type" && rtrim ( $userInfo->hasAttribute ( "value" ) )) {
@@ -114,14 +121,10 @@ class XCDDataXMLToFlexionsRepresentation {
 						}
 				}
 				
-				if ($attribute->hasAttribute ( "attributeType" )) {
-					$property->type = $attribute->getAttribute ( "attributeType" );
-				} else {
-					$property->type = ObjectiveCHelper::UNDEFINED_TYPE;
-				}
-				if ($attribute->hasAttribute ( "defaultValueString" ))
+			
+				if ($attribute->hasAttribute ( "defaultValueString" )){
 					$property->default = $attribute->getAttribute ( "defaultValueString" );
-					
+				}
 					// Add the property to the entity
 				$entityR->properties [$property->name] = $property;
 			}
