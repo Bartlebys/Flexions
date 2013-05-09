@@ -45,10 +45,18 @@ class EntityRepresentation {
 	
 	
 	/**
+	 * 
+	 * @var boolean
+	 */
+	public $generateCollectionClass=false;
+	
+	/**
 	 * Current iteration property
 	 * @var int
 	 */
 	protected  $_propertyIndex=-1;
+	
+	
 	
 	
 	

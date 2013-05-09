@@ -11,11 +11,18 @@ NOT SUPPORTED :  reciprocity of relationship is currently  supported ?
 we should allow a referencing process ( if A<->B ) A should deserialze B that should reference A.
 
 
-Modeling tool extended types :
+Modeling tool extensions
 --------------------------------------
 
-If an entity has a userInfos dictionary : 
-"type:array" will cast to the native type NSArray
-Sample : "Activity" references "librariesList" an array/
+#1 If a property has in its userInfos dictionary a key=="type"
 
+"type:array" this directive will cast to the native type NSArray
+"type:rect" this directive will cast to the native type CGrect 
 Any of the ObjectiveCHelper->getSupportedNativeTypes() types should work.
+
+
+#2 If an entity has in its userInfos  a key == "generate" and a value =="collection"
+It will generate an independent collection class for this object.
+(Normally collection are generated according to 1-n relationships);
+
+
