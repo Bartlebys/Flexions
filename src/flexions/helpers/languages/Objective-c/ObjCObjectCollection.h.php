@@ -51,6 +51,8 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 
 - (NSUInteger)count;
 - (<?php echo $className;?> *)objectAtIndex:(NSUInteger)index;
+- (<?php echo $className;?> *)lastObject;
+- (<?php echo $className;?> *)firstObjectCommonWithArray:(NSArray*)array;
 - (void)addObject:(<?php echo $className;?>*)anObject;
 - (void)insertObject:(<?php echo $className;?>*)anObject atIndex:(NSUInteger)index;
 - (void)removeLastObject;

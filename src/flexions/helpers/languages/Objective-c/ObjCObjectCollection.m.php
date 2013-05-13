@@ -109,6 +109,13 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 	return [_collection objectAtIndex:index];
 }
 
+- (<?php echo $className;?> *)lastObject{
+    return [_collection lastObject];
+}
+
+- (<?php echo $className;?> *)firstObjectCommonWithArray:(NSArray*)array{
+    return [_collection firstObjectCommonWithArray:array];
+}
 
 - (void)addObject:(<?php echo $className;?>*)anObject{
  	[_collection addObject:anObject];
