@@ -60,6 +60,28 @@ while ( $d ->iterateOnProperties() === true ) {
 }
 ?>
 
+
+-(id)init{
+    self=[super init];
+    if(self){
+<?php 
+while ( $d->iterateOnProperties () === true ) {
+	$property = $d->getProperty ();
+	if ($property->instanceOf != null) {
+		$instanceOf = $property->instanceOf;
+		$pos = strpos ( $instanceOf, COLLECTION_OF );
+		if ($pos >= 0) {
+			$propertyNameLocal=$property->name;
+			echoindent ( "self.$propertyNameLocal=[[$instanceOf alloc] init];\n", 2 );
+		}
+	}
+}
+?>   
+    }
+    return self;
+}
+
+
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)instanceFromDictionary:(NSDictionary *)aDictionary{
 	<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*instance = nil;
 	if([aDictionary objectForKey:@"className"] && [aDictionary objectForKey:@"properties"]){
