@@ -39,10 +39,10 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 ?><?php ////////////   GENERATION STARTS HERE   ////////// ?>
 <?php if($f->license!=null) include $f->license;?>
 <?php echo getCommentHeader($sf);?>
-
+<?php echo $imports?>
 <?php echo "#import \"$className.h\"";?> 
 
-@interface <?php echo $collectionClassName;?>:NSObject {
+@interface <?php echo"$collectionClassName:$parentClass"?> {
 }
 
 + (<?php echo $collectionClassName;?> *)instanceFromDictionary:(NSDictionary *)aDictionary;
