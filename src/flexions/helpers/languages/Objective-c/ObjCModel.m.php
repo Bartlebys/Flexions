@@ -80,6 +80,11 @@ while ( $d->iterateOnProperties () === true ) {
     return self;
 }
 
+- (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)localized{
+    [self localize];
+    return self;
+}
+
 
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)instanceFromDictionary:(NSDictionary *)aDictionary{
 	<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*instance = nil;

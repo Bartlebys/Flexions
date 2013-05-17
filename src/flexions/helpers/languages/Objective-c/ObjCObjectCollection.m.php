@@ -44,7 +44,6 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 <?php echo "#import \"$collectionClassName.h\"";?> 
 
 @implementation <?php echo $collectionClassName;?>{
-	NSMutableArray* _collection;
 }
 
 -(id)init{
@@ -92,6 +91,11 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 	[wrapper setObject:NSStringFromClass([self class]) forKey:@"className"];
     [wrapper setObject:dictionary forKey:@"properties"];
     return wrapper;
+}
+
+- (<?php echo $collectionClassName;?>*)localized{
+	[self localize];
+	return self;
 }
 
 

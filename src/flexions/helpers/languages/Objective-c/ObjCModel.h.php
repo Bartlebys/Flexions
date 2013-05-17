@@ -150,6 +150,6 @@ while ( $d->iterateOnProperties () === true ) {
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)instanceFromDictionary:(NSDictionary *)aDictionary;
 - (void)setAttributesFromDictionary:(NSDictionary *)aDictionary;
 - (NSDictionary *)dictionaryRepresentation;
-
+- (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)localized;
 @end
 <?php ////////////   GENERATION ENDS HERE   ////////// ?>
