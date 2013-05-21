@@ -128,7 +128,7 @@ while ( $d->iterateOnProperties () === true ) {
 }
 ?>
 
-@interface <?php echo getCurrentClassNameFragment($d,$f->prefix);?>:<?php
+@interface <?php echo getCurrentClassNameFragment($d,$f->prefix)?>:<?php
 // We determine the parent class
 if ($d->instanceOf != null) {
 	echo $d->instanceOf;
@@ -137,7 +137,7 @@ if ($d->instanceOf != null) {
 } else {
 	echo "NSObject";
 }
-?>{
+?><?php echo (isset($protocols))?"<$protocols>":""; ?>{
 }
 
 <?php
@@ -146,10 +146,8 @@ while ( $d->iterateOnProperties () === true ) {
 	echoindent ( $languageHelper->getPropertyDeclaration ( $property, $allowScalars ), 0 );
 }
 ?>
- 
+
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)instanceFromDictionary:(NSDictionary *)aDictionary;
-- (void)setAttributesFromDictionary:(NSDictionary *)aDictionary;
-- (NSDictionary *)dictionaryRepresentation;
 - (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)localized;
 @end
 <?php ////////////   GENERATION ENDS HERE   ////////// ?>

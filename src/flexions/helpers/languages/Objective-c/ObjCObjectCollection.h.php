@@ -42,12 +42,10 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 <?php echo "#import \"$className.h\"";?> 
 <?php echo "#import \"$collectionParentClass.h\"";?> 
 
-@interface <?php echo"$collectionClassName:$collectionParentClass"?> {
+@interface <?php echo"$collectionClassName:$collectionParentClass"?> <?php echo(isset($protocols))?"<$protocols>":"";?>{
 }
 
 + (<?php echo $collectionClassName;?> *)instanceFromDictionary:(NSDictionary *)aDictionary;
-- (void)setAttributesFromDictionary:(NSDictionary *)aDictionary;
-- (NSDictionary *)dictionaryRepresentation;
 - (<?php echo $collectionClassName;?> *)localized;
 
 - (NSUInteger)count;
