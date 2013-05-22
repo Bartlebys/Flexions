@@ -255,7 +255,7 @@ class ObjectiveCHelper {
 	 */
 	function valueStringForProperty($valueString, PropertyRepresentation $p){
 		if($p->isGeneratedType==true){
-			return "[".$p->instanceOf. " instanceFromDictionary:$valueString]";
+			return "[".$p->instanceOf. " instanceFromDictionary:$valueString inRegistry:_registry]";
 		}
 		$nativeType=$this->nativeTypeForProperty($p);
 		/*

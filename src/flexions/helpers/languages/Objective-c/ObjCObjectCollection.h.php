@@ -45,7 +45,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 @interface <?php echo"$collectionClassName:$collectionParentClass"?> <?php echo(isset($protocols))?"<$protocols>":"";?>{
 }
 
-+ (<?php echo $collectionClassName;?> *)instanceFromDictionary:(NSDictionary *)aDictionary;
++ (<?php echo $collectionClassName;?> *)instanceFromDictionary:(NSDictionary *)aDictionary  inRegistry:(WattRegistry*)registry;
 - (<?php echo $collectionClassName;?> *)localized;
 
 - (NSUInteger)count;
