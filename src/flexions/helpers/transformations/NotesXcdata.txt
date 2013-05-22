@@ -14,15 +14,19 @@ we should allow a referencing process ( if A<->B ) A should deserialze B that sh
 Modeling tool extensions
 --------------------------------------
 
-#1 If a property has in its userInfos dictionary a key=="type"
+// Attributes or Properties 
 
+#1 If a property has in its userInfos dictionary a key=="type" : 
 "type:array" this directive will cast to the native type NSArray
 "type:rect" this directive will cast to the native type CGrect 
 Any of the ObjectiveCHelper->getSupportedNativeTypes() types should work.
 
+// Entities
 
 #2 If an entity has in its userInfos  a key == "generate" and a value =="collection"
 It will generate an independent collection class for this object.
 (Normally collection are generated according to 1-n relationships);
 
-
+#3 If an entity has in its userInfos  a key == "parent" and a value =="MyParent"
+1-  the entity prefix will not apply !!
+2- this directive overrides the "parentEntity"

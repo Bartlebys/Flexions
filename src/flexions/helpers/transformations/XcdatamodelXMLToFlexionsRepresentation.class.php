@@ -88,6 +88,9 @@ class XCDDataXMLToFlexionsRepresentation {
 					if ($userInfoEntry->hasAttribute ( "key" ) && rtrim ( $userInfoEntry->getAttribute ( "key" ) ) == "generate" && ($userInfoEntry->hasAttribute ( "value" ) && rtrim ( $userInfoEntry->getAttribute ( "value" ) ) == "collection")) {
 						$entityR->generateCollectionClass = true;
 					}
+					if ($userInfoEntry->hasAttribute ( "key" ) && rtrim ( $userInfoEntry->getAttribute ( "key" ) ) == "parent" && $userInfoEntry->hasAttribute ( "value" )) {
+						$entityR->instanceOf =$userInfoEntry->getAttribute ( "value" );
+					}
 				}
 			}
 			
