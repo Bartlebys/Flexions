@@ -61,8 +61,8 @@ while ( $d ->iterateOnProperties() === true ) {
 ?>
 
 
--(id)init{
-    self=[super init];
+-(id)initInDefaultRegistry{
+    self=[self init];
     if(self){
 <?php 
 while ( $d->iterateOnProperties () === true ) {
@@ -72,7 +72,7 @@ while ( $d->iterateOnProperties () === true ) {
 		$pos = strpos ( $instanceOf, COLLECTION_OF );
 		if ($pos >= 0) {
 			$propertyNameLocal=$property->name;
-			echoindent ( "self.$propertyNameLocal=[[$instanceOf alloc] init];\n", 2 );
+			echoindent ( "self.$propertyNameLocal=[[$instanceOf alloc] initInDefaultRegistry];\n", 2 );
 		}
 	}
 }?>   
