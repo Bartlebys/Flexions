@@ -54,32 +54,12 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     return self;
 }
 
-+ (<?php echo $collectionClassName;?>*)instanceFromDictionary:(NSDictionary *)aDictionary inRegistry:(WattRegistry*)registry{
-	<?php echo $collectionClassName;?>*instance = nil;
-	if([aDictionary objectForKey:__className__] && [aDictionary objectForKey:__properties__]){
-		Class theClass=NSClassFromString([aDictionary objectForKey:__className__]);
-		id unCasted= [[theClass alloc] initInRegistry:registry];
-		[unCasted setAttributesFromDictionary:[aDictionary objectForKey:__properties__]];
-		instance=(<?php echo $collectionClassName;?>*)unCasted;
-		[registry registerObject:instance];
-	}
-	return instance;
++ (<?php echo $collectionClassName;?>*)instanceFromDictionary:(NSDictionary *)aDictionary inRegistry:(WattRegistry*)registry {
+	return (<?php echo $collectionClassName;?>*)[WattCollectionOfObject instanceFromDictionary:aDictionary inRegistry:registry ];
 }
 
-
-- (NSDictionary*)dictionaryRepresentation{
-	NSMutableDictionary *wrapper = [NSMutableDictionary dictionary];
-	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    NSMutableArray *array=[NSMutableArray array];
-    for (<?php echo $className;?> *o in _collection) {
-        NSDictionary*oDictionary=[o dictionaryRepresentation];
-        [array addObject:oDictionary];
-    }
-    [dictionary setValue:array forKey:__collection__];
-	[wrapper setObject:NSStringFromClass([self class]) forKey:__className__];
-    [wrapper setObject:dictionary forKey:__properties__];
-    [wrapper setObject:[NSNumber numberWithInteger:self.uinstID] forKey:__uinstID__];
-    return wrapper;
+- (NSDictionary*)dictionaryRepresentationWithChildren:(BOOL)includeChildren{
+    return [super dictionaryRepresentationWithChildren:includeChildren];
 }
 
 - (<?php echo $collectionClassName;?>*)localized{
@@ -100,35 +80,35 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     return [_collection count];
 }
 - (<?php echo $className;?> *)objectAtIndex:(NSUInteger)index{
-	return [_collection objectAtIndex:index];
+	return (<?php echo $className;?>*)[super  objectAtIndex:index];
 }
 
 - (<?php echo $className;?> *)lastObject{
-    return [_collection lastObject];
+    return  (<?php echo $className;?>*)[super lastObject];
 }
 
 - (<?php echo $className;?> *)firstObjectCommonWithArray:(NSArray*)array{
-    return [_collection firstObjectCommonWithArray:array];
+    return (<?php echo $className;?>*)[super firstObjectCommonWithArray:array];
 }
 
 - (void)addObject:(<?php echo $className;?>*)anObject{
- 	[_collection addObject:anObject];
+ 	[super addObject:anObject];
 }
 
 - (void)insertObject:(<?php echo $className;?>*)anObject atIndex:(NSUInteger)index{
-	[_collection insertObject:anObject atIndex:index];
+	[super insertObject:anObject atIndex:index];
 }
 
 - (void)removeLastObject{
-	[_collection removeLastObject];
+	[super removeLastObject];
 }
 
 - (void)removeObjectAtIndex:(NSUInteger)index{
-    [_collection removeObjectAtIndex:index];
+    [super removeObjectAtIndex:index];
 }
 
 - (void)replaceObjectAtIndex:(NSUInteger)index withObject:(<?php echo $className;?>*)anObject{
-    [_collection replaceObjectAtIndex:index withObject:anObject];
+    [super replaceObjectAtIndex:index withObject:anObject];
 }
 
 

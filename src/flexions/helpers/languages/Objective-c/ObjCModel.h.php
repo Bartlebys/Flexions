@@ -147,6 +147,15 @@ while ( $d->iterateOnProperties () === true ) {
 }
 ?>
 
+<?php
+while ( $d->iterateOnProperties () === true ) {
+	$property = $d->getProperty ();
+	if($property->isGeneratedType){
+		echoIndent("- (".$property->instanceOf."*)".$property->name."_auto;\n",0);
+	}
+}
+?>
+
 + (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)instanceFromDictionary:(NSDictionary *)aDictionary  inRegistry:(WattRegistry*)registry;
 - (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)localized;
 @end
