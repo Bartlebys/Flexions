@@ -46,7 +46,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 @implementation <?php echo $collectionClassName;?>{
 }
 
--(id)initInRegistry:(WattRegistry*)registry{
+- (instancetype)initInRegistry:(WattRegistry*)registry{
     self=[super initInRegistry:registry];
     if(self){
         _collection=[NSMutableArray array];
@@ -54,21 +54,10 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     return self;
 }
 
-+ (<?php echo $collectionClassName;?>*)instanceFromDictionary:(NSDictionary *)aDictionary inRegistry:(WattRegistry*)registry {
-	return (<?php echo $collectionClassName;?>*)[WattCollectionOfObject instanceFromDictionary:aDictionary inRegistry:registry ];
-}
 
-- (NSDictionary*)dictionaryRepresentationWithChildren:(BOOL)includeChildren{
-    return [super dictionaryRepresentationWithChildren:includeChildren];
-}
-
-- (<?php echo $collectionClassName;?>*)localized{
-	[self localize];
-	return self;
-}
-
-
--(NSString*)description{
+- (NSString*)description{
+    if([self isAnAlias])
+        return [super aliasDescription];
 	NSMutableString *s=[NSMutableString string];
     [s appendFormat:@"Collection of %@\n",@"<?php echo $className;?>"];
     [s appendFormat:@"With of %i members\n",[_collection count]];

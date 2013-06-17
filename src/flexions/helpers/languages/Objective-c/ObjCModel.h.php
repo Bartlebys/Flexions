@@ -156,7 +156,5 @@ while ( $d->iterateOnProperties () === true ) {
 }
 ?>
 
-+ (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)instanceFromDictionary:(NSDictionary *)aDictionary  inRegistry:(WattRegistry*)registry;
-- (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)localized;
 @end
 <?php ////////////   GENERATION ENDS HERE   ////////// ?>

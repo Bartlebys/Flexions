@@ -70,18 +70,6 @@ if($markAsDynamic==true){
 }
 ?>
 
-- (<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *)localized{
-<?php if($markAsDynamic==false) {?>
-    [self localize];
- <?php } ?>
-    return self;
-}
-
-+ (<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)instanceFromDictionary:(NSDictionary *)aDictionary inRegistry:(WattRegistry*)registry{
-	return (<?php echo getCurrentClassNameFragment($d,$f->prefix);?>*)[WattObject instanceFromDictionary:aDictionary inRegistry:registry ];
-}
-
-
 - (void)setValue:(id)value forKey:(NSString *)key {
 <?php
 	while ( $d ->iterateOnProperties() === true ) {
@@ -114,10 +102,12 @@ if($markAsDynamic==true){
 				$ivarName="_".$name;
 				
 				// Getter 
-				echoIndent("-(". $property->instanceOf."*)$name{\n",0);
+				echoIndent("- (". $property->instanceOf."*)$name{\n",0);
 					echoIndent("if([$ivarName isAnAlias]){\n",1);
-						echoIndent("WattObjectAlias *alias=(WattObjectAlias*)$ivarName;\n",2);
-						echoIndent("$ivarName=(". $property->instanceOf."*)[_registry objectWithUinstID:alias.uinstID];\n",2);
+						echoIndent("id o=[_registry objectWithUinstID:$ivarName.uinstID];\n",2);
+						echoIndent("if(o){\n",2);
+						echoIndent("$ivarName=o;\n",3);
+						echoIndent("}\n",2);
 					echoIndent("}\n",1);
 					/*
 					$instanceOf = $property->instanceOf;
@@ -144,7 +134,7 @@ if($markAsDynamic==true){
 				echoIndent("\n",0);
 				
 				// Setter 
-				echoIndent("-(void)set".ucfirst($name).":(".$property->instanceOf."*)$name{\n",0);
+				echoIndent("- (void)set".ucfirst($name).":(".$property->instanceOf."*)$name{\n",0);
 					echoIndent("$ivarName=$name;\n",1);
 				echoIndent("}\n",0);
 				echoIndent("\n",0);
@@ -153,7 +143,9 @@ if($markAsDynamic==true){
 ?>
 
 
--(NSDictionary *)dictionaryRepresentationWithChildren:(BOOL)includeChildren{
+- (NSDictionary *)dictionaryRepresentationWithChildren:(BOOL)includeChildren{
+    if([self isAnAlias])
+        return [super aliasDictionaryRepresentation];
 	NSMutableDictionary *wrapper = [NSMutableDictionary dictionary];
     NSMutableDictionary *dictionary=[NSMutableDictionary dictionary];
 <?php
@@ -163,10 +155,12 @@ if($markAsDynamic==true){
 	    $name=$property->name;
 	    $s=$languageHelper->objectFromExpression("self.$name", $type);
 	 	if($property->isGeneratedType==true){
-			echoIndent("if(includeChildren){\n",1);
-			echoIndent("[dictionary setValue:[$s dictionaryRepresentationWithChildren:includeChildren] forKey:@\"$name\"];\n",2);
-			echoIndent("}else{\n",1);
-			echoIndent("[dictionary setValue:[WattObjectAlias aliasDictionaryRepresentationFrom:$s] forKey:@\"$name\"];\n",2);
+			echoIndent("if(self.$name){\n",1);
+				echoIndent("if(includeChildren){\n",2);
+					echoIndent("[dictionary setValue:[$s dictionaryRepresentationWithChildren:includeChildren] forKey:@\"$name\"];\n",3);
+				echoIndent("}else{\n",2);
+					echoIndent("[dictionary setValue:[$s aliasDictionaryRepresentation] forKey:@\"$name\"];\n",3);
+				echoIndent("}\n",2);
 			echoIndent("}\n",1);
 		}else{
 			echoIndent("[dictionary setValue:$s forKey:@\"$name\"];\n",1);
@@ -179,7 +173,10 @@ if($markAsDynamic==true){
     return wrapper;
 }
 
--(NSString*)description{
+
+- (NSString*)description{
+    if([self isAnAlias])
+        return [super aliasDescription];
 	NSMutableString *s=[NSMutableString string];
 	[s appendFormat:@"Instance of %@ :\n",NSStringFromClass([self class])];
 <?php
@@ -197,36 +194,6 @@ if($markAsDynamic==true){
  ?>
 	return s;
 }
-
-/*
-// @todo implement the default values? 
-- (void)setNilValueForKey:(NSString *)theKey{
-    if ([theKey isEqualToString:@"age"]) {
-        [self setValue:[NSNumber numberWithFloat:0.0] forKey:@"age"];
-    } else
-        [super setNilValueForKey:theKey];
-}
-
-//@todo implement the validation process
--(BOOL)validateName:(id *)ioValue error:(NSError * __autoreleasing *)outError{
- 
-    // The name must not be nil, and must be at least two characters long.
-    if ((*ioValue == nil) || ([(NSString *)*ioValue length] < 2)) {
-        if (outError != NULL) {
-            NSString *errorString = NSLocalizedString(
-                    @"A Person's name must be at least two characters long",
-                    @"validation: Person, too short name error");
-            NSDictionary *userInfoDict = @{ NSLocalizedDescriptionKey : errorString };
-            *outError = [[NSError alloc] initWithDomain:@"PERSON_ERROR_DOMAIN"
-                                                    code:1//PERSON_INVALID_NAME_CODE
-                                                userInfo:userInfoDict];
-        }
-        return NO;
-    }
-    return YES;
-}
-*/
-
 
 @end
 <?php ////////////   GENERATION ENDS HERE   ////////// ?>
