@@ -30,13 +30,8 @@ require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/languages/Objective-c/ObjCGen
 
 $f->fileName = getCurrentClassNameFragment ( $d, $f->prefix ) . '.h';
 $languageHelper = new ObjectiveCHelper ();
-
-?><?php 
-// ////////// GENERATION STARTS HERE //////////
-?>
+?><?php // ////////// GENERATION STARTS HERE //////////?>
 <?php
-
-
 if ($f->license != null)
 	include $f->license;
 ?>
@@ -86,6 +81,7 @@ if ($d->generateCollectionClass == true) {
 // /////////////////////////////////////////////////////////////////////////
 // Relationships imports an Sub generation of collections.
 // //////////////////////////////////////////////////////////////////////////
+
 while ( $d->iterateOnProperties () === true ) {
 	$property = $d->getProperty ();
 	if ($property->instanceOf != null) {
@@ -94,10 +90,11 @@ while ( $d->iterateOnProperties () === true ) {
 		
 		// SUB GENERATION OF COLLECTIONS
 		// we do generate .h and .m in the same sub-loop
-		// The sub templates relies on $sf
+		// The sub templates relies on $s
 		
 		$pos = strpos ( $instanceOf, COLLECTION_OF );
-		if ($pos >= 0) {
+		if ($pos !==false) {
+			// Generate a collection (it is a 1-n or n-n relationship)
 			for($i = 0; $i < 2; $i ++) {
 				// We instanciate a sub Flexed
 				$sf = new Flexed ();
@@ -123,6 +120,8 @@ while ( $d->iterateOnProperties () === true ) {
 				// We add the flexed the Hypotypose for the post processors
 				$h->addFlexed ( $sf );
 			}
+		}else{
+			// The standard object is already generated (it is a 1-1 relationship)
 		}
 	}
 }

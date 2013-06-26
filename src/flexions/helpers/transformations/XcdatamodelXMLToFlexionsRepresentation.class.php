@@ -141,7 +141,7 @@ class XCDDataXMLToFlexionsRepresentation {
 				} else {
 					throw new Exception ( 'property with no name' );
 				}
-				
+			
 				$tooMany = false;
 				if ($relationship->hasAttribute ( "toMany" )) {
 					$tooMany = ($relationship->getAttribute ( "toMany" ) == "YES");
