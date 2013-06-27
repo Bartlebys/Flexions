@@ -4,11 +4,10 @@ Modeling tool constraint :
 "1-N relationship" will generate intermediary collection entity.
 "1-1 relationship" will reference to an entity
 
-You can also reference conventionnaly out of the graph object by storing a reference to its UID:
-Sample : "Element" can reference its "Library" by defining a property  "libraryUID"
 
-NOT SUPPORTED :  reciprocity of relationship is currently  supported ? 
-we should allow a referencing process ( if A<->B ) A should deserialze B that should reference A.
+NOT SUPPORTED :  automation of relationship reciprocity 
+You need to manage manually reciprocity (future extension may generate setters to deal with reciprocity)
+
 
 
 Modeling tool extensions
@@ -25,8 +24,15 @@ Any of the ObjectiveCHelper->getSupportedNativeTypes() types should work.
 
 #2 If an entity has in its userInfos  a key == "generate" and a value =="collection"
 It will generate an independent collection class for this object.
-(Normally collection are generated according to 1-n relationships);
+(Normally collection are generated using to 1-n relationships);
 
 #3 If an entity has in its userInfos  a key == "parent" and a value =="MyParent"
-1-  the entity prefix will not apply !!
+1- the entity prefix will not apply !!
 2- this directive overrides the "parentEntity"
+
+
+When using WATT framework 
+--------------------------------------
+
+You can also reference conventionnaly out of the graph object by storing a reference to its Registry identifier : uinstID
+KEY FEATURE : those uinstID are persistent even when moving from a device to another.
