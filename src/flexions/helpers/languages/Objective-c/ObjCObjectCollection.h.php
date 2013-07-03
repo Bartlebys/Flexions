@@ -45,7 +45,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 @interface <?php echo"$collectionClassName:$collectionParentClass"?> <?php echo(isset($protocols))?"<$protocols>":"";?>{
 }
 
-
+- (<?php echo $collectionClassName;?>*)filteredCollectionUsingPredicate:(NSPredicate *)predicate withRegistry:(WattRegistry *)registry;
 - (NSUInteger)count;
 - (<?php echo $className;?> *)objectAtIndex:(NSUInteger)index;
 - (<?php echo $className;?> *)lastObject;

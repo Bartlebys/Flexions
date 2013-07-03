@@ -64,6 +64,9 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 	return s;
 }
 
+- (<?php echo $collectionClassName;?>*)filteredCollectionUsingPredicate:(NSPredicate *)predicate withRegistry:(WattRegistry *)registry{
+	return (<?php echo $collectionClassName;?>*)[super filteredCollectionUsingPredicate:predicate withRegistry:registry];
+}
 
 - (NSUInteger)count{
     return [_collection count];
