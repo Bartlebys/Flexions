@@ -92,7 +92,6 @@ if($markAsDynamic==true){
 ?>
 }
 
-
 <?php  
 	// We generate the setters && getters with aliases support
 	while ( $d ->iterateOnProperties() === true ) {
@@ -142,12 +141,16 @@ if($markAsDynamic==true){
 	}
 ?>
 
-
 - (NSDictionary *)dictionaryRepresentationWithChildren:(BOOL)includeChildren{
-    if([self isAnAlias])
-        return [super aliasDictionaryRepresentation];
 	NSMutableDictionary *wrapper = [NSMutableDictionary dictionary];
-    NSMutableDictionary *dictionary=[NSMutableDictionary dictionary];
+	[wrapper setObject:NSStringFromClass([self class]) forKey:__className__];
+    [wrapper setObject:[self dictionaryOfPropertiesWithChildren:includeChildren] forKey:__properties__];
+    [wrapper setObject:[NSNumber numberWithInteger:self.uinstID] forKey:__uinstID__];
+    return wrapper;
+}
+
+- (NSMutableDictionary*)dictionaryOfPropertiesWithChildren:(BOOL)includeChildren{
+    NSMutableDictionary *dictionary=[super dictionaryOfPropertiesWithChildren:includeChildren];
 <?php
 	while ( $d ->iterateOnProperties() === true ) {
 		$property = $d->getProperty();
@@ -167,10 +170,7 @@ if($markAsDynamic==true){
 		}
 	}
  ?>
-	[wrapper setObject:NSStringFromClass([self class]) forKey:__className__];
-    [wrapper setObject:dictionary forKey:__properties__];
-    [wrapper setObject:[NSNumber numberWithInteger:self.uinstID] forKey:__uinstID__];
-    return wrapper;
+    return dictionary;
 }
 
 
