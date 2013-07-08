@@ -64,6 +64,16 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 	return s;
 }
 
+- (void)enumerateObjectsUsingBlock:(void (^)(<?php echo $className;?> *obj, NSUInteger idx, BOOL *stop))block{
+	 NSUInteger idx = 0;
+    BOOL stop = NO;
+    for( <?php echo $className;?>* obj in _collection ){
+        block(obj, idx++, &stop);
+        if( stop )
+            break;
+    }
+}
+
 - (<?php echo $collectionClassName;?>*)filteredCollectionUsingPredicate:(NSPredicate *)predicate withRegistry:(WattRegistry *)registry{
 	return (<?php echo $collectionClassName;?>*)[super filteredCollectionUsingPredicate:predicate withRegistry:registry];
 }
