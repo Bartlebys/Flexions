@@ -59,6 +59,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     if([self isAnAlias])
         return [super aliasDescription];
 	NSMutableString *s=[NSMutableString string];
+	[s appendFormat:@"Instance of %@ (%i) :\n",NSStringFromClass([self class]),self.uinstID];
     [s appendFormat:@"Collection of %@\n",@"<?php echo $className;?>"];
     [s appendFormat:@"With of %i members\n",[_collection count]];
 	return s;
