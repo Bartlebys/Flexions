@@ -90,6 +90,10 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     return  (<?php echo $className;?>*)[super lastObject];
 }
 
+- (<?php echo $className;?> *)firstObject{
+    return  (<?php echo $className;?>*)[super firstObject];
+}
+
 - (<?php echo $className;?> *)firstObjectCommonWithArray:(NSArray*)array{
     return (<?php echo $className;?>*)[super firstObjectCommonWithArray:array];
 }

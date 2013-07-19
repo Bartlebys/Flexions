@@ -48,6 +48,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 - (<?php echo $collectionClassName;?>*)filteredCollectionUsingPredicate:(NSPredicate *)predicate withRegistry:(WattRegistry *)registry;
 - (NSUInteger)count;
 - (<?php echo $className;?> *)objectAtIndex:(NSUInteger)index;
+- (<?php echo $className;?> *)firstObject;
 - (<?php echo $className;?> *)lastObject;
 - (<?php echo $className;?> *)firstObjectCommonWithArray:(NSArray*)array;
 - (void)addObject:(<?php echo $className;?>*)anObject;
