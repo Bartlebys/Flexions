@@ -4,10 +4,10 @@ Modeling tool constraint :
 "1-N relationship" will generate intermediary collection entity.
 "1-1 relationship" will reference to an entity
 
+You can reference an external relationship directly by using #2
 
 NOT SUPPORTED :  automation of relationship reciprocity 
 You need to manage manually reciprocity (future extension may generate setters to deal with reciprocity)
-
 
 
 Modeling tool extensions
@@ -20,13 +20,17 @@ Modeling tool extensions
 "type:rect" this directive will cast to the native type CGrect 
 Any of the ObjectiveCHelper->getSupportedNativeTypes() types should work.
 
+
+#2 You can generate a relationship attribute adding to the property key == "relationship" value="ClassName"
+This is used in WTMShelf to reference Watt classes (users=WattCollectionOfUser,...)
+
 // Entities
 
-#2 If an entity has in its userInfos  a key == "generate" and a value =="collection"
+#3 If an entity has in its userInfos  a key == "generate" and a value =="collection"
 It will generate an independent collection class for this object.
 (Normally collection are generated using to 1-n relationships);
 
-#3 If an entity has in its userInfos  a key == "parent" and a value =="MyParent"
+#4 If an entity has in its userInfos  a key == "parent" and a value =="MyParent"
 1- the entity prefix will not apply !!
 2- this directive overrides the "parentEntity"
 

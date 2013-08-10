@@ -122,6 +122,13 @@ class XCDDataXMLToFlexionsRepresentation {
 							$propertyType = $userInfo->getAttribute ( "value" );
 							$property->type = $propertyType;
 						}
+						if ($userInfo->hasAttribute ( "key" ) && rtrim ( $userInfo->getAttribute ( "key" ) ) == "relationship" && rtrim ( $userInfo->hasAttribute ( "value" ) )) {
+							/* Support of external relationship */
+							$propertyType = $userInfo->getAttribute ( "value" );
+							$property->type = "object";
+							$property->instanceOf = $propertyType;
+							$property->isGeneratedType = false;
+						}
 				}
 				
 			
