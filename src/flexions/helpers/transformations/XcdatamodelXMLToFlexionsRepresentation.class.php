@@ -127,7 +127,8 @@ class XCDDataXMLToFlexionsRepresentation {
 							$propertyType = $userInfo->getAttribute ( "value" );
 							$property->type = "object";
 							$property->instanceOf = $propertyType;
-							$property->isGeneratedType = false;
+							$property->isGeneratedType = true;
+							$property->isExternal=yes; // Used to prevent from generation
 						}
 				}
 				

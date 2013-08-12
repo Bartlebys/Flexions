@@ -84,7 +84,7 @@ if ($d->generateCollectionClass == true) {
 
 while ( $d->iterateOnProperties () === true ) {
 	$property = $d->getProperty ();
-	if ($property->instanceOf != null) {
+	if ($property->instanceOf != null && $property->isExternal==false) {
 		$instanceOf = $property->instanceOf;
 		echoindent ( "@class $instanceOf;\n", 0 );
 		

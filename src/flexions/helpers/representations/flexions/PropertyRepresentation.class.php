@@ -48,6 +48,12 @@ class  PropertyRepresentation{
 	 */
 	public $isGeneratedType=false;
 	
+	
+	/**
+	 * @var bool defines if the class is external to the generative package.
+	 */
+	public $isExternal=false;
+	
 	/**
 	 * @var  bool Whether or not the property is required
 	 */
