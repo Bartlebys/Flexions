@@ -84,10 +84,11 @@ if ($d->generateCollectionClass == true) {
 
 while ( $d->iterateOnProperties () === true ) {
 	$property = $d->getProperty ();
-	if ($property->instanceOf != null && $property->isExternal==false) {
+	if ($property->instanceOf != null ) {
 		$instanceOf = $property->instanceOf;
 		echoindent ( "@class $instanceOf;\n", 0 );
-		
+	}		
+	if ($property->instanceOf != null && $property->isExternal==false) {
 		// SUB GENERATION OF COLLECTIONS
 		// we do generate .h and .m in the same sub-loop
 		// The sub templates relies on $s
