@@ -52,9 +52,11 @@ class XCDDataXMLToFlexionsRepresentation {
 			if ($entity->hasAttribute ( "representedClassName" )) {
 				$entityR->name = $entity->getAttribute ( "representedClassName" );
 				fLog ( 'Parsing : ' . $entityR->name . cr (), true );
-			} else if ($entity->hasAttribute ( "name" )) {
+			}
+			 if ($entity->hasAttribute ( "name" ) && strlen($entityR->name)<=1 ) {
 				$entityR->name = $entity->getAttribute ( "name" );
-			} else {
+			}
+			if(strlen($entityR->name)<=1){
 				throw new Exception ( 'entity with no representedClassName and no name' );
 			}
 			
