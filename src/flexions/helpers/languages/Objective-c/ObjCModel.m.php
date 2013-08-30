@@ -72,23 +72,27 @@ if($markAsDynamic==true){
 
 - (void)setValue:(id)value forKey:(NSString *)key {
 <?php
-	while ( $d ->iterateOnProperties() === true ) {
-		$property = $d->getProperty();
-	    $name=$property->name;
-	    $valueString=$languageHelper->valueStringForProperty("value",$property);
-	    if($d->firstProperty()){
-	    	echoIndent("if ([key isEqualToString:@\"$name\"]){\n",1);
-	    		echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
-	    }else{
-			echoIndent("} else if ([key isEqualToString:@\"$name\"]) {\n",1);
-				echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
+	if(count($d->properties)==0){
+		echoIndent("[super setValue:value forKey:key];\n",1);
+	}else{
+		while ( $d ->iterateOnProperties() === true ) {
+			$property = $d->getProperty();
+		    $name=$property->name;
+		    $valueString=$languageHelper->valueStringForProperty("value",$property);
+		    if($d->firstProperty()){
+		    	echoIndent("if ([key isEqualToString:@\"$name\"]){\n",1);
+		    		echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
+		    }else{
+				echoIndent("} else if ([key isEqualToString:@\"$name\"]) {\n",1);
+					echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
+			}
+			if ($d->lastProperty()){
+				echoIndent("} else {\n",1);
+					echoIndent("[super setValue:value forKey:key];\n",2);	
+				echoIndent("}\n",1);
+			}
 		}
-		if ($d->lastProperty()){
-			echoIndent("} else {\n",1);
-				echoIndent("[super setValue:value forKey:key];\n",2);	
-			echoIndent("}\n",1);
-		}
-	}
+}
 ?>
 }
 
