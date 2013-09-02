@@ -76,6 +76,16 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     }
 }
 
+- ( <?php echo"$collectionClassName"?>*)filteredCollectionUsingBlock:(BOOL (^)(<?php echo $className;?>  *obj))block withRegistry:(WattRegistry *)registry{
+	 <?php echo $collectionClassName;?> *__block collection=[[<?php echo $collectionClassName;?> alloc] initInRegistry:registry];
+	    [self enumerateObjectsUsingBlock:^(<?php echo $className;?> *obj, NSUInteger idx, BOOL *stop) {
+	        if(block(obj)){
+	            [collection addObject:obj];
+	        }
+	    } reverse:NO];
+	    return collection;
+	}
+
 - (<?php echo $collectionClassName;?>*)filteredCollectionUsingPredicate:(NSPredicate *)predicate withRegistry:(WattRegistry *)registry{
 	return (<?php echo $collectionClassName;?>*)[super filteredCollectionUsingPredicate:predicate withRegistry:registry];
 }

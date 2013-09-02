@@ -45,6 +45,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 @interface <?php echo"$collectionClassName:$collectionParentClass"?> <?php echo(isset($protocols))?"<$protocols>":"";?>{
 }
 - (void)enumerateObjectsUsingBlock:(void (^)(<?php echo $className;?> *obj, NSUInteger idx, BOOL *stop))block reverse:(BOOL)useReverseEnumeration;
+- ( <?php echo"$collectionClassName"?>*)filteredCollectionUsingBlock:(BOOL (^)(<?php echo $className;?>  *obj))block withRegistry:(WattRegistry *)registry;
 - (<?php echo $collectionClassName;?>*)filteredCollectionUsingPredicate:(NSPredicate *)predicate withRegistry:(WattRegistry *)registry;
 - (NSUInteger)count;
 - (<?php echo $className;?> *)objectAtIndex:(NSUInteger)index;
