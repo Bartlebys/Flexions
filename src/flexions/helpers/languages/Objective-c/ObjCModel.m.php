@@ -70,6 +70,41 @@ if($markAsDynamic==true){
 }
 ?>
 
+<?php if(isset($protocols) &&  (strpos($protocols,"WattCopying")!==false) ) { ?>
+
+#pragma  mark WattCopying
+
+- (instancetype)wattCopyInRegistry:(WattRegistry*)registry{
+    <?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[self copy];
+    [registry addObject:instance];
+    return instance;
+}
+
+
+// NSCopying
+- (id)copyWithZone:(NSZone *)zone{
+    <?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[[[super class] allocWithZone:zone] init];
+    <?php echoIndent("instance->_registry=nil; // We want to furnish a registry free copy\n",1);?>
+	<?php echoIndent("// we do not provide an _uinstID\n",1);	?>
+   	<?php while ( $d ->iterateOnProperties() === true ) {
+   				/* @var $property PropertyRepresentation */
+  	 			$property = $d->getProperty();
+		  		$name=$property->name;
+		  		$ivar="_".$name;
+		  		$nativeType=$languageHelper->nativeTypeForProperty($property);
+		  		if($languageHelper->isScalar($nativeType)){
+					echoIndent("instance->".$ivar."=".$ivar.";\n",2);
+				}else{
+					echoIndent("instance->".$ivar."=[".$ivar." copyWithZone:zone];\n",2);
+				}
+   	}?>
+    return instance;
+}
+
+#pragma mark -
+
+<?php } ?>
+
 - (void)setValue:(id)value forKey:(NSString *)key {
 <?php
 	if(count($d->properties)==0){

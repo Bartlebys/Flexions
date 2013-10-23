@@ -89,7 +89,7 @@ class ObjectiveCHelper {
 	
 	/**
 	 * Returns the property dŽclaration
-	 * 
+	 *
 	 * @param PropertyRepresentation $property        	
 	 * @param bool $allowScalars
 	 *        	used for example when generating for core data
@@ -104,7 +104,7 @@ class ObjectiveCHelper {
 	
 	/**
 	 * Return a string containing the property declaration options
-	 * 
+	 *
 	 * @param string $nativeTypeName        	
 	 * @return string
 	 */
@@ -160,9 +160,16 @@ class ObjectiveCHelper {
 			$rType = 'NSNull';
 		} elseif ($t == 'any') {
 			$rType = 'id';
-		} elseif (strpos ( $t, 'int' ) === 0 or strpos ( $t, 'long' === 0 )) {
-			if (strpos ( $t, 'uint' ) !== false or strpos ( $t, 'unsigned' !== false )) {
-				$rType = 'NSUInteger';
+		} elseif (	strpos ( $t, 'int' ) === 0 or
+						strpos ( $t, 'int32_t' === 0 )	or
+						strpos ( $t, 'int64_t' === 0 )or
+						strpos ( $t, 'long' === 0 )
+				) {
+			if ( 	strpos ( $t, 'uint' ) !== false  or 
+					strpos ( $t, 'u_' !== false ) or
+					strpos ( $t, 'unsigned' !== false )
+					) {
+					$rType = 'NSUInteger';
 			} else {
 				$rType = 'NSInteger';
 			}
@@ -299,8 +306,20 @@ class ObjectiveCHelper {
 	 * @return boolean
 	 */
 	public function isScalar($nativeTypeName) {
-		if ($nativeTypeName == 'id' or 		// Not really scalar.
-		$nativeTypeName == 'NSInteger' or $nativeTypeName == 'NSUInteger' or $nativeTypeName == 'float' or $nativeTypeName == 'double' or $nativeTypeName == 'BOOL' or $nativeTypeName == 'CGRect' or $nativeTypeName == 'CGPoint' or $nativeTypeName == 'CGSize')
+		if (
+				$nativeTypeName == 'id' or 		// Not really scalar.
+				$nativeTypeName =='char' or 
+				$nativeTypeName =='short' or
+				$nativeTypeName =='long' or
+				$nativeTypeName == 'NSInteger' or 
+				$nativeTypeName == 'NSUInteger' or
+				$nativeTypeName == 'float' or 
+				$nativeTypeName == 'double' or 
+				$nativeTypeName == 'BOOL' or 
+				$nativeTypeName == 'CGRect' or
+				$nativeTypeName == 'CGPoint' or 
+				$nativeTypeName == 'CGSize'
+			)
 			return true;
 		return false;
 	}
@@ -314,6 +333,8 @@ class ObjectiveCHelper {
 	public function indent($source, $style) {
 		return $source;
 	}
+		
+		
 }
 
 ?>
