@@ -70,40 +70,37 @@ if($markAsDynamic==true){
 }
 ?>
 
-<?php if(isset($protocols) &&  (strpos($protocols,"WattCopying")!==false) ) { ?>
+<?php if( isset($protocols)  &&  (strpos($protocols,"WattCopying")!==false) ) { ?>
 
 #pragma  mark WattCopying
 
 - (instancetype)wattCopyInRegistry:(WattRegistry*)registry{
-    <?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[self copy];
-    [registry addObject:instance];
-    return instance;
-}
-
-
-// NSCopying
-- (id)copyWithZone:(NSZone *)zone{
-    <?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super copyWithZone:zone];
-    <?php echoIndent("instance->_registry=nil; // We want to furnish a registry free copy\n",1);?>
-	<?php echoIndent("// we do not provide an _uinstID\n",1);	?>
-   	<?php while ( $d ->iterateOnProperties() === true ) {
+	<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super wattCopyInRegistry:registry];
+    if(![registry objectWithUinstID:instance.uinstID]){
+        [registry addObject:instance];
+<?php echoIndent("instance->_registry=registry;\n",2);?>
+<?php while ( $d ->iterateOnProperties() === true ) {
    				/* @var $property PropertyRepresentation */
   	 			$property = $d->getProperty();
 		  		$name=$property->name;
 		  		$ivar="_".$name;
 		  		$nativeType=$languageHelper->nativeTypeForProperty($property);
-		  		if($languageHelper->isScalar($nativeType)){
+		  		if($property->isGeneratedType){
+					echoIndent("instance->".$ivar."=[".$ivar." wattCopyInRegistry:registry];\n",2);
+		  		}else if($languageHelper->isScalar($nativeType)){
 					echoIndent("instance->".$ivar."=".$ivar.";\n",2);
 				}else{
-					echoIndent("instance->".$ivar."=[".$ivar." copyWithZone:zone];\n",2);
+					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",2);
 				}
-   	}?>
+ 		  	}
+   		}?>
+	}
     return instance;
 }
 
+
 #pragma mark -
 
-<?php } ?>
 
 - (void)setValue:(id)value forKey:(NSString *)key {
 <?php
