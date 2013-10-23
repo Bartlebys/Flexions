@@ -83,7 +83,7 @@ if($markAsDynamic==true){
 
 // NSCopying
 - (id)copyWithZone:(NSZone *)zone{
-    <?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[[[super class] allocWithZone:zone] init];
+    <?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super copyWithZone:zone];
     <?php echoIndent("instance->_registry=nil; // We want to furnish a registry free copy\n",1);?>
 	<?php echoIndent("// we do not provide an _uinstID\n",1);	?>
    	<?php while ( $d ->iterateOnProperties() === true ) {

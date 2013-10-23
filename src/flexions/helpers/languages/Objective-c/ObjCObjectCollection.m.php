@@ -59,7 +59,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 #pragma  mark WattCopying
 
 - (instancetype)wattCopyInRegistry:(WattRegistry*)registry{
-    <?php echo $collectionClassName;?> *instance=[super copy];
+    <?php echo $collectionClassName;?> *instance=[self copy];
     [registry addObject:instance];
      WattRegistry *__block registryReference=registry;
     [self enumerateObjectsUsingBlock:^(<?php echo $className;?> *obj, NSUInteger idx, BOOL *stop) {
@@ -71,7 +71,7 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
 
 // NSCopying
 - (id)copyWithZone:(NSZone *)zone{
-    <?php echo $collectionClassName;?>*instance=[[[self class] allocWithZone:zone] init];
+    <?php echo $collectionClassName;?>*instance=[super copyWithZone:zone];
     instance->_registry=nil; // We want to furnish a registry free copy
     //_uinstID=0;// we do not provide an _uinstID
    <?php echo $collectionClassName;?>*__block ref=instance;
