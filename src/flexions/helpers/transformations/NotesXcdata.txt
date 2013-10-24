@@ -13,6 +13,17 @@ You need to manage manually reciprocity (future extension may generate setters t
 Modeling tool extensions
 --------------------------------------
 
+
+// Entities
+
+#4 If an entity has in its userInfos  a key == "generate" and a value =="collection"
+It will generate an independent collection class for this object.
+(Normally collection are generated using to 1-n relationships);
+
+#5 If an entity has in its userInfos  a key == "parent" and a value =="MyParent"
+1- the entity prefix will not apply !!
+2- this directive overrides the "parentEntity"
+
 // Attributes or Properties 
 
 #1 If a property has in its userInfos dictionary a key=="type" : 
@@ -20,23 +31,15 @@ Modeling tool extensions
 "type:rect" this directive will cast to the native type CGrect 
 Any of the ObjectiveCHelper->getSupportedNativeTypes() types should work.
 
-
 #2 You can generate a relationship attribute adding to the property key == "relationship" value="ClassName"
 This is used in WTMShelf to reference Watt classes (users=WattCollectionOfUser,...)
 
-// Entities
+#3  If a property has in its userInfos dictionary a key=="extractible" : 
+"extractible:NO" when the subgraph is copyied (extracted) the related entity is not copyed (it is null) 
 
-#3 If an entity has in its userInfos  a key == "generate" and a value =="collection"
-It will generate an independent collection class for this object.
-(Normally collection are generated using to 1-n relationships);
+// Attributes for relationship 
+#6 "extractible:no" when the subgraph is copyied (extracted) the related entity is not copyed (it is null) 
 
-#4 If an entity has in its userInfos  a key == "parent" and a value =="MyParent"
-1- the entity prefix will not apply !!
-2- this directive overrides the "parentEntity"
-
-
-When using WATT framework 
---------------------------------------
-
-You can also reference conventionnaly out of the graph object by storing a reference to its Registry identifier : uinstID
-KEY FEATURE : those uinstID are persistent even when moving from a device to another.
+NOTE  : 
+For entities, properties (and relationship that are converted to properties)
+We store any metadata (key values stored in userInfo) in an associative array for specific extension.

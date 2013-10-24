@@ -99,7 +99,7 @@ class ObjectiveCHelper {
 		$t = $this->nativeTypeForProperty ( $property, $allowScalars );
 		$options = $this->propertyDeclarationOptionForNativeType ( $t );
 		$p = $this->isScalar ( $t ) == true ? "" : "*";
-		return "@property (" . $options . ") " . $t . " " . $p . " " . $property->name . ";\n";
+		return "@property (" . $options . ") " . $t . " " . $p . " " . $property->name . ";";
 	}
 	
 	/**

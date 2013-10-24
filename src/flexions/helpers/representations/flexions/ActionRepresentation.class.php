@@ -89,6 +89,11 @@ class ActionRepresentation {
 		public $description;
 	
 
+		/**
+		 * @var array an associative array to pass specific metadata
+		 */
+		public $metadata;
+		
 }
 
 ?>

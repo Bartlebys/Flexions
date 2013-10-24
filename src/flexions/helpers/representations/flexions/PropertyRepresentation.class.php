@@ -70,7 +70,16 @@ class  PropertyRepresentation{
 	public $pattern;
 	
 	
-
+	/**
+	 * @var bool set to false if the property is not extractible in a sub-graph copy operation 
+	 */
+	public $isExtractible=true; 
+	
+	
+	/**
+	 * @var array an associative array to pass specific metadata
+	 */
+	public $metadata;
 
 }
 

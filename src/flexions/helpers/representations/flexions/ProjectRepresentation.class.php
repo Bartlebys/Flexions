@@ -65,6 +65,12 @@ class ProjectRepresentation {
 		public $classPrefix="";
 		
 		
+		/**
+		 * @var array an associative array to pass specific metadata
+		 */
+		public $metadata;
+		
+		
 		// Actions
 		
 

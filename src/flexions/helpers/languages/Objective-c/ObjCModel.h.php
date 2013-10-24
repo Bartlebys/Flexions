@@ -144,6 +144,11 @@ if ($d->instanceOf != null) {
 while ( $d->iterateOnProperties () === true ) {
 	$property = $d->getProperty ();
 	echoindent ( $languageHelper->getPropertyDeclaration ( $property, $allowScalars ), 0 );
+	if($property->isExtractible==false){
+			echo ("// non extractible\n");
+	}else{
+		echo("\n");	
+	}
 }
 ?>
 

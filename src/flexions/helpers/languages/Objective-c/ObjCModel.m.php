@@ -91,9 +91,41 @@ if($markAsDynamic==true){
 					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",1);
 				}
  		  	}
-   		}?>
+}?>
     return instance;
 }
+<?php if( isset($protocols)  &&  (strpos($protocols,"WattExtraction")!==false) ) { ?>
+
+#pragma  mark WattExtraction
+
+- (instancetype)wattExtractAndCopyToRegistry:(WattRegistry*)destinationRegistry{
+	<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super wattExtractAndCopyToRegistry:destinationRegistry];
+<?php echoIndent("instance->_registry=destinationRegistry;\n",1);?>
+<?php while ( $d ->iterateOnProperties() === true ) {
+   				/* @var $property PropertyRepresentation */
+  	 			$property = $d->getProperty();
+		  		$name=$property->name;
+		  		$ivar="_".$name;
+		  		$nativeType=$languageHelper->nativeTypeForProperty($property);
+		  		if($property->isExtractible===false ){
+					if($languageHelper->isScalar($nativeType)){
+						echoIndent("// instance->".$ivar." is non extractible\n",1);
+					}else{
+						echoIndent("instance->".$ivar."=nil;// Non extractible\n",1);
+					}		  		
+				}else if($property->isGeneratedType){
+					echoIndent("instance->".$ivar."=[".$ivar." wattExtractAndCopyToRegistry:destinationRegistry];\n",1);
+		  		}else if($languageHelper->isScalar($nativeType)){
+					echoIndent("instance->".$ivar."=".$ivar.";\n",1);
+				}else{
+					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",1);
+				}
+ 		  	}
+}?>
+    return instance;
+}
+
+
 
 
 #pragma mark -

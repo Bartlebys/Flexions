@@ -103,6 +103,14 @@ class EntityRepresentation {
 		return ( $this->_propertyIndex== count($this->properties)-1);
 	}
 	
+	
+
+	/**
+	 * @var array an associative array to pass specific metadata
+	 */
+	public $metadata;
+	
+	
 }
 
 ?>

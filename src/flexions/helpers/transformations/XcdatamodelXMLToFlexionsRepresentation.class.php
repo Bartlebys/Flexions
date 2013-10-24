@@ -44,65 +44,118 @@ class XCDDataXMLToFlexionsRepresentation {
 		$dom->load ( $pth );
 		$entities = $dom->getElementsByTagName ( 'entity' );
 		
+		// /////////////////////////
+		// ENTITIES
+		// /////////////////////////
+		
+		fLog ( 	 "********************".cr(),true );
+		fLog ( 	 "Parsing Entities".cr(),true );
+		fLog ( 	 "********************".cr().cr(),true );
+		
 		foreach ( $entities as $entity ) {
 			
 			/* @var DOMNode $entity */
-			
 			$entityR = new EntityRepresentation ();
+			$entityR->metadata=array();
+			
+			// ////////////////////////////////////////////////////////////////
+			//
+			// -> ENTITY
+			// Stored in <model ><entity>...
+			//
+			// sample :
+			// <entity name="Activity" representedClassName="Activity" syncable="YES">
+			// ...
+			//
+			// ////////////////////////////////////////////////////////////////
+			
+			// We parse the attribute of the <entity> element
+			
 			if ($entity->hasAttribute ( "representedClassName" )) {
 				$entityR->name = $entity->getAttribute ( "representedClassName" );
-				fLog ( 'Parsing : ' . $entityR->name . cr (), true );
+				fLog ( cr ().'Parsing : ' . $entityR->name . cr (), true );
+				fLog ( '------------------------'. cr (), true );
 			}
-			 if ($entity->hasAttribute ( "name" ) && strlen($entityR->name)<=1 ) {
+			if ($entity->hasAttribute ( "name" ) && strlen ( $entityR->name ) <= 1) {
 				$entityR->name = $entity->getAttribute ( "name" );
 			}
-			if(strlen($entityR->name)<=1){
+			if (strlen ( $entityR->name ) <= 1) {
 				throw new Exception ( 'entity with no representedClassName and no name' );
 			}
 			
-			// We parse the properties
-			$attributes = $entity->getElementsByTagName ( 'attribute' );
 			$entityR->type = "object"; // Entities are objects
 			if ($entity->hasAttribute ( "parentEntity" )) {
 				$entityR->instanceOf = $nativePrefix . $entity->getAttribute ( "parentEntity" );
 			} else {
 				// We donnot qualifiy the instance
 				// a requalification can be done according to the situation in
-			// the template
+				// the template
 			}
+			
+			// ////////////////////////////////////////////////////////////////
+			//
+			// -> ENTITY->metadata
+			// Stored in <userInfo><entry> elements
+			//
+			// Sample :
+			// <entity name="Activity" representedClassName="Activity" syncable="YES">
+			// ...
+			// <userInfo>
+			// <entry key="parent" value="WattModel"/>
+			// </userInfo>
+			// </entity>
+			//
+			// ////////////////////////////////////////////////////////////////
 			
 			$entityUserInfos = $entity->getElementsByTagName ( "userInfo" );
 			foreach ( $entityUserInfos as $entityUserInfo ) {
 				$userInfoEntries = $entityUserInfo->getElementsByTagName ( "entry" );
 				foreach ( $userInfoEntries as $userInfoEntry ) {
+					fLog ( 	 $entityR->name .'.metadata : '.$this->elementToString($userInfoEntry).cr(),true );
 					
-					// $entity->generateCollectionClass?
-					// We generate a collection class if :
-					// 1- there is a relation 1-n to
-					// 2- the entity embedds an explicit generation directive :
-					// Sample :
-					// <entity name="Datum" representedClassName="Datum"
-					// syncable="YES">
-					// <attribute name="key" attributeType="String"
-					// syncable="YES"/>
-					// <userInfo> <entry key="generate"
-					// value="collection"/></userInfo>
-					if ($userInfoEntry->hasAttribute ( "key" ) && rtrim ( $userInfoEntry->getAttribute ( "key" ) ) == "generate" && ($userInfoEntry->hasAttribute ( "value" ) && rtrim ( $userInfoEntry->getAttribute ( "value" ) ) == "collection")) {
+					if ($userInfoEntry->hasAttribute ( "key" ) && $userInfoEntry->hasAttribute ( "value" )){
+						$entityR->metadata[ rtrim ( $userInfoEntry->getAttribute ( "key" ))]=rtrim( $userInfoEntry->getAttribute ( "value" ));
+					}
+					
+					if ($userInfoEntry->hasAttribute ( "key" ) && rtrim ( $userInfoEntry->getAttribute ( "key" ) ) == "generate" && ($userInfoEntry->hasAttribute ( "value" ) && strtolower ( rtrim ( $userInfoEntry->getAttribute ( "value" ) ) ) == "collection")) {
 						$entityR->generateCollectionClass = true;
 					}
 					if ($userInfoEntry->hasAttribute ( "key" ) && rtrim ( $userInfoEntry->getAttribute ( "key" ) ) == "parent" && $userInfoEntry->hasAttribute ( "value" )) {
-						$entityR->instanceOf =$userInfoEntry->getAttribute ( "value" );
+						$entityR->instanceOf = $userInfoEntry->getAttribute ( "value" );
 					}
 				}
 			}
 			
+			// ////////////////////////////////////////////////////////////////
+			//
+			// -> ENTITY->properties
+			// Stored in <attribute> elements
+			//
+			// Sample :
+			//
+			// <entity name="Activity" representedClassName="Activity" syncable="YES">
+			// <attribute name="level" optional="YES" attributeType="Integer 16"
+			// defaultValueString="0" syncable="YES"/>
+			// <attribute name="rating" optional="YES" attributeType="Integer 16"
+			// defaultValueString="0" syncable="YES"/>
+			// ...
+			//
+			// ////////////////////////////////////////////////////////////////
+			
+			$attributes = $entity->getElementsByTagName ( 'attribute' );
 			foreach ( $attributes as $attribute ) {
+				
+				// For each attribute : here attribute == property
 				$property = new PropertyRepresentation ();
+				
+				// We parse the attribute of the <attribute> element
 				if ($attribute->hasAttribute ( "name" )) {
 					$property->name = $attribute->getAttribute ( "name" );
 				} else {
 					throw new Exception ( 'property with no name' );
 				}
+				
+				fLog ( $entityR->name.'.'.$property->name.' '.cr(),true );
 				
 				if ($attribute->hasAttribute ( "attributeType" )) {
 					$property->type = $attribute->getAttribute ( "attributeType" );
@@ -110,53 +163,87 @@ class XCDDataXMLToFlexionsRepresentation {
 					$property->type = ObjectiveCHelper::UNDEFINED_TYPE;
 				}
 				
-				$userInfos = $attribute->getElementsByTagName ( 'entry' );
-				foreach ( $userInfos as $userInfo ) {
-						if ($userInfo->hasAttribute ( "key" ) && rtrim ( $userInfo->getAttribute ( "key" ) ) == "type" && rtrim ( $userInfo->hasAttribute ( "value" ) )) {
-							/*
-							 * The user can define a specific type within the
-							 * user info Conventionnally we use a "type" as a
-							 * key. <attribute name="myDictionary"
-							 * optional="YES" attributeType="String"
-							 * syncable="YES"> <userInfo> <entry key="type"
-							 * value="dictionary"/> </userInfo> </attribute>
-							 */
-							$propertyType = $userInfo->getAttribute ( "value" );
+				if ($attribute->hasAttribute ( "defaultValueString" )) {
+					$property->default = $attribute->getAttribute ( "defaultValueString" );
+				}
+				
+				// We parse the property metadata
+
+				$propertyUserInfos = $attribute->getElementsByTagName ( "userInfo" );
+				foreach ( $propertyUserInfos as $propertyUserInfo ) {
+					$userInfos = $propertyUserInfo->getElementsByTagName ( "entry" );
+					// We parse the entries
+					
+					$property->metadata=array();
+					
+					foreach ( $userInfos as $propertyInfoEntry ) {
+			
+						fLog ( 	 $entityR->name.'.'.$property->name .'.metadata : '.$this->elementToString($propertyInfoEntry).cr(),true );
+						
+						if ($propertyInfoEntry->hasAttribute ( "key" ) && $propertyInfoEntry->hasAttribute ( "value" )){
+							$property->metadata[ rtrim ( $propertyInfoEntry->getAttribute ( "key" ))]=rtrim( $propertyInfoEntry->getAttribute ( "value" ));
+						}
+						
+						if ($propertyInfoEntry->hasAttribute ( "key" ) && rtrim ( $propertyInfoEntry->getAttribute ( "key" ) ) == "type" && rtrim ( $propertyInfoEntry->hasAttribute ( "value" ) )) {
+							$propertyType = $propertyInfoEntry->getAttribute ( "value" );
 							$property->type = $propertyType;
 						}
-						if ($userInfo->hasAttribute ( "key" ) && rtrim ( $userInfo->getAttribute ( "key" ) ) == "relationship" && rtrim ( $userInfo->hasAttribute ( "value" ) )) {
+						if ($propertyInfoEntry->hasAttribute ( "key" ) && rtrim ( $propertyInfoEntry->getAttribute ( "key" ) ) == "relationship" && rtrim ( $propertyInfoEntry->hasAttribute ( "value" ) )) {
 							/* Support of external relationship */
-							$propertyType = $userInfo->getAttribute ( "value" );
+							$propertyType = $propertyInfoEntry->getAttribute ( "value" );
 							$property->type = "object";
 							$property->instanceOf = $propertyType;
 							$property->isGeneratedType = true;
-							$property->isExternal=true; // Used to prevent from generation
+							$property->isExternal = true; // Used to prevent from generation
 						}
+						if ($propertyInfoEntry->hasAttribute ( "key" ) && rtrim ( $propertyInfoEntry->getAttribute ( "key" ) ) == "extractible" && rtrim ( $propertyInfoEntry->hasAttribute ( "value" ) )) {
+							/* Support of extractibility */
+							$property->isExtractible = (strtolower ( $propertyInfoEntry->getAttribute ( "value" ) ) != "no");
+							var_dump ( $property->extractible );
+						}
+					}
 				}
-				
-			
-				if ($attribute->hasAttribute ( "defaultValueString" )){
-					$property->default = $attribute->getAttribute ( "defaultValueString" );
-				}
-					// Add the property to the entity
 				$entityR->properties [$property->name] = $property;
+				
+				
 			}
 			
-			// We parse the relationships
+			
+			// ////////////////////////////////////////////////////////////////
+			//
+			// -> ENTITY->relationships
+			// Stored in <relationship> elements
+			//
+			// Sample :
+			//
+			// <entity name="Cell" syncable="YES">
+			// ...
+			// <relationship name="column" optional="YES" minCount="1" maxCount="1"
+			// deletionRule="Nullify" destinationEntity="Column" inverseName="cells"
+			// inverseEntity="Column" syncable="YES"/>
+			// <relationship name="element" optional="YES" minCount="1" maxCount="1"
+			// deletionRule="Nullify" destinationEntity="Element" inverseName="cells"
+			// inverseEntity="Element" syncable="YES"/>
+			//
+			// ////////////////////////////////////////////////////////////////
+			
 			$relationships = $entity->getElementsByTagName ( 'relationship' );
 			foreach ( $relationships as $relationship ) {
+				
+				// We create a property to hold the relationship
 				$property = new PropertyRepresentation ();
+				$property->metadata=array();
+				
 				if ($relationship->hasAttribute ( "name" )) {
 					$property->name = $relationship->getAttribute ( "name" );
 				} else {
 					throw new Exception ( 'property with no name' );
 				}
-			
+				fLog ( $entityR->name.'.'.$property->name.' '.cr(),true );
 				$tooMany = false;
 				if ($relationship->hasAttribute ( "toMany" )) {
 					$tooMany = ($relationship->getAttribute ( "toMany" ) == "YES");
 				}
-				
 				if ($relationship->hasAttribute ( "destinationEntity" )) {
 					$destinationEntity = $relationship->getAttribute ( "destinationEntity" );
 					if ($tooMany == true) {
@@ -172,15 +259,46 @@ class XCDDataXMLToFlexionsRepresentation {
 					$property->type = ObjectiveCHelper::UNDEFINED_TYPE;
 				}
 				
+				// Relationship metadata user infos
+				
+				$relationshipUserInfos = $relationship->getElementsByTagName ( 'userInfo' );
+				foreach ( $relationshipUserInfos as $relationshipUserInfo ) {
+					$userInfoEntries = $relationshipUserInfo->getElementsByTagName ( "entry" );
+					foreach ( $userInfoEntries as $propertyInfoEntry ) {
+						
+						fLog ( 	 $entityR->name.'.'.$property->name .'.metadata : '.$this->elementToString($propertyInfoEntry).cr(),true );
+						
+						if ($propertyInfoEntry->hasAttribute ( "key" ) && $propertyInfoEntry->hasAttribute ( "value" )){
+							$property->metadata[ rtrim ( $propertyInfoEntry->getAttribute ( "key" ))]=rtrim( $propertyInfoEntry->getAttribute ( "value" ));
+						}
+						
+						if ($propertyInfoEntry->hasAttribute ( "key" ) && rtrim ( $propertyInfoEntry->getAttribute ( "key" ) ) == "extractible" && rtrim ( $propertyInfoEntry->hasAttribute ( "value" ) )) {
+							/* Support of extractibility */
+							$property->isExtractible = (strtolower ( $propertyInfoEntry->getAttribute ( "value" ) ) != "no");
+						}
+					}
+				}
+				
 				// Add the property to the entity
 				$entityR->properties [$property->name] = $property;
 			}
 			
+			// We add the entity representations to the entities.
 			$r->entities [$entityR->name] = $entityR;
 		}
 		
 		fLog ( "" . cr (), true );
+		
+		fLog ( 	 "********************".cr(),true );
+		fLog ( 	 "End of  Entities".cr(),true );
+		fLog ( 	 "********************".cr().cr(),true );
+		
+		
 		return $r;
+	}
+	
+	public function elementToString($domElement){
+		return $domElement->ownerDocument->saveXML($domElement);
 	}
 }
 
