@@ -74,11 +74,9 @@ if($markAsDynamic==true){
 
 #pragma  mark WattCopying
 
-- (instancetype)wattCopyInRegistry:(WattRegistry*)registry{
-	<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super wattCopyInRegistry:registry];
-    if(![registry objectWithUinstID:instance.uinstID]){
-        [registry addObject:instance];
-<?php echoIndent("instance->_registry=registry;\n",2);?>
+- (instancetype)wattCopyInRegistry:(WattRegistry*)destinationRegistry{
+	<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super wattCopyInRegistry:destinationRegistry];
+<?php echoIndent("instance->_registry=destinationRegistry;\n",1);?>
 <?php while ( $d ->iterateOnProperties() === true ) {
    				/* @var $property PropertyRepresentation */
   	 			$property = $d->getProperty();
@@ -86,15 +84,14 @@ if($markAsDynamic==true){
 		  		$ivar="_".$name;
 		  		$nativeType=$languageHelper->nativeTypeForProperty($property);
 		  		if($property->isGeneratedType){
-					echoIndent("instance->".$ivar."=[".$ivar." wattCopyInRegistry:registry];\n",2);
+					echoIndent("instance->".$ivar."=[".$ivar." wattCopyInRegistry:destinationRegistry];\n",1);
 		  		}else if($languageHelper->isScalar($nativeType)){
-					echoIndent("instance->".$ivar."=".$ivar.";\n",2);
+					echoIndent("instance->".$ivar."=".$ivar.";\n",1);
 				}else{
-					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",2);
+					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",1);
 				}
  		  	}
    		}?>
-	}
     return instance;
 }
 
@@ -144,15 +141,6 @@ if($markAsDynamic==true){
 						echoIndent("$ivarName=o;\n",3);
 						echoIndent("}\n",2);
 					echoIndent("}\n",1);
-					/*
-					$instanceOf = $property->instanceOf;
-					$pos = strpos ( $instanceOf, COLLECTION_OF );
-					if ($pos >= 0) {
-						echoIndent("if(!$ivarName){\n",1);
-							echoindent ( "$ivarName=[[$instanceOf alloc] initInRegistry:_registry];\n", 2 );
-						echoIndent("}\n",1);
-					}
-					*/
 					echoIndent("return $ivarName;\n",1);
 				echoIndent("}\n",0);
 				echoIndent("\n",0);
