@@ -84,7 +84,7 @@ if($markAsDynamic==true){
 		  		$ivar="_".$name;
 		  		$nativeType=$languageHelper->nativeTypeForProperty($property);
 		  		if($property->isGeneratedType){
-					echoIndent("instance->".$ivar."=[".$ivar." wattCopyInRegistry:destinationRegistry];\n",1);
+					echoIndent("instance->".$ivar."=[".$ivar." instancebyCopyTo:destinationRegistry];\n",1);
 		  		}else if($languageHelper->isScalar($nativeType)){
 					echoIndent("instance->".$ivar."=".$ivar.";\n",1);
 				}else{
