@@ -114,7 +114,7 @@ if($markAsDynamic==true){
 						echoIndent("instance->".$ivar."=nil;// Non extractible\n",1);
 					}		  		
 				}else if($property->isGeneratedType){
-					echoIndent("instance->".$ivar."=[".$ivar." wattExtractAndCopyToRegistry:destinationRegistry];\n",1);
+					echoIndent("instance->".$ivar."=[".$ivar." extractInstancebyCopyTo:destinationRegistry];\n",1);
 		  		}else if($languageHelper->isScalar($nativeType)){
 					echoIndent("instance->".$ivar."=".$ivar.";\n",1);
 				}else{

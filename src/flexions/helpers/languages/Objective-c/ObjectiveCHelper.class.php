@@ -239,28 +239,28 @@ class ObjectiveCHelper {
 		 * long)value; + (NSNumber *)numberWithUnsignedLongLong:(unsigned long long)value;
 		 */
 		if ($type == 'char')
-			return "[NSNumber numberWithChar:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'short')
-			return "[NSNumber numberWithShort:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'NSUInteger')
-			return "[NSNumber numberWithUnsignedInteger:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'NSInteger')
-			return "[NSNumber numberWithInteger:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'long')
-			return "[NSNumber numberWithLong:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'float')
-			return "[NSNumber numberWithFloat:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'double')
-			return "[NSNumber numberWithDouble:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == 'BOOL')
-			return "[NSNumber numberWithBool:" . $expr . "]";
+			return "@(" . $expr . ")";
 		
 		if ($type == "CGRect")
 			return "[NSValue valueWithCGRect:$expr]";
