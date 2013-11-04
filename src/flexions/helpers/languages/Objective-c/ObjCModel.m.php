@@ -139,13 +139,14 @@ if($markAsDynamic==true){
 		while ( $d ->iterateOnProperties() === true ) {
 			$property = $d->getProperty();
 		    $name=$property->name;
+		    $compactName=($f->useCompactMode)?$d->getCompactPropertyName():$name;
 		    $valueString=$languageHelper->valueStringForProperty("value",$property);
 		    if($d->firstProperty()){
-		    	echoIndent("if ([key isEqualToString:@\"$name\"]){\n",1);
-		    		echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
+		    	echoIndent("if ([key isEqualToString:@\"$compactName\"]){\n",1);
+		    		echoIndent("[super setValue:$valueString forKey:@\"$compactName\"];\n",2);
 		    }else{
-				echoIndent("} else if ([key isEqualToString:@\"$name\"]) {\n",1);
-					echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
+				echoIndent("} else if ([key isEqualToString:@\"$compactName\"]) {\n",1);
+					echoIndent("[super setValue:$valueString forKey:@\"$compactName\"];\n",2);
 			}
 			if ($d->lastProperty()){
 				echoIndent("} else {\n",1);
@@ -210,19 +211,27 @@ if($markAsDynamic==true){
 <?php
 	while ( $d ->iterateOnProperties() === true ) {
 		$property = $d->getProperty();
-	    $type=$languageHelper->nativeTypeForProperty($property,$allowScalars);
+	    $nativeType=$languageHelper->nativeTypeForProperty($property,$allowScalars);
 	    $name=$property->name;
-	    $s=$languageHelper->objectFromExpression("self.$name", $type);
+		$compactName=($f->useCompactMode)?$d->getCompactPropertyName():$name;
+	    $s=$languageHelper->objectFromExpression("self.$name", $nativeType);
+	    $ivar="_".$name;
 	 	if($property->isGeneratedType==true){
-			echoIndent("if(self.$name){\n",1);
+			echoIndent("if($ivar){\n",1);
 				echoIndent("if(includeChildren){\n",2);
-					echoIndent("[dictionary setValue:[$s dictionaryRepresentationWithChildren:includeChildren] forKey:@\"$name\"];\n",3);
+					echoIndent("[dictionary setValue:[$s dictionaryRepresentationWithChildren:includeChildren] forKey:@\"$compactName\"];\n",3);
 				echoIndent("}else{\n",2);
-					echoIndent("[dictionary setValue:[$s aliasDictionaryRepresentation] forKey:@\"$name\"];\n",3);
+					echoIndent("[dictionary setValue:[$s aliasDictionaryRepresentation] forKey:@\"$compactName\"];\n",3);
 				echoIndent("}\n",2);
 			echoIndent("}\n",1);
 		}else{
-			echoIndent("[dictionary setValue:$s forKey:@\"$name\"];\n",1);
+			if($languageHelper->isScalar($nativeType)){
+				echoIndent("[dictionary setValue:$s forKey:@\"$compactName\"];\n",1);
+			}else{
+				echoIndent("if($ivar){\n",1);
+					echoIndent("[dictionary setValue:$s forKey:@\"$compactName\"];\n",2);
+				echoIndent("}\n",1);			
+			}
 		}
 	}
  ?>

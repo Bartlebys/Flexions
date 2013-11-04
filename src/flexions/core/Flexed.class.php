@@ -111,7 +111,14 @@ class Flexed {
 	 * @var string
 	 */
 	var $license;
-
+	
+	/**
+	 * Compact mode is a sort of obfuscation
+	 * @var Bool
+	 */
+	var $useCompactMode=true;
+	
+	
 }
 
 ?>

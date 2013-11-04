@@ -57,9 +57,6 @@ class EntityRepresentation {
 	protected  $_propertyIndex=-1;
 	
 	
-	
-	
-	
 	/**
 	 * Return true while there is a property
 	 * @return boolean
@@ -104,6 +101,14 @@ class EntityRepresentation {
 	}
 	
 	
+	/**
+	 * returns the property iteration index during iteration encoded in compactmode
+	 * Used for obfuscation
+	 */
+	public function getCompactPropertyName(){
+		 $compactKey='abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPSQRSTUVWXYZ';
+		return intToCompactMode($this->_propertyIndex, $compactKey);
+	}	
 
 	/**
 	 * @var array an associative array to pass specific metadata
