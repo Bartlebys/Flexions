@@ -143,10 +143,10 @@ if($markAsDynamic==true){
 		    $valueString=$languageHelper->valueStringForProperty("value",$property);
 		    if($d->firstProperty()){
 		    	echoIndent("if ([key isEqualToString:@\"$compactName\"]){\n",1);
-		    		echoIndent("[super setValue:$valueString forKey:@\"$compactName\"];\n",2);
+		    		echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
 		    }else{
 				echoIndent("} else if ([key isEqualToString:@\"$compactName\"]) {\n",1);
-					echoIndent("[super setValue:$valueString forKey:@\"$compactName\"];\n",2);
+					echoIndent("[super setValue:$valueString forKey:@\"$name\"];\n",2);
 			}
 			if ($d->lastProperty()){
 				echoIndent("} else {\n",1);
