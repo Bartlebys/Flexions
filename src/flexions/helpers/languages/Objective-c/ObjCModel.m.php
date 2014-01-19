@@ -91,15 +91,17 @@ if($markAsDynamic==true){
 					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",1);
 				}
  		  	}
-}?>
+	?>
     return instance;
 }
+<?php } ?>
+
 <?php if( isset($protocols)  &&  (strpos($protocols,"WattExtraction")!==false) ) { ?>
 
 #pragma  mark WattExtraction
 
 - (instancetype)wattExtractAndCopyToRegistry:(WattRegistry*)destinationRegistry{
-	<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super wattExtractAndCopyToRegistry:destinationRegistry];
+<?php echo getCurrentClassNameFragment($d,$f->prefix);?> *instance=[super wattExtractAndCopyToRegistry:destinationRegistry];
 <?php echoIndent("instance->_registry=destinationRegistry;\n",1);?>
 <?php while ( $d ->iterateOnProperties() === true ) {
    				/* @var $property PropertyRepresentation */
@@ -121,11 +123,9 @@ if($markAsDynamic==true){
 					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",1);
 				}
  		  	}
-}?>
     return instance;
-}
-
-
+?>
+<?php } ?>
 
 
 #pragma mark -
