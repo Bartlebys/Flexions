@@ -241,7 +241,7 @@ if($markAsDynamic==true){
     if([self isAnAlias])
         return [super aliasDescription];
     NSMutableString *s=[NSMutableString stringWithString:[super description]];
-	[s appendFormat:@"Instance of %@ (%@.%i) :\n",@"<?php echo getCurrentClassNameFragment($d,$f->prefix);?> ",_registry.uidString,_uinstID];
+	[s appendFormat:@"Instance of %@ (%@.%@) :\n",@"<?php echo getCurrentClassNameFragment($d,$f->prefix);?> ",_registry.uidString,@(_uinstID)];
 <?php
 	while ( $d ->iterateOnProperties() === true ) {
 		$property = $d->getProperty();
