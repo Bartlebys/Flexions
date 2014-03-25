@@ -123,8 +123,9 @@ if($markAsDynamic==true){
 					echoIndent("instance->".$ivar."=[".$ivar." copy];\n",1);
 				}
  		  	}
-    return instance;
 ?>
+    return instance;
+ }
 <?php } ?>
 
 
