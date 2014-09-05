@@ -128,6 +128,9 @@ $className=getClassNameFromCollectionClassName($collectionClassName);
     [super replaceObjectAtIndex:index withObject:anObject];
 }
 
+- (Class)collectedObjectClass{
+	return [<?php echo $className;?> class];
+}
 
 @end
 <?php ////////////   GENERATION ENDS HERE   ////////// ?>
