@@ -20,7 +20,7 @@
  * When using this template you must define : $f->prefix
  * and you can inject : $imports, $parentClass
  */
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/languages/Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
 
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */

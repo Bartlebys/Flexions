@@ -10,7 +10,7 @@
  */
 
 if (isset ( $language )) {
-	include_once FLEXIONS_ROOT_DIR. 'dependencies/geshi/geshi.php';
+	include_once FLEXIONS_ROOT_DIR . 'modules/GeSHI/dependencies/geshi/geshi.php';
 	foreach ( $h->flexedList as $loopname => $list ) {
 		foreach ( ( array ) $list as $f ) {
 			/* @var $f Flexed */

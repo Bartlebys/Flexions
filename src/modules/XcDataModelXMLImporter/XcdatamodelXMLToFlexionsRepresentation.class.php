@@ -22,8 +22,9 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
 
 
 require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/representations/flexions/FlexionsRepresentationsIncludes.php';
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/languages/Objective-c/ObjCGeneric.functions.php';
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/languages/Objective-c/ObjectiveCHelper.class.php';
+require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjectiveCHelper.class.php';
+
 class XCDDataXMLToFlexionsRepresentation {
 	
 	/**

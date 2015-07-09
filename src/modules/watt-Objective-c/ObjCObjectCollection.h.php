@@ -25,7 +25,7 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
  * IT RELIES ON  $sf
  * 	When using this template  you must define :  $collectionClassName;
  */
-require_once FLEXIONS_ROOT_DIR.'flexions/helpers/languages/Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
 
 /* @var $sf Flexed */
 /* @var string $collectionClassName */

@@ -41,4 +41,4 @@ define ( "ECHO_LOGS", false );
 define ( "FLEXIONS_ROOT_DIR", __DIR__ . '/' );
 define ( "VERBOSE_FLEXIONS", true );
 
-include_once 'flexions/core/flexions.script.php';
+include_once "flexions/core/flexions.script.php";

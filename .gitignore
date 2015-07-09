@@ -1,3 +1,4 @@
 .project
 out/*
 .idea/
+out.flexions/
