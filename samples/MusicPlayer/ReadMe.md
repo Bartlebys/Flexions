@@ -1,4 +1,4 @@
-## SLY sample
+## The music player sample
 
 Generation from a xcdatamodel (xcode modeling document) to a Watt objective C projet.
 

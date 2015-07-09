@@ -32,7 +32,7 @@ flexionsFolder="../../../Flexions/"
 # templates, pre , post, destination
 
 # We setup the descriptor  
-descriptor="SLYPlayer.xcdatamodel/contents"
+descriptor="MusicPlayer.xcdatamodel/contents"
 
 #You can specify a destination folder
 #If not it will  generate in the out/ folder

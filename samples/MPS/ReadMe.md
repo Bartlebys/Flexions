@@ -1,4 +1,4 @@
-## SLY sample
+## MPS sample
 
 Generation from a xcdatamodel (xcode modeling document) to various templates.
 

@@ -2,7 +2,7 @@
 
 /* @var $f Flexed */
 
-$prefix = "SLY";
+$prefix = "MusicPlayer";
 
 if (isset ( $f )) {
 	$f->package = "Models/";
