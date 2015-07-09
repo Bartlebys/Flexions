@@ -28,7 +28,7 @@ class ProjectRepresentation {
 		public  $actions = array();
 	
 		/**
-		 * @var array Array of API entities (models) 
+		 * @var array Array of API entities (models)
 		*/
 		public $entities = array();
 	

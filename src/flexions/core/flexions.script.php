@@ -19,38 +19,6 @@ GNU LESSER GENERAL PUBLIC LICENSE for more details.
 You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/licenses/>
 
-## EXPLANATIONS ##
-
-This script Interprets and validates the call and then runs through 3 phases : pre-processing / processing / post-processing
-
-#1- pre-processing : ( you can have multiple pre-processors )
-
-	1.1 can proceed to preparation (pre-generation, data set building per introspection, etc....)
- 	1.2 loads the "descriptor" and transform them to an Hypotypose instance
-  
-   	We create aliases to be used in the templates : 
-   	
-	$h refers to the singleton Hypotypose::instance()  
-	$d refers whithin the loop to the current focus for example : $d=$actions[19] if the loop runs on the 19th actions.
-	$f  fefers to the current Flexed instance
- 	
- 
-#2- processing (usually a triple loop)  :
-
-	2.1 Per entity loop (entity )												enumerates { $entities }
-	2.2 Action loop (operations, command)							enumerates { $actions }
- 	2.3 One stop loop (api , http client , shared headers)     runs once  per $project
- 	
-   IMPORTANT if the package contains a loops.php file the standard flexion loop is not used.
-
-#3- post-processing : (you can have multiple post-processors)
-	
-	Each loop store a collection of Flexed instances .
-     
- 	3.1 Can use the "Flexed" instances to generate sub-Flexed (for example an header file for all the generated files)
- 	3.1 Serializes the "Flexed" to sources files to the destination.
-	3.2 Perform any other post processing action (notification, push, ....)
-
 */
 
 require_once FLEXIONS_ROOT_DIR.'flexions/core/Flog.class.php';
@@ -147,6 +115,23 @@ if ($templates == "*") {
 		$templatesArray[]=$baseTemplatePath."/".$templatePath;;
 	}
 }
+
+/*
+$onceTemplatePath = FLEXIONS_SOURCE_DIR . 'templates';
+// Templates joker.
+if ($templates == "*") {
+	// We populate the templates with the relative path
+	$templatesArray = directoryToArray ( $baseTemplatePath );
+	$templates = implode ( ',', $templatesArray );
+}else{
+	$templatesTempArray= explode(',', $templates);
+	$templatesArray=array();
+	foreach ( $templatesTempArray as $templatePath ) {
+		// Compute the absolute path
+		$templatesArray[]=$baseTemplatePath."/".$templatePath;;
+	}
+}
+*/
 
 
 $specificLoops = FLEXIONS_SOURCE_DIR . 'loops.php';
