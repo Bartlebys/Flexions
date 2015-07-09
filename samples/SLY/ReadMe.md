@@ -4,7 +4,8 @@ Generation from a xcdatamodel (xcode modeling document) to a Watt objective C pr
 
 ## How to ?
 
-Go to the terminal.
+Go to the SLY/ folder in the samples via the terminal.
+And run flexion.sh
 
 ```
     . flexions.sh
