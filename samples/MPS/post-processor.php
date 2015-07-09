@@ -51,7 +51,7 @@ $f=new Flexed();
 // This include sets $f properties
 include FLEXIONS_SOURCE_DIR . "variables-for-swift.php";
 $f->package="";
-$f->fileName="SLYModelsImports.h";
+$f->fileName="TestImports.h";
 
 // We save the generated headers.
 $filePath= $destination .$f->package. $f->fileName;

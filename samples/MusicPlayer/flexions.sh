@@ -24,7 +24,7 @@
 ########################
 
 # We define the  path to the Flexions root folder.
-flexionsFolder="../../../Flexions/"
+flexionsFolder="../../"
 
 . ${flexionsFolder}default.flx
 

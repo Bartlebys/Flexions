@@ -29,19 +29,23 @@ require_once FLEXIONS_ROOT_DIR.'flexions/core/functions.script.php';
 error_reporting(E_ALL | E_STRICT);
 date_default_timezone_set ( 'UTC' );
 
-// Server & commandline versatile support 
+// The argument can also be defined from a boot php script
+if (! isset($arguments)) {
+	// Server & commandline versatile support
+	if ($_SERVER ['argc'] == 0 || !defined('STDIN')) {
+		// Server mode
+		$arguments = $_GET;
+		define("COMMANDLINE_MODE", false);
+	} else {
+		// Command line mode
+		$rawArgs = $_SERVER ['argv'];
+		array_shift($rawArgs); // shifts the commandline script file flexions.php
+		$arguments = array();
+		parse_str(implode('&', $rawArgs), $arguments);
 
-if ($_SERVER ['argc'] == 0 || ! defined ( 'STDIN' )) {
-	// Server mode
-	$arguments = $_GET;
-	define ( "COMMANDLINE_MODE", false );
-} else {
-	// Command line mode
-	$rawArgs = $_SERVER ['argv'];
-	array_shift ( $rawArgs ); // shifts the commandline script file flexions.php
-	$arguments = array ();
-	parse_str ( implode ( '&', $rawArgs ), $arguments );
-	define ( "COMMANDLINE_MODE", true );
+
+		define("COMMANDLINE_MODE", true);
+	}
 }
 
 
