@@ -13,7 +13,12 @@ $r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix
 
 // We pass some dummy data to the loop
 $r->actions=array(1,2);
-$p=array("A");
+
+$p=array(
+    DefaultLoops::ENTITIES=>$r->entities,
+    DefaultLoops::ACTIONS=>$r->actions,
+    "infos"=>"SOME INFOS"
+);
 
 // we instanciate the Hypotypose singleton
 $h = Hypotypose::instance();
