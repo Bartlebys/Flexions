@@ -14,7 +14,7 @@ The flexions.script /src/flexions/core/flexions.script.php Interprets and valida
 #### We create aliases to be used in the templates :
 - $h refers to the singleton Hypotypose::instance()
 - $d refers whithin the loop to the current focus for example : $d=$actions[19] if the loop runs on the 19th actions.
-- $f  refers to the current Flexed instance
+- $f refers to the current Flexed instance
 
 ### 2- processing (usually a triple loop)  :
 1. Per entity loop (entity ) enumerates { $entities }
@@ -34,7 +34,7 @@ Each loop store a collection of Flexed instances
 ```
 php  -f ${cmdPath} source=${source} destination=${destination} descriptor=${descriptor} templates=${templates}  preProcessors=${pre} postProcessors=${post}
 ```
-But most of the time you will prefer to create a .sh wrapper 
+### But most of the time you will prefer to create a .sh wrapper 
 
 - source:the generation source folder path
 - descriptor:the descriptor file name
@@ -72,3 +72,38 @@ destination="out.flexions/"
 
 . ${flexionsFolder}flexions.flx
 ```
+
+### Or a run script 
+
+```
+<?php
+/**
+ * Created by PhpStorm.
+ * User: bpds
+ * Date: 09/07/15
+ * Time: 14:56
+ * You can call this little script from command line
+ * php -f run.php
+ * it is  equivalent to . flexions.sh
+ * its main advantage is that it can be debugged directly more easily
+ */
+
+$arguments=array();
+$arguments['source']="./";
+$arguments['destination']="out.flexions/";
+$arguments['descriptor']="MusicPlayer.xcdatamodel/contents";
+$arguments['templates']="*";
+$arguments['preProcessors']="pre-processor.php";
+$arguments['postProcessors']="post-processor.php";
+
+define ( "COMMANDLINE_MODE", true );
+
+// Invoke flexions
+include_once '../../src/flexions.php';
+```
+
+
+## About templates
+
+To determinate if a template should be used in a loop we check if there is an occurence of the loopname in the path.
+To include a template in the project loop put it in : templates/project/myTemplate.php
