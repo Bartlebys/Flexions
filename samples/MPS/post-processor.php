@@ -49,7 +49,7 @@ foreach ( $classList as $flexed ) {
 // We use the models variables
 $f=new Flexed();
 // This include sets $f properties
-include FLEXIONS_SOURCE_DIR . "variables-for-swift.php";
+include FLEXIONS_SOURCE_DIR . "variables-for-MPS.php";
 $f->package="";
 $f->fileName="TestImports.h";
 

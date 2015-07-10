@@ -98,7 +98,7 @@ class Flexed {
 	 * 
 	 * @var string
 	 */
-	var $year="2013";
+	var $year="2015";
 	
 	 /**
 	  * 

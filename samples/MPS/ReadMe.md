@@ -4,14 +4,17 @@ Generation from a xcdatamodel (xcode modeling document) to various templates.
 
 ## How to ?
 
-Go to the MPS/ folder in the samples via the terminal.
+Go to the MusicPlayer/ folder in the samples via the terminal.
 And run flexion.sh
 
 ```
-    . flexions.sh
+. flexions.sh
+```
+or 
+
+```
+php -f run.php
 ```
 
 The generated files will be available in the folder out.flexions/
-The logs will be written in /out/
-
-
+The logs will be written in ../../out/

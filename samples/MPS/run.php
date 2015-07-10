@@ -20,7 +20,5 @@ $arguments['postProcessors']="post-processor.php";
 
 define ( "COMMANDLINE_MODE", true );
 
+// Invoke flexions
 include_once '../../src/flexions.php';
-
-
-

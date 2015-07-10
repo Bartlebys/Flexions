@@ -20,9 +20,9 @@
 
 
 class DefaultLoops {
-	const ENTITIES       		=  'entities';
-	const ACTIONS       		=  'actions';
-	const PROJECT       		=  'project';
+	const ENTITIES       		=  'entities'; // Generaly for generating models
+	const ACTIONS       		=  'actions'; // For example for endpoints generations
+	const PROJECT       		=  'project'; // For a glob
 }
 
 /** 
@@ -99,14 +99,7 @@ final class Hypotypose extends stdClass {
 	 */
 	function __construct($loopsList=NULL) {
 		$this->_loopIndex = -1;
-		if ($loopsList === NULL) {
-			$loopsList =array(DefaultLoops::ENTITIES,DefaultLoops::COLLECTIONS,DefaultLoops::ACTIONS,DefaultLoops::PROJECT);
-		}
-		$this->_loopNameList = $loopsList;
-		foreach ($this->_loopNameList as $name){
-			$this->flexedList[$name]=array();
-			$this->_descriptor[$name]=array();
-		}
+		$this->_loopNameList = array();
 	}
 	
 	/**
@@ -170,9 +163,12 @@ final class Hypotypose extends stdClass {
 	 * @return boolean
 	 */
 	public function setLoopDescriptor( $descriptor, $loopName){
-		if(array_key_exists($loopName,$this->_descriptor)){
+		if(!array_key_exists(_loopNameList,$this->_loopNameList)){
 			// We add the descriptor
+			$this->_loopNameList[]=$loopName;
 			$this->_descriptor[$loopName]=$descriptor;
+			$this->flexedList[$loopName]=array();
+			$this->_descriptor[$loopName]=array();
 			return  true;
 		}
 		return false;		

@@ -42,8 +42,6 @@ if (! isset($arguments)) {
 		array_shift($rawArgs); // shifts the commandline script file flexions.php
 		$arguments = array();
 		parse_str(implode('&', $rawArgs), $arguments);
-
-
 		define("COMMANDLINE_MODE", true);
 	}
 }
@@ -120,23 +118,6 @@ if ($templates == "*") {
 	}
 }
 
-/*
-$onceTemplatePath = FLEXIONS_SOURCE_DIR . 'templates';
-// Templates joker.
-if ($templates == "*") {
-	// We populate the templates with the relative path
-	$templatesArray = directoryToArray ( $baseTemplatePath );
-	$templates = implode ( ',', $templatesArray );
-}else{
-	$templatesTempArray= explode(',', $templates);
-	$templatesArray=array();
-	foreach ( $templatesTempArray as $templatePath ) {
-		// Compute the absolute path
-		$templatesArray[]=$baseTemplatePath."/".$templatePath;;
-	}
-}
-*/
-
 
 $specificLoops = FLEXIONS_SOURCE_DIR . 'loops.php';
 
@@ -166,7 +147,11 @@ $arrayOfPreProcessors = explode ( ",", $preProcessors );
 foreach ( $arrayOfPreProcessors as $preProcessor ) {
 	// Invokes the pre-processor
 	$preProcessorPath = FLEXIONS_SOURCE_DIR . $preProcessor;
-	include $preProcessorPath;
+	try {
+		@include $preProcessorPath;
+	}catch (Exception $e) {
+		fLog('PREPROCESSOR EXCEPTION ' . $e->getMessage(),true);
+	}
 }
 	
 // //////////////////////////////////
@@ -180,6 +165,9 @@ foreach ( $arrayOfPreProcessors as $preProcessor ) {
  *     
  */
 
+
+fLog ( 'Processing...'.cr(), true );
+
 if (file_exists ( $specificLoops )) {
 	// We use the specific loops
 	include $specificLoops;
@@ -187,6 +175,8 @@ if (file_exists ( $specificLoops )) {
 	
 	while ( $h->nextLoop () == true ) {
 		$list = $h->getContentForCurrentLoop (); // Returns the current loop items
+		fLog ( 'Looping in '.$h->getLoopName().cr(), true );
+
 		foreach ( $list as $descriptions ) {
 				// It is a description object 
 				iterateOnTemplates ( $templatesArray, $h, $descriptions, $destination );
