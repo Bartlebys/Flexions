@@ -14,6 +14,7 @@ $r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix
 $h = Hypotypose::instance ();
 $h->classPrefix=$r->classPrefix;
 
+
 /// Associate the entities to the loop name
 if(! $h->setLoopDescriptor($r->entities,DefaultLoops::ENTITIES)){
 	throw new Exception('Error when setting the loop descriptor '.DefaultLoops::ENTITIES);

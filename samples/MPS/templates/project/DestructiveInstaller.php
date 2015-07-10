@@ -6,7 +6,7 @@
  * Time: 11:29
  */
 
-require_once FLEXIONS_ROOT_DIR.'modules/Utils/Pluralization.php';
+require_once FLEXIONS_ROOT_DIR . 'modules/Utils/Pluralization.php';
 
 if (isset ( $f )) {
     $f->fileName = 'DestructiveInstaller.php';
@@ -14,15 +14,6 @@ if (isset ( $f )) {
     $f->projectName = "MPS-Sample";
     $f->license = FLEXIONS_ROOT_DIR."flexions/helpers/licenses/LGPL.tpl.php";
 }
-
-/**
- * @param $entityName
- * @return string
- */
-function collectionNameFrom($entityName){
-    return strtolower(pluralize($entityName));
-}
-
 
 /**
  *
@@ -34,7 +25,7 @@ echo '
 <?php
 
 /**
-* A destructive installer script '.$f->projectName .'
+* A destructive installer script for '.$f->projectName .'
 */
 
 function logMessage($message=""){

@@ -19,30 +19,24 @@ if(file_exists(realpath($destination))==false){
 }
 
 $generated='';
-$classList = Hypotypose::Instance()->flexedList [DefaultLoops::ENTITIES];
+
+$h=Hypotypose::Instance();
+
+
+// Let's write the list of the files we have created in the loop "Project"
+$list = $h->flexedList [DefaultLoops::PROJECT];
 $counter = 0;
 
-foreach ( $classList as $flexed ) {
+foreach ( $list as $flexed ) {
 	if ($flexed->exclude === false) {
 		// Let's add a human readable log.
 		$counter ++;
+        $line='';
 		if (VERBOSE_FLEXIONS)
 			fLog ( $counter . " " . $flexed->fileName. cr() , false );
-			
-		// Populate the Header file
-		if ((strpos (  $flexed->fileName, ".h" ) === strlen (  $flexed->fileName ) - 2) && strpos ( $generated,  $flexed->fileName ) == null) {
-			$line = '';
-			if ($flexed->description!=null && strpos ( $generated,  $flexed->description ) == null) {
-				// This documentation line has not been found
-				$line = "\n" . '//' .  $flexed->description . "\n";
-				$line .= '#import "' .  $flexed->fileName . '"' . "\n";
-				$generated .= $line;
-			} else {
-				// There is already such a documentation line
-				$line .= '#import "' .  $flexed->fileName . '"' . "\n";
-				$generated .= $line;
-			};
-		}
+		// Let's list the file names
+		$line .= 'We have created "'.$flexed->fileName . '"' . "\n";
+		$generated .= $line;
 	}
 }
 
@@ -51,7 +45,7 @@ $f=new Flexed();
 // This include sets $f properties
 include FLEXIONS_SOURCE_DIR . "variables-for-MPS.php";
 $f->package="";
-$f->fileName="TestImports.h";
+$f->fileName="PostProcessed.txt";
 
 // We save the generated headers.
 $filePath= $destination .$f->package. $f->fileName;

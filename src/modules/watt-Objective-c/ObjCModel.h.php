@@ -51,7 +51,9 @@ if ($d->instanceOf != null) {
 /* @var $d EntityRepresentation */
 if ($d->generateCollectionClass == true) {
 	for($i = 0; $i < 2; $i ++) {
-		// We instanciate a sub Flexed
+
+		// TO generate a collection
+		// We instantiate a sub Flexed
 		$sf = new Flexed ();
 		$sf->package = $f->package;
 		$sf->prefix = $f->prefix;

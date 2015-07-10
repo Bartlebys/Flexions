@@ -163,12 +163,12 @@ final class Hypotypose extends stdClass {
 	 * @return boolean
 	 */
 	public function setLoopDescriptor( $descriptor, $loopName){
-		if(!array_key_exists(_loopNameList,$this->_loopNameList)){
+		if(!array_key_exists($loopName,$this->_loopNameList)){
 			// We add the descriptor
 			$this->_loopNameList[]=$loopName;
 			$this->_descriptor[$loopName]=$descriptor;
 			$this->flexedList[$loopName]=array();
-			$this->_descriptor[$loopName]=array();
+			$this->_descriptor[$loopName]=$descriptor;
 			return  true;
 		}
 		return false;		

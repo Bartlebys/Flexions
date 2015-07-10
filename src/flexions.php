@@ -29,5 +29,5 @@ define ( "VERBOSE_FLEXIONS", true );
 try {
     include_once "flexions/core/flexions.script.php";
 }catch (Exception $e){
-    echo 'EXCEPTION '.$e->getMessage();
+    echo 'ROOT EXCEPTION '.$e->getMessage();
 }

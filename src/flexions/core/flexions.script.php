@@ -134,7 +134,7 @@ if (file_exists ( $specificLoops )) {
 	$m .=  '# Using the standard loops' . cr() . cr() ;
 }
 $m .='FLEXIONS_SOURCE_DIR='. FLEXIONS_SOURCE_DIR.cr();
-$m .='FLEXIONS_ROOT_DIR='. FLEXIONS_ROOT_DIR.cr(). cr();
+$m .='FLEXIONS_ROOT_DIR='. FLEXIONS_ROOT_DIR;
 fLog ( $m, true );
 
 // /////////////////////////////////
@@ -142,13 +142,18 @@ fLog ( $m, true );
 // PREPROCESSING
 // /////////////////////////////////
 
+fLog ( cr().cr().'##'.cr(), true );
+fLog ( 'Pre Processing'.cr(), true );
+fLog ( '##'.cr().cr(),true );
+
 
 $arrayOfPreProcessors = explode ( ",", $preProcessors );
 foreach ( $arrayOfPreProcessors as $preProcessor ) {
 	// Invokes the pre-processor
 	$preProcessorPath = FLEXIONS_SOURCE_DIR . $preProcessor;
+    fLog ( cr().'Running:'.$preProcessorPath.cr().cr(),true );
 	try {
-		@include $preProcessorPath;
+		include $preProcessorPath;
 	}catch (Exception $e) {
 		fLog('PREPROCESSOR EXCEPTION ' . $e->getMessage(),true);
 	}
@@ -165,8 +170,9 @@ foreach ( $arrayOfPreProcessors as $preProcessor ) {
  *     
  */
 
-
-fLog ( 'Processing...'.cr(), true );
+fLog ( cr().cr().'##'.cr(), true );
+fLog ( 'Looping'.cr(), true );
+fLog ( '##'.cr().cr(), true );
 
 if (file_exists ( $specificLoops )) {
 	// We use the specific loops
@@ -188,7 +194,7 @@ if (file_exists ( $specificLoops )) {
  * 
  * @param array $templatePath
  * @param Hypotypose $h
- * @param mixed $d
+ * @param mixed $d the descriptor (a set of data)
  * @throws Exception
  */
  function iterateOnTemplates(array $templatesArray, Hypotypose $h,  $d,$destination){
@@ -197,13 +203,16 @@ if (file_exists ( $specificLoops )) {
 			
 		// We need to determine if the template should be used in
 		// this loop.
-		$shouldBeUsedInThisLoop = (strpos ( $templatePath, $h->getLoopName () ) !== false);
+        $loopName=$h->getLoopName ();
+		$componentsOfTemplatePath=explode('/',strtolower($templatePath));
+
+        $shouldBeUsedInThisLoop = in_array(strtolower($loopName),$componentsOfTemplatePath);
 			
 		if ($shouldBeUsedInThisLoop) {
 	
 			$result = '';
 			if (! isset ( $d )) {
-				throw new Exception( 'Descriptor variable $d must be set for the templates' );
+				throw new Exception( 'Descriptor variable $d must be set for the templates. Your preprocessor should have populated an iterable list of data for the descriptor for the loop : '.$loopName );
 			}
 			
 			// We instanciate the current Flexed
@@ -235,10 +244,14 @@ if (file_exists ( $specificLoops )) {
 // POST PROCESSING
 // ///////////////////////////////////
 
+fLog ( cr().cr().'##'.cr(), true );
+fLog ( 'Post Processing'.cr(), true );
+fLog ( '##'.cr().cr(),true );
 $arrayOfPostProcessors = explode ( ",", $postProcessors );
 foreach ( $arrayOfPostProcessors as $postProcessor ) {
 	// Invokes the post-processor
 	$postProcessorPath = FLEXIONS_SOURCE_DIR  . $postProcessor;
+    fLog ( cr().'Running:'.$preProcessorPath.cr().cr(),true );
 	include $postProcessorPath;
 }
 

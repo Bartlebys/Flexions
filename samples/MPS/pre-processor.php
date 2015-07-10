@@ -11,6 +11,9 @@ $transformer=new XCDDataXMLToFlexionsRepresentation();
 // $r is a ProjectRepresentation
 $r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix);
 
+// We pass some dummy data to the loop
+$r->actions=array(1,2);
+$p=array("A");
 
 // we instanciate the Hypotypose singleton
 $h = Hypotypose::instance();
@@ -26,7 +29,7 @@ if(! $h->setLoopDescriptor($r->actions,DefaultLoops::ACTIONS)){
 	throw new Exception('Error when setting the loop descriptor '.DefaultLoops::ACTIONS);
 }
 
-/// Associate the project to the loop name
-if(! $h->setLoopDescriptor($r ,DefaultLoops::PROJECT)){
+/// Associate the project data to be  the loop name
+if(! $h->setLoopDescriptor($p ,DefaultLoops::PROJECT)){
 	throw new Exception('Error when setting the loop descriptor '.DefaultLoops::PROJECT);
 }
