@@ -99,16 +99,6 @@ class EntityRepresentation {
 	public function lastProperty(){
 		return ( $this->_propertyIndex== count($this->properties)-1);
 	}
-	
-	
-	/**
-	 * returns the property iteration index during iteration encoded in compactmode
-	 * Used for obfuscation
-	 */
-	public function getCompactPropertyName(){
-		 $compactKey='abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPSQRSTUVWXYZ';
-		return intToCompactMode($this->_propertyIndex, $compactKey);
-	}	
 
 	/**
 	 * @var array an associative array to pass specific metadata

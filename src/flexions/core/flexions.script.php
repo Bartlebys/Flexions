@@ -46,7 +46,6 @@ if (! isset($arguments)) {
 	}
 }
 
-
 // We instanciate the Flog singleton
 // and store a time stamp as  first log.
 Flog::Instance ()->addMessage ( '##' . fDate () . '##' . cr() );

@@ -31,8 +31,9 @@ require_once FLEXIONS_MODULES_DIR . 'watt-Objective-c/ObjCGeneric.functions.php'
 /* @var string $collectionClassName */
 
 if(!isset($collectionClassName)){
-	throw new Exception('$collectionClassName is not set in'.__FILE__);
+    $collectionClassName='UNDEFINED_COLLECTION_CLASS_NAME';
 }
+
 $sf->fileName =$collectionClassName.".m";
 $className=getClassNameFromCollectionClassName($collectionClassName);
 

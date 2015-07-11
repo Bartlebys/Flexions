@@ -20,66 +20,70 @@ You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/licenses/>
 */
 
-class  PropertyRepresentation{
 
-	/**
-	 * @var string unique Name of the property
-	 */
-	public $name;
-	
-	/**
-	 * @var string  Documentation  of the property
-	 */
-	public $description;
-	
-	/**
-	 *   @var string Type of variable (string, number, integer, boolean, object, array, float, null, any).
-	 */
-	public $type;
-	
-	/**
-	 * @var  string When the type is an object, you can specify the class that the object must implement
-	 */
-	public $instanceOf;
-	
-	
-	/**
-	 * @var bool set to true if the type is generated 
-	 */
-	public $isGeneratedType=false;
-	
-	
-	/**
-	 * @var bool defines if the class is external to the generative package.
-	 */
-	public $isExternal=false;
-	
-	/**
-	 * @var  bool Whether or not the property is required
-	 */
-	public $required;
-	
-	/**
-	 * @var  mixed Default value to use if no value is supplied
-	 */
-	public $default;
-	
-	/**
-	 * @var   When the type is a string, you can specify the regex pattern that a value must match
-	 */
-	public $pattern;
-	
-	
-	/**
-	 * @var bool set to false if the property is not extractible in a sub-graph copy operation 
-	 */
-	public $isExtractible=true; 
-	
-	
-	/**
-	 * @var array an associative array to pass specific metadata
-	 */
-	public $metadata;
+class  PropertyRepresentation
+{
+
+    /**
+     * @var string unique Name of the property
+     */
+    public $name;
+
+    /**
+     * @var string  Documentation  of the property
+     */
+    public $description;
+
+    /**
+     * @var string Type of variable (string, number, integer, boolean, object, array, float, null, any).
+     *
+     *  WE GONNA ADD : byte, date, dateTime @todo SWAGGER
+     */
+    public $type;
+
+    /**
+     * @var  string When the type is an object, you can specify the class that the object must implement
+     */
+    public $instanceOf;
+
+
+    /**
+     * @var bool set to true if the type is generated
+     */
+    public $isGeneratedType = false;
+
+
+    /**
+     * @var bool defines if the class is external to the generative package.
+     */
+    public $isExternal = false;
+
+    /**
+     * @var  bool Whether or not the property is required
+     */
+    public $required;
+
+    /**
+     * @var  mixed Default value to use if no value is supplied
+     */
+    public $default;
+
+    /**
+     * @var   When the type is a string, you can specify the regex pattern that a value must match
+     */
+    public $pattern;
+
+
+    /**
+     * @var bool set to false if the property is not extractible in a sub-graph copy operation
+     */
+    public $isExtractible = true;
+
+
+    /**
+     * @var array an associative array to pass specific metadata
+     */
+    public $metadata;
 
 }
 

@@ -31,19 +31,10 @@ require_once 'XcdataModelDelegate.Interface.php';
  */
 class XCDDataXMLToFlexionsRepresentation {
 
-
-    /**
-     * @param $descriptorFilePath
-     * @param string $nativePrefix
-     * @param XcdataModelDelegateInterface $delegate
-     * @return ProjectRepresentation|void
-     * @throws Exception
-     */
-    function projectRepresentationFromXcodeModel($descriptorFilePath, $nativePrefix = "", XcdataModelDelegateInterface $delegate) {
+	function projectRepresentationFromXcodeModel($descriptorFilePath, $nativePrefix = "", XcdataModelDelegateInterface $delegate) {
 
 		if(!isset($delegate)){
 			fLog ( "XCDDataXMLToFlexionsRepresentation.projectRepresentationFromXcodeModel() module requires a XcdataModelDelegate" , true );
-
 			return;
 		}
 

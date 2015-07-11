@@ -32,7 +32,7 @@ flexionsFolder="../../"
 # templates, pre , post, destination
 
 # We setup the descriptor  
-descriptor="datasources/Test.xcdatamodel/contents"
+descriptor="datasources/pet-store-swagger.json"
 
 #You can specify a destination folder
 #If not it will  generate in the out/ folder
