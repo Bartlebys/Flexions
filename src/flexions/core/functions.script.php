@@ -101,9 +101,12 @@ function hypotyposeToFiles() {
 				}
 				/* @var $f Flexed */
 				if( !file_exists($path) || (file_exists($path) && $shouldBePreserved==false)){
+					// Any path marked as preserved in preprocessor is not ovveriden
 					file_put_Flexed ( $f );
 					$history[]=$path;
-				}
+				}else{
+                    $f->wasPreserved=true;
+                }
 			}
 		}
 	}

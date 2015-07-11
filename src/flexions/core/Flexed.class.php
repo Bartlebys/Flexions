@@ -111,8 +111,12 @@ class Flexed {
 	 * @var string
 	 */
 	var $license;
-	
 
+
+	/**
+	 * @var bool set to true if preserved by Hypotypose->preservePath
+     */
+	var $wasPreserved=false;
 	
 	
 }
