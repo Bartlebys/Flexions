@@ -49,3 +49,6 @@ $filePath= $destination .'ReadMe.txt';
 $c='Those files that are recreated by flexions should not be modified directly. Preserved path can be modified, and recreated by deleting them'.cr().cr();
 $c.=$generated;
 file_put_contents ( $filePath, $c );
+
+
+// We can deploy the deployable files via FTP for example.

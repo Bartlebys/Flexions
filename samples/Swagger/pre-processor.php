@@ -13,11 +13,13 @@ $r=$transformer->projectRepresentationFromSwaggerJson($descriptorFilePath,$prefi
 $h = Hypotypose::instance();
 $h->classPrefix=$r->classPrefix;
 
-// If you add a path to the preserve path it will be generated once only
-// If the file does not exists.
+// If you add a path to the preserve path it will be generated  only
+// If the file does not alreadey exists.
+// To regenerate delete it and re proceed to flexions
 $h->preservePath[]='v1/Api.class.php';
 $h->preservePath[]='v1/Config.php';
 $h->preservePath[]='v1/Const.php';
+
 
 /// Associate the entities to the loop name
 if(! $h->setLoopDescriptor($r->entities,DefaultLoops::ENTITIES)){

@@ -57,9 +57,9 @@ foreach ($collectionList as $collection) {
 logMessage("Recreating the collections");
 // Collection creation
 ';
-
+/* @var $d ProjectRepresentation */
 /* @var $entity EntityRepresentation */
-foreach ($d as $entity ) {
+foreach ($d->entities as $entity ) {
     $pluralized=strtolower(Pluralization::pluralize($entity->name));
     echoIndent('logMessage("Creating the '.$pluralized.' collection");'.cr(),0);
     echoIndent('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");'.cr(),0);

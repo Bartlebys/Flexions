@@ -137,38 +137,3 @@ function simplifyPath($path){
 	$path=str_replace(FLEXIONS_ROOT_DIR,"", $path);
 	return $path;
 }
-
-
-/**
- *  Converts an int to a compact notation according to a key
- * @param unknown_type $n
- * @param unknown_type $withKey
- * @return string
- */
-function intToCompactMode($n,$withKey){
-	$alpha=str_split($withKey);
-	return intToAlphaBaseN($n, $alpha);
-}
-
-
-/**
- *  Convert an int to any base 
- * @param int $n
- * @param array $baseArray
- * @return string
- */
-function intToAlphaBaseN($n,$baseArray) {
-	$l=count($baseArray);
-	$s = '';
-	for ($i = 1; $n >= 0 && $i < 10; $i++) {
-		$s =  $baseArray[($n % pow($l, $i) / pow($l, $i - 1))].$s;
-		$n -= pow($l, $i);
-	}
-	return $s;
-}
-
-
-
-
-
-

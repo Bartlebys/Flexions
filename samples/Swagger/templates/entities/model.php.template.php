@@ -17,9 +17,21 @@ if (isset ( $f )) {
 echoIndent('<?php'.cr(),0);
 echoIndent('class '.ucfirst($d->name).'{'.cr(),0);
 /* @var $property PropertyRepresentation */
-foreach ($d->properties as $property ) {
-    echoIndent('var $'.$property->name.';'.cr(),1);
+
+// You can distinguish the first, and last property
+while ( $d ->iterateOnProperties() === true ) {
+    $property = $d->getProperty();
+    $name=$property->name;
+
+    if($d->firstProperty()){
+        echoIndent('var $'.$name.';'.cr(),1);
+    }else if ($d->lastProperty()){
+        echoIndent('var $'.$name.';',1);
+    }else{
+        echoIndent('var $'.$name.';'.cr(),1);
+    }
 }
+
 echoIndent(cr().'}',0);
 echoIndent(cr().'?>',0);
 
