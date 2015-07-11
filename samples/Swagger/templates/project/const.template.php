@@ -7,17 +7,15 @@
  */
 
 /* @var $d ProjectRepresentation */
+$d;
 
 require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
 
 if (isset ( $f )) {
-    $f->fileName = 'ApiFacade.class.php';
+    $f->fileName = 'Const.php';
     $f->package = "php/api/v1/";
 }
 echo('<?php'.cr());
-/* @var $action ActionRepresentation */
-foreach ($d->actions as $action ) {
-}
 echo(cr().'?>');
 
 

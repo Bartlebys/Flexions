@@ -93,9 +93,17 @@ function hypotyposeToFiles() {
 			$path=$f->packagePath . $f->fileName;
 			// We put to file once only per destination
 			if(in_array($path, $history)==false){
+				$shouldBePreserved=false;
+				foreach ($h->preservePath as $pathToPreserve ) {
+					if(strpos($path,$pathToPreserve)!==false){
+						$shouldBePreserved=true;
+					}
+				}
 				/* @var $f Flexed */
-				file_put_Flexed ( $f );
-				$history[]=$path;
+				if( !file_exists($path) || (file_exists($path) && $shouldBePreserved==false)){
+					file_put_Flexed ( $f );
+					$history[]=$path;
+				}
 			}
 		}
 	}

@@ -49,6 +49,12 @@ final class Hypotypose extends stdClass {
 
 
     /**
+     * @var array
+     */
+    public $preservePath = array();
+
+
+    /**
      *
      * @var array
      */
