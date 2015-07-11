@@ -1,7 +1,7 @@
 <?php
 
-include FLEXIONS_SOURCE_DIR.'/variables-for-MPS.php';
-require_once FLEXIONS_SOURCE_DIR.'classes/LocalSwiftTools.class.php';
+include FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+require_once FLEXIONS_SOURCE_DIR.'helpers/classes/LocalSwiftTools.class.php';
 
 
 
@@ -11,9 +11,6 @@ if (isset ( $f )) {
     $f->package = 'iOS/swift/models/';
 }
 
-echo "
-
-
-";
+echo "";
 
 ?>

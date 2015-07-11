@@ -6,20 +6,20 @@
  * Time: 17:13
  */
 
+require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
 
 if (isset ( $f )) {
     $f->fileName = 'bootstrap.php';
     $f->package = "php/api/";
 }
 
-echo('
-<?php
-require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."/v1/SLYTrackerConfig.php";
-require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR . "/v1/SLYTrackerConst.php";
-require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."/v1/SLYTrackerAPI.class.php";
+echo('<?php
+require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."/v1/Config.php";
+require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR . "/v1/Const.php";
+require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."/v1/Api.class.php";
 
 try {
-    $API = new SLYTrackerAPI ();
+    $API = new API ();
     echo $API->run ();
 } catch ( Exception $e ) {
     $status=500;
@@ -30,3 +30,4 @@ try {
         "error" => $e->getMessage ()
     ) );
 }');
+

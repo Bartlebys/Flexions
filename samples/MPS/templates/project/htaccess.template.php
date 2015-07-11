@@ -1,5 +1,7 @@
 <?php
 
+require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+
 if (isset ( $f )) {
     $f->fileName = '.htaccess';
     $f->package = "php/api/";

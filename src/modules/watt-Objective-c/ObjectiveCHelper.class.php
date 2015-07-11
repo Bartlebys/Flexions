@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/>
  */
 
-require_once FLEXIONS_ROOT_DIR .'flexions/helpers/representations/flexions/FlexionsRepresentationsIncludes.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
 
 class ObjectiveCHelper {
 	const UNDEFINED_TYPE = "UNDEFINED_TYPE";

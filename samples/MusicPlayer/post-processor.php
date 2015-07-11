@@ -49,11 +49,10 @@ foreach ( $classList as $flexed ) {
 // We use the models variables
 $f=new Flexed();
 // This include sets $f properties
-include FLEXIONS_SOURCE_DIR . "variables-for-MusicPlayer.php";
+include FLEXIONS_SOURCE_DIR . "SharedMusicPlayer.php";
 $f->package="";
 $f->fileName="SLYModelsImports.h";
 
 // We save the generated headers.
 $filePath= $destination .$f->package. $f->fileName;
-$generated=getCommentHeader ( $f )."\n\n" .$generated;
 file_put_contents ( $filePath, $generated );

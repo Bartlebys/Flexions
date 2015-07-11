@@ -25,13 +25,13 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
  * IT RELIES ON  $sf
  * 	When using this template  you must define :  $collectionClassName;
  */
-require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_MODULES_DIR . 'watt-Objective-c/ObjCGeneric.functions.php';
 
 /* @var $sf Flexed */
 /* @var string $collectionClassName */
 
 if(!isset($collectionClassName)){
-	throw new Exception('$baseClassName is not set');
+	throw new Exception('$collectionClassName is not set in'.__FILE__);
 }
 $sf->fileName =$collectionClassName.".m";
 $className=getClassNameFromCollectionClassName($collectionClassName);

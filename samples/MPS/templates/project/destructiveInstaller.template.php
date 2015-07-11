@@ -6,7 +6,7 @@
  * Time: 11:29
  */
 
-require_once FLEXIONS_ROOT_DIR . 'modules/Utils/Pluralization.php';
+require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
 
 if (isset ( $f )) {
     $f->fileName = 'destructiveInstaller.php';
@@ -60,7 +60,7 @@ logMessage("Recreating the collections");
 
 /* @var $entity EntityRepresentation */
 foreach ($d as $entity ) {
-    $pluralized=strtolower(pluralize($entity->name));
+    $pluralized=strtolower(Pluralization::pluralize($entity->name));
     echoIndent('logMessage("Creating the '.$pluralized.' collection");'.cr(),0);
     echoIndent('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");'.cr(),0);
 }

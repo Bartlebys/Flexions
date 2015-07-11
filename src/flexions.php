@@ -24,6 +24,7 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
 
 define ( "ECHO_LOGS", false );
 define ( "FLEXIONS_ROOT_DIR", __DIR__ . '/' );
+define ( "FLEXIONS_MODULES_DIR", FLEXIONS_ROOT_DIR . 'modules/' );
 define ( "VERBOSE_FLEXIONS", true );
 
 try {

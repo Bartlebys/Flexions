@@ -21,19 +21,32 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
 */
 
 
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/representations/flexions/FlexionsRepresentationsIncludes.php';
-require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
-require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjectiveCHelper.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
 
+require_once 'XcdataModelDelegate.Interface.php';
+
+
+/**
+ * Class XCDDataXMLToFlexionsRepresentation
+ */
 class XCDDataXMLToFlexionsRepresentation {
-	
-	/**
-	 *
-	 * @param string $descriptorFilePath        	
-	 * @throws Exception
-	 * @return ProjectRepresentation
-	 */
-	function projectRepresentationFromXcodeModel($descriptorFilePath, $nativePrefix = "") {
+
+
+    /**
+     * @param $descriptorFilePath
+     * @param string $nativePrefix
+     * @param XcdataModelDelegateInterface $delegate
+     * @return ProjectRepresentation|void
+     * @throws Exception
+     */
+    function projectRepresentationFromXcodeModel($descriptorFilePath, $nativePrefix = "", XcdataModelDelegateInterface $delegate) {
+
+		if(!isset($delegate)){
+			fLog ( "XCDDataXMLToFlexionsRepresentation.projectRepresentationFromXcodeModel() module requires a XcdataModelDelegate" , true );
+
+			return;
+		}
+
 		fLog ( "Invoking XCDDataXMLToFlexionsRepresentation.projectRepresentationFromXcodeModel()" . cr () . cr (), true );
 		
 		$r = new ProjectRepresentation ();
@@ -249,7 +262,7 @@ class XCDDataXMLToFlexionsRepresentation {
 					$destinationEntity = $relationship->getAttribute ( "destinationEntity" );
 					if ($tooMany == true) {
 						$property->type = "object";
-						$property->instanceOf = getCollectionClassName ( $nativePrefix, $destinationEntity );
+						$property->instanceOf = $delegate->getCollectionClassName( $nativePrefix, $destinationEntity );
 						$property->isGeneratedType = true;
 					} else {
 						$property->type = "object";

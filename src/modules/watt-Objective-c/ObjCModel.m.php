@@ -25,7 +25,8 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
  *	And you can inject : 	$markAsDynamic==true to inject a @dynamic tag (for core data)
  */
 
-require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_MODULES_DIR .'watt-Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_MODULES_DIR .'watt-Objective-c/ObjCObjectCollection.m.php';
 
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */

@@ -2,6 +2,7 @@
 
 /* @var $f Flexed */
 
+
 $prefix = "MusicPlayer";
 
 if (isset ( $f )) {
@@ -10,7 +11,7 @@ if (isset ( $f )) {
 	$f->prefix = $prefix;
 	$f->author = "benoit@pereira-da-silva.com";
 	$f->projectName = "MusicPlayer";
-	$f->license = FLEXIONS_ROOT_DIR."flexions/helpers/licenses/LGPL.tpl.php";
+	$f->license = FLEXIONS_MODULES_DIR."licenses/LGPL.template.php";
 }
 $parentClass = "WattModel";
 $collectionParentClass="WattCollectionOfModel";

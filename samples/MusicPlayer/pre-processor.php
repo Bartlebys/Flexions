@@ -1,14 +1,16 @@
 <?php
 
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/representations/flexions/FlexionsRepresentationsIncludes.php';
-require_once FLEXIONS_ROOT_DIR.'modules/XcDataModelXMLImporter/XcdatamodelXMLToFlexionsRepresentation.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
+require_once FLEXIONS_MODULES_DIR.'XcDataModelXMLImporter/XcdatamodelXMLToFlexionsRepresentation.class.php';
+require_once FLEXIONS_MODULES_DIR . 'XcDataModelXMLImporter/XcdataModelDelegate.class.php';
 
 /* @var $descriptorFilePath string */
-include  FLEXIONS_SOURCE_DIR.'/variables-for-MusicPlayer.php';// we load the shared variables
+include  FLEXIONS_SOURCE_DIR.'/SharedMusicPlayer.php';// we load the shared variables
 /* @var $prefix string */
 
 $transformer=new XCDDataXMLToFlexionsRepresentation();
-$r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix);
+$delegate=new XcdataModelDelegate();
+$r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix,$delegate);
 
 // we instanciate the Hypotypose singleton;
 $h = Hypotypose::instance ();

@@ -231,6 +231,7 @@ if (file_exists ( $specificLoops )) {
 				 
 				// We add the flexed the Hypotypose for the post processors
 				$h-> addFlexed($f);
+                fLog ( '+Adding '.$f->fileName.cr(), true );
 			} else {
 				fWarning ( 'fileName or package is not defined in ' . $templatePath );
 			}
@@ -251,7 +252,7 @@ $arrayOfPostProcessors = explode ( ",", $postProcessors );
 foreach ( $arrayOfPostProcessors as $postProcessor ) {
 	// Invokes the post-processor
 	$postProcessorPath = FLEXIONS_SOURCE_DIR  . $postProcessor;
-    fLog ( cr().'Running:'.$preProcessorPath.cr().cr(),true );
+    fLog ( cr().'Running:'.$postProcessorPath.cr().cr(),true );
 	include $postProcessorPath;
 }
 

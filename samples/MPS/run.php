@@ -13,7 +13,7 @@
 $arguments=array();
 $arguments['source']="./";
 $arguments['destination']="out.flexions/";
-$arguments['descriptor']="Test.xcdatamodel/contents";
+$arguments['descriptor']="datasources/Test.xcdatamodel/contents";
 $arguments['templates']="*";
 $arguments['preProcessors']="pre-processor.php";
 $arguments['postProcessors']="post-processor.php";

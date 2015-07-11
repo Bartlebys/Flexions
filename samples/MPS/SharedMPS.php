@@ -2,7 +2,11 @@
 
 /* @var $f Flexed */
 
-$prefix = "MusicPlayer";
+require_once FLEXIONS_MODULES_DIR .'Utils/Pluralization.php';
+require_once FLEXIONS_SOURCE_DIR.'helpers/classes/GeneralUtils.class.php';
+require_once FLEXIONS_SOURCE_DIR.'helpers/classes/LocalSwiftTools.class.php';
+
+$prefix = "MPS";
 
 if (isset ( $f )) {
 	$f->package = "Models/";
@@ -10,8 +14,9 @@ if (isset ( $f )) {
 	$f->prefix = $prefix;
 	$f->author = "benoit@pereira-da-silva.com";
 	$f->projectName = "MPS-Sample";
-	$f->license = FLEXIONS_ROOT_DIR."flexions/helpers/licenses/LGPL.tpl.php";
+	$f->license = FLEXIONS_MODULES_DIR."licenses/LGPL.template.php";
 }
+
 $parentClass = "ChaosmosBaseModel";
 $collectionParentClass="ChaosmosCollectionOfModel";
 $protocols="ChaosmosCoding";

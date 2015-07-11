@@ -20,7 +20,7 @@ You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/licenses/>
 */
 
-require_once FLEXIONS_ROOT_DIR.'/flexions/helpers/representations/flexions/ProjectRepresentation.class.php';
-require_once FLEXIONS_ROOT_DIR.'/flexions/helpers/representations/flexions/ActionRepresentation.class.php';
-require_once FLEXIONS_ROOT_DIR.'/flexions/helpers/representations/flexions/EntityRepresentation.class.php';
-require_once FLEXIONS_ROOT_DIR.'/flexions/helpers/representations/flexions/PropertyRepresentation.class.php';
+require_once FLEXIONS_ROOT_DIR . '/flexions/representations/flexions/ProjectRepresentation.class.php';
+require_once FLEXIONS_ROOT_DIR . '/flexions/representations/flexions/ActionRepresentation.class.php';
+require_once FLEXIONS_ROOT_DIR . '/flexions/representations/flexions/EntityRepresentation.class.php';
+require_once FLEXIONS_ROOT_DIR . '/flexions/representations/flexions/PropertyRepresentation.class.php';

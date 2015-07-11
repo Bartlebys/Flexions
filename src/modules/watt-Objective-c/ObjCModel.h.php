@@ -20,7 +20,7 @@
  * When using this template you must define : $f->prefix
  * and you can inject : $imports, $parentClass
  */
-require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjCGeneric.functions.php';
+require_once FLEXIONS_MODULES_DIR . '/watt-Objective-c/ObjCGeneric.functions.php';
 
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */
@@ -69,7 +69,7 @@ if ($d->generateCollectionClass == true) {
 		}
 		// subTPL execution
 		ob_start ();
-		include "ObjCObjectCollection.$tplExtension.php";
+        include FLEXIONS_MODULES_DIR . "/watt-Objective-c/ObjCObjectCollection.$tplExtension.php";
 		$subResult = ob_get_clean ();
 		// End of subTPL execution
 		$sf->source = $subResult; // We store the generation result
@@ -114,7 +114,7 @@ while ( $d->iterateOnProperties () === true ) {
 				}
 				// subTPL execution
 				ob_start ();
-				include "ObjCObjectCollection.$tplExtension.php";
+				include FLEXIONS_MODULES_DIR . "/watt-Objective-c/ObjCObjectCollection.$tplExtension.php";
 				$subResult = ob_get_clean ();
 				// End of subTPL execution
 				$sf->source = $subResult; // We store the generation result

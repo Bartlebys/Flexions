@@ -1,15 +1,17 @@
 <?php
 
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/representations/flexions/FlexionsRepresentationsIncludes.php';
-require_once FLEXIONS_ROOT_DIR.'modules/XcDataModelXMLImporter/XcdatamodelXMLToFlexionsRepresentation.class.php';
 
 // we load the shared variables
-include  FLEXIONS_SOURCE_DIR.'/variables-for-MPS.php';
+include  FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
 
+require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
+require_once FLEXIONS_MODULES_DIR.'XcDataModelXMLImporter/XcdatamodelXMLToFlexionsRepresentation.class.php';
+require_once FLEXIONS_MODULES_DIR . 'XcDataModelXMLImporter/XcdataModelDelegate.class.php';
 
 $transformer=new XCDDataXMLToFlexionsRepresentation();
+$delegate=new XcdataModelDelegate();
 // $r is a ProjectRepresentation
-$r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix);
+$r=$transformer->projectRepresentationFromXcodeModel($descriptorFilePath,$prefix,$delegate);
 
 // We pass some dummy data to the loop
 $r->actions=array(1,2);

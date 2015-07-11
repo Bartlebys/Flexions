@@ -21,10 +21,11 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
  */
 
 require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flexed.class.php';
-require_once FLEXIONS_ROOT_DIR . 'flexions/helpers/representations/flexions/FlexionsRepresentationsIncludes.php';
-require_once FLEXIONS_ROOT_DIR . 'modules/watt-Objective-c/ObjectiveCHelper.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
+require_once FLEXIONS_MODULES_DIR . 'watt-Objective-c/ObjectiveCHelper.class.php';
 
-define ( "COLLECTION_OF","CollectionOf");
+
+
 
 /**
  *
