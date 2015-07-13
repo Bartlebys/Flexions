@@ -6,23 +6,19 @@
  * Time: 11:29
  */
 
-require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+/* @var $f Flexed */
+
+require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 
 if (isset ( $f )) {
     $f->fileName = 'destructiveInstaller.php';
     $f->package = "php/tools/";
 }
+/* TEMPLATES STARTS HERE -> */?>
+<?php echo '<?php'?>
 
 /**
- *
- * GENERATION STARTS HERE !
- *
- */
-
-echo '
-<?php
-/**
-* A destructive installer script for '.$f->projectName .'
+* A destructive installer script for <?php echo $f->projectName ?>
 */
 
 function logMessage($message=""){
@@ -56,7 +52,7 @@ foreach ($collectionList as $collection) {
 
 logMessage("Recreating the collections");
 // Collection creation
-';
+<?php
 /* @var $d ProjectRepresentation */
 /* @var $entity EntityRepresentation */
 foreach ($d->entities as $entity ) {
@@ -64,3 +60,5 @@ foreach ($d->entities as $entity ) {
     echoIndent('logMessage("Creating the '.$pluralized.' collection");'.cr(),0);
     echoIndent('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");'.cr(),0);
 }
+?>
+<?php /*<- END OF TEMPLATE */?>

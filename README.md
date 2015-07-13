@@ -1,6 +1,7 @@
 # Flexions
 
-Flexions is a simple, easy to use (but powerfull) code generator.
+Flexions is a simple set of scripts (written in basic PHP) to perform code generation.
+Flexions intent to be an easy to use code generator.
 The simpliest way to understand how it works is to check our samples in the samples folder.
 
 ## Flexions life cycle
@@ -44,66 +45,7 @@ php  -f ${cmdPath} source=${source} destination=${destination} descriptor=${desc
 - postProcessors:the post-processors separated by commas
 
 
-```  
-#!/bin/sh 
-
-########################
-# Configuration  
-########################
-
-# We define the  path to the Flexions root folder.
-flexionsFolder="<path to>/Flexions/"
-
-. ${flexionsFolder}default.flx
-
-#You can override the default variables
-# templates, pre , post, destination
-
-# We setup the descriptor (generation datasource)
-descriptor="Test.xcdatamodel/contents"
-
-#You can specify a destination folder
-#If not it will  generate in the out/ folder
-destination="out.flexions/"
-
-###############
-# Invoke flexions 
-###############
-
-. ${flexionsFolder}flexions.flx
-```
-
-### Or a run script 
-
-```
-<?php
-/**
- * Created by PhpStorm.
- * User: bpds
- * Date: 09/07/15
- * Time: 14:56
- * You can call this little script from command line
- * php -f run.php
- * it is  equivalent to . flexions.sh
- * its main advantage is that it can be debugged directly more easily
- */
-
-$arguments=array();
-$arguments['source']="./";
-$arguments['destination']="out.flexions/";
-$arguments['descriptor']="MusicPlayer.xcdatamodel/contents";
-$arguments['templates']="*";
-$arguments['preProcessors']="pre-processor.php";
-$arguments['postProcessors']="post-processor.php";
-
-define ( "COMMANDLINE_MODE", true );
-
-// Invoke flexions
-include_once '../../src/flexions.php';
-```
-
-
 ## About templates
 
 To determinate if a template should be used in a loop we check if there is an occurence of the loopname in the path.
-To include a template in the project loop put it in : templates/project/myTemplate.php
+To include a template in the "project" loop put it in : templates/project/myTemplate.php

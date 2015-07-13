@@ -1,15 +1,25 @@
 <?php
 
-include FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
-require_once FLEXIONS_SOURCE_DIR.'helpers/classes/LocalSwiftTools.class.php';
+
+include FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
+require_once FLEXIONS_SOURCE_DIR.'helpers/classes/GenerativeHelperForSwift.class.php';
+
+/* @var $f Flexed */
+/* @var $d EntityRepresentation */
 
 if (isset ( $f )) {
-    $f->fileName = LocalSwiftTools::getCurrentClassNameWithPrefix($d).'.swift';
+    // We determine the file name.
+    $f->fileName = GenerativeHelperForSwift::getCurrentClassNameWithPrefix($d).'.swift';
+    // And its package.
     $f->package = 'iOS/swift/models/';
 }
 
-echoIndent('@class '.ucfirst($d->name).':Mappable{'.cr(),0);
-/* @var $d EntityRepresentation */
+/* TEMPLATES STARTS HERE -> */?>
+<?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
+
+
+@class <?php echo ucfirst($d->name)?>:NSObject,NSCoding,Mappable{
+<?php
 // You can distinguish the first, and last property
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
@@ -17,7 +27,6 @@ while ( $d ->iterateOnProperties() === true ) {
     if($d->firstProperty()){
         echoIndent(cr(),0);
     }
-    //@todo HEADER generator
     //@todo typed collection
     //@todo CREATE SWIFT TOOLS SET WITH TYPE MAPPING
     //@todo create a notion of transformer for NSURL support for example
@@ -25,21 +34,32 @@ while ( $d ->iterateOnProperties() === true ) {
     if($d->lastProperty()){
         echoIndent(cr(),0);
     }
-}
+}?>
 
+    // MARK: NSCoding
 
-echoIndent('// MARK: Mappable'.cr(),1);
-echoIndent('required init?(map: Map) {'.cr(),1);
-echoIndent('mapping(map)'.cr(),2);
-echoIndent('}'.cr(),1);
-echoIndent('func mapping(_ map: Map) {'.cr(),1);
+    required init(coder decoder: NSCoder!) {
+        //array = decoder.decodeObjectForKey("array") as? [String]
+    }
+
+    func encodeWithCoder(aCoder: NSCoder!) {
+        aCoder.encodeObject(self.array, forKey: "array")
+    }
+
+    // MARK: Mappable
+
+    required init?(map: Map) {
+        mapping(map)
+    }
+
+    func mapping(_ map: Map) {
+<?php
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name = $property->name;
     echoIndent($name.'<-["'.$name.'"]'.cr(),2);
-}
+}?>
+    }
 
-echoIndent('}'.cr(),1);
-echoIndent(cr().'}');
 
-?>
+}<?php /*<- END OF TEMPLATE */?>

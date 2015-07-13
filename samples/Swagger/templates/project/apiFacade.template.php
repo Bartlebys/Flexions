@@ -5,20 +5,17 @@
  * Date: 10/07/15
  * Time: 17:13
  */
-
+/* @var $f Flexed */
 /* @var $d ProjectRepresentation */
 
-require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 
 if (isset ( $f )) {
     $f->fileName = 'ApiFacade.class.php';
-    $f->package = "php/api/v1/";
-}
-echo('<?php'.cr());
-/* @var $action ActionRepresentation */
-foreach ($d->actions as $action ) {
-}
-echo(cr().'?>');
-
+    $f->package = 'php/api/'.$h->majorVersionPathSegmentString();
+}/* TEMPLATES STARTS HERE -> */?>
+<?php echo '<?php'?>
+<?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
+<?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
 
 

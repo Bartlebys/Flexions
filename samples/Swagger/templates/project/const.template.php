@@ -5,18 +5,17 @@
  * Date: 10/07/15
  * Time: 17:13
  */
-
+/* @var $f Flexed */
 /* @var $d ProjectRepresentation */
-$d;
 
-require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 
 if (isset ( $f )) {
     $f->fileName = 'Const.php';
-    $f->package = "php/api/v1/";
+    $f->package = 'php/api/'.$h->majorVersionPathSegmentString();
 }
-echo('<?php'.cr());
-echo(cr().'?>');
+/* TEMPLATES STARTS HERE -> */?>
+<?php echo '<?php'?>
+<?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 
-
-
+<?php echo '?>'?><?php /*<- END OF TEMPLATE */?>

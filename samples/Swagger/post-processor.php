@@ -1,12 +1,13 @@
-<?php 
+<?php
+
+
+/* @var $h Hypotypose */
 
 // /////////////////////////////////////////
 // #1 Save the hypotypose to files
 // /////////////////////////////////////////
 
-
 hypotyposeToFiles();
-
 
 // /////////////////////////////////////////
 // #2 generate some post generation files
@@ -35,14 +36,13 @@ foreach ( $list as $flexed ) {
 			fLog ( $counter . " " . $flexed->fileName. cr() , false );
 		// Let's list the file name
 		if( $flexed->wasPreserved==true){
-			$line .= $counter.'<- * We have preserved "'.$flexed->package.''.$flexed->fileName . '"' . "*".cr();
+			$line .= $counter.'<- * We have preserved "'.$flexed->package.$flexed->fileName . '"' . "*".cr();
 		}else{
-			$line .= $counter.'-> We have created "'.$flexed->package.''.$flexed->fileName . '"' . "".cr();
+			$line .= $counter.'-> We have created "'.$flexed->package.$flexed->fileName . '"' . "".cr();
 		}
 		$generated .= $line;
 	}
 }
-
 
 // We save the file
 $filePath= $destination .'ReadMe.txt';
@@ -51,4 +51,33 @@ $c.=$generated;
 file_put_contents ( $filePath, $c );
 
 
-// We can deploy the deployable files via FTP for example.
+// /////////////////////////////////////////
+// #3 Deploy
+// /////////////////////////////////////////
+
+
+// We can deploy the files per version and stage
+// And keep a copy in the out.flexions folder.
+
+require_once FLEXIONS_MODULES_DIR.'/Deploy/FTPDeploy.php';
+require_once FLEXIONS_MODULES_DIR.'/Deploy/LocalDeploy.php';
+
+// DEVELOPMENT
+if ($h->stage==DefaultStages::STAGE_DEVELOPMENT){
+    $deploy=new \Flexions\LocalDeploy($h);
+    // We want to copy the package 'php/' files to /Applications/MAMP/htdocs
+    $deploy->copyFiles('/php/','/Applications/MAMP/htdocs/swagger-generative-sample/',true);
+    // We want to copy the package 'ios/' files to the iOS sources
+    $deploy->copyFiles('/ios/','/Users/bpds/Documents/swagger-sample/',true);
+}
+
+// PRODUCTION
+if ($h->stage==DefaultStages::STAGE_PRODUCTION){
+    $deploy=new \Flexions\LocalDeploy($h);
+    // We want to copy the package 'ios/' files to the iOS sources
+    $deploy->copyFiles('ios/','~/Documents/swagger-sample/src/');
+
+    // We want to copy the package 'php/' files to a valid FTP.
+    //$deploy->copyFilesFrom('php/','/Applications/MAMP/htdocs/swagger-generative-sample/');
+
+}

@@ -6,17 +6,22 @@
  * Time: 17:13
  */
 
-require_once FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
+/* @var $f Flexed */
+
 
 if (isset ( $f )) {
     $f->fileName = 'bootstrap.php';
     $f->package = "php/api/";
 }
 
-echo('<?php
-require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."/v1/Config.php";
-require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR . "/v1/Const.php";
-require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."/v1/Api.class.php";
+/* TEMPLATES STARTS HERE -> */?>
+<?php echo '<?php'?>
+<?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
+
+require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."<?php echo $h->majorVersionPathSegmentString() ?>Config.php";
+require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."<?php echo $h->majorVersionPathSegmentString() ?>Const.php";
+require_once dirname ( __FILE__ ) . DIRECTORY_SEPARATOR ."<?php echo $h->majorVersionPathSegmentString() ?>Api.class.php";
 
 try {
     $API = new API ();
@@ -29,5 +34,5 @@ try {
         "description"=>$API->errorDescription,
         "error" => $e->getMessage ()
     ) );
-}');
-
+}
+<?php /*<- END OF TEMPLATE */?>

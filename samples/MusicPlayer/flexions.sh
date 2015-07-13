@@ -32,7 +32,7 @@ flexionsFolder="../../"
 # templates, pre , post, destination
 
 # We setup the descriptor  
-descriptor="MusicPlayer.xcdatamodel/contents"
+descriptor="datasources/MusicPlayer.xcdatamodel/contents"
 
 #You can specify a destination folder
 #If not it will  generate in the out/ folder

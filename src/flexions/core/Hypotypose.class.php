@@ -25,6 +25,14 @@ class DefaultLoops {
     const PROJECT = 'project'; // For a glob
 }
 
+class DefaultStages{
+    const NO_STAGE='';
+    const STAGE_PRODUCTION='production';
+    const STAGE_DEVELOPMENT='development';
+    const STAGE_BETA='beta';
+
+}
+
 /**
  *  An hypotypose is a structured description that
  *  uses  agnostic data structure
@@ -42,8 +50,8 @@ class DefaultLoops {
  *  hypotypose->flexedList(s) are iterated to generate the files from  $f->source
  *
  * @package   flexions
- * @author          benoit@pereira-da-silva.com
- * @version     0.0.1
+ * @author    benoit@pereira-da-silva.com
+ * @version   1.0.0
  */
 final class Hypotypose extends stdClass {
 
@@ -52,6 +60,44 @@ final class Hypotypose extends stdClass {
      * @var array
      */
     public $preservePath = array();
+
+
+    /**
+     * @var string the current global stage
+     */
+    public $stage = DefaultStages::NO_STAGE;
+
+
+
+    public $version = '';// No version by default
+
+    function majorVersionPathSegmentString(){
+        $components=explode('.',$this->version);
+        if (count($components)>0 && $components[0]!=''){
+            return 'v'.$components[0].'/';
+        }else{
+            return '';
+        }
+    }
+
+    function stagePathSegmentString(){
+        if ($this->stage!=DefaultStages::NO_STAGE){
+            return $this->stage.'/';
+        }else{
+            return '';
+        }
+    }
+
+
+    function  majorVersionString(){
+        $components=explode('.',$this->version);
+        if (count($components)>0){
+            return $components[0];
+        }else{
+            return '';
+        }
+    }
+
 
 
     /**
@@ -88,21 +134,27 @@ final class Hypotypose extends stdClass {
 
 
     /**
+     * @var string a facility to gain access to command line destination
+     */
+    public $exportFolderPath ='';
+
+
+    /**
      * Call this method to get singleton
      *
      * @return Hypotypose
      */
-    public static function Instance($loopsList = NULL) {
+    public static function Instance() {
         static $inst = NULL;
         if ($inst === NULL) {
-            $inst = new Hypotypose ($loopsList);
+            $inst = new Hypotypose ();
         }
         return $inst;
     }
 
     /**
      */
-    function __construct($loopsList = NULL) {
+    function __construct( ) {
         $this->_loopIndex = -1;
         $this->_loopNameList = array();
     }

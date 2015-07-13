@@ -1,25 +1,27 @@
 <?php
 
 // we load the shared variables
-include  FLEXIONS_SOURCE_DIR.'/SharedMPS.php';
+include  FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerToFlexionsRepresentations.class.php';
 require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerDelegate.class.php';
 
-$transformer=new SwaggerToFlexionsRepresentations();
-$delegate=new SWaggerDelegate();
-$r=$transformer->projectRepresentationFromSwaggerJson($descriptorFilePath,$prefix,$delegate);
-
 // we instanciate the Hypotypose singleton
 $h = Hypotypose::instance();
-$h->classPrefix=$r->classPrefix;
+$h->stage=DefaultStages::STAGE_DEVELOPMENT;
+$h->version='1.0';
+$h->classPrefix=$prefix;
 
 // If you add a path to the preserve path it will be generated  only
 // If the file does not alreadey exists.
 // To regenerate delete it and re proceed to flexions
-$h->preservePath[]='v1/Api.class.php';
-$h->preservePath[]='v1/Config.php';
-$h->preservePath[]='v1/Const.php';
+$h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Api.class.php';
+$h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Config.php';
+$h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Const.php';
 
+
+$transformer=new SwaggerToFlexionsRepresentations();
+$delegate=new SWaggerDelegate();
+$r=$transformer->projectRepresentationFromSwaggerJson($descriptorFilePath,$prefix,$delegate);
 
 /// Associate the entities to the loop name
 if(! $h->setLoopDescriptor($r->entities,DefaultLoops::ENTITIES)){

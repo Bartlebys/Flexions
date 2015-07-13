@@ -116,7 +116,7 @@ class SwaggerToFlexionsRepresentations {
                 foreach ($paths as $path => $descriptor) {
                     $className=$this->_classNameForPath($path);
                     $action=new ActionRepresentation();
-                    $action->class=$className;
+                    $action->class=$className.'EndPoint';
                     $r->actions[]=$action;
 
                 }

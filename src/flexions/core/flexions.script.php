@@ -74,6 +74,7 @@ if (isset ( $arguments ["descriptor"] )) {
 }
 
 
+
 if (isset ( $arguments ["templates"] ) && strlen ( $arguments ["templates"] ) >= 1) {
 	$templates = $arguments ["templates"];
 } else {
@@ -81,9 +82,9 @@ if (isset ( $arguments ["templates"] ) && strlen ( $arguments ["templates"] ) >=
 }
 
 if (isset ( $arguments ["destination"] ) && strlen ( $arguments ["destination"] ) >= 1) {
-	$destination = $arguments ["destination"];
+	$destination = injectVersionInPath($arguments ["destination"]);
 } else {
-	$destination = FLEXIONS_ROOT_DIR . '/out/standard/';
+	$destination = injectVersionInPath(FLEXIONS_ROOT_DIR . '/out/standard/');
 	if(file_exists($destination)==false)
 		mkdir ( $destination, 0777, true );
 }
@@ -168,6 +169,10 @@ foreach ( $arrayOfPreProcessors as $preProcessor ) {
  * @var $h Hypotypose
  *     
  */
+
+$destination=$destination.$h->majorVersionPathSegmentString().$h->stagePathSegmentString();
+$h=Hypotypose::Instance();
+$h->exportFolderPath=$destination;
 
 fLog ( cr().cr().'##'.cr(), true );
 fLog ( 'Looping'.cr(), true );

@@ -1,10 +1,10 @@
-## MPS sample
+## Swagger sample
 
-Generation from a xcdatamodel (xcode modeling document) to various templates.
+Generation  to various templates.
 
 ## How to ?
 
-Go to the MusicPlayer/ folder in the samples via the terminal.
+Go to the Swagger/ folder in the samples via the terminal.
 And run flexion.sh
 
 ```

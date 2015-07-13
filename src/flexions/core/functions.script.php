@@ -137,3 +137,12 @@ function simplifyPath($path){
 	$path=str_replace(FLEXIONS_ROOT_DIR,"", $path);
 	return $path;
 }
+
+
+
+function injectVersionInPath($path){
+	$h=Hypotypose::Instance();
+	$newPath= str_ireplace('{version.major}',$h->majorVersionPathSegmentString(),$path);
+	return $newPath;
+
+}

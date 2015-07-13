@@ -3,8 +3,8 @@
 /* @var $f Flexed */
 
 require_once FLEXIONS_MODULES_DIR .'Utils/Pluralization.php';
-require_once FLEXIONS_SOURCE_DIR.'helpers/classes/GeneralUtils.class.php';
-require_once FLEXIONS_SOURCE_DIR.'helpers/classes/LocalSwiftTools.class.php';
+require_once FLEXIONS_SOURCE_DIR.'helpers/classes/GenerativeHelperForPhp.class.php';
+require_once FLEXIONS_SOURCE_DIR.'helpers/classes/GenerativeHelperForSwift.class.php';
 
 $prefix = "Swagger";
 
