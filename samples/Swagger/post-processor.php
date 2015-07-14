@@ -63,7 +63,7 @@ require_once FLEXIONS_MODULES_DIR.'/Deploy/FTPDeploy.php';
 require_once FLEXIONS_MODULES_DIR.'/Deploy/LocalDeploy.php';
 
 // DEVELOPMENT
-if ($h->stage==DefaultStages::STAGE_DEVELOPMENT){
+if ($h->stage==DefaultStages::STAGE_PRODUCTION){
     $deploy=new LocalDeploy($h);
     // We want to copy the package 'php/' files to /Applications/MAMP/htdocs
     $deploy->copyFiles('/php/','/Applications/MAMP/htdocs/swagger-generative-sample/',true);
@@ -73,7 +73,7 @@ if ($h->stage==DefaultStages::STAGE_DEVELOPMENT){
 
 // PRODUCTION
 // Replace Host + <USER> & <PASSWORD>
-if ($h->stage==DefaultStages::STAGE_PRODUCTION){
+if ($h->stage==DefaultStages::STAGE_BETA){
 	// We want to copy the package 'php/' files to a valid FTP.
 	$ftpDeploy=new FTPDeploy($h);
     $ftpDeploy->setUp("chaosmos.fr");
