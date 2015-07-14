@@ -64,7 +64,7 @@ require_once FLEXIONS_MODULES_DIR.'/Deploy/LocalDeploy.php';
 
 // DEVELOPMENT
 if ($h->stage==DefaultStages::STAGE_DEVELOPMENT){
-    $deploy=new \Flexions\LocalDeploy($h);
+    $deploy=new LocalDeploy($h);
     // We want to copy the package 'php/' files to /Applications/MAMP/htdocs
     $deploy->copyFiles('/php/','/Applications/MAMP/htdocs/swagger-generative-sample/',true);
     // We want to copy the package 'ios/' files to the iOS sources
@@ -72,12 +72,20 @@ if ($h->stage==DefaultStages::STAGE_DEVELOPMENT){
 }
 
 // PRODUCTION
+// Replace Host + <USER> & <PASSWORD>
 if ($h->stage==DefaultStages::STAGE_PRODUCTION){
-    $deploy=new \Flexions\LocalDeploy($h);
+	// We want to copy the package 'php/' files to a valid FTP.
+	$ftpDeploy=new FTPDeploy($h);
+    $ftpDeploy->setUp("chaosmos.fr");
+    if($ftpDeploy->login("<USER>","<PASSWORD>")==true){
+        $ftpDeploy->copyFiles('php/','/home/chaosmos/public_html/test/');
+    }else{
+        // There is may be an issue
+    }
+    // Local copies
+    $deploy=new LocalDeploy($h);
     // We want to copy the package 'ios/' files to the iOS sources
-    $deploy->copyFiles('ios/','~/Documents/swagger-sample/src/');
+    $deploy->copyFiles('/ios/','/Users/bpds/Documents/swagger-sample/',true);
 
-    // We want to copy the package 'php/' files to a valid FTP.
-    //$deploy->copyFilesFrom('php/','/Applications/MAMP/htdocs/swagger-generative-sample/');
 
 }
