@@ -20,9 +20,7 @@ You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/licenses/>
 */
 
-
-class  PropertyRepresentation
-{
+class  PropertyRepresentation {
 
     /**
      * @var string unique Name of the property
@@ -35,14 +33,12 @@ class  PropertyRepresentation
     public $description;
 
     /**
-     * @var string Type of variable (string, number, integer, boolean, object, array, float, null, any).
-     *
-     *  WE GONNA ADD : byte, date, dateTime @todo SWAGGER
+     * @var string Type  const enumerated in FlexTypes
      */
     public $type;
 
     /**
-     * @var  string When the type is an object, you can specify the class that the object must implement
+     * @var  string When the type is an _OBJECT or a _COLLECTION, you can specify the class that the object must implement
      */
     public $instanceOf;
 
@@ -83,7 +79,7 @@ class  PropertyRepresentation
     /**
      * @var array an associative array to pass specific metadata
      */
-    public $metadata;
+    public $metadata=array();
 
 }
 

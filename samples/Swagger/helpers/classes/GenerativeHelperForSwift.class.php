@@ -1,6 +1,8 @@
 <?php
 
 require_once 'GenerativeHelper.php';
+require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
+
 
 class GenerativeHelperForSwift extends  GenerativeHelper{
     static function getCurrentClassNameWithPrefix($d, $classesPrefix = "") {

@@ -18,7 +18,7 @@ if (isset ($f)) {
 }
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
-
+// Path : <?php echo $d->path.cr(); ?>
 @class <?php echo $d->class; ?>{
 }
 <?php echo '?>' ?>

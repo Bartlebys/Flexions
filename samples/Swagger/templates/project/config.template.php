@@ -24,6 +24,3 @@ foreach ($d->actions as $action ) {
     echo('require_once "/endpoints/'.$action->class.'.class.php";'.cr());
 }
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
-
-
-

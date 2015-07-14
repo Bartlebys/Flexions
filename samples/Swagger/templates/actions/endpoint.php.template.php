@@ -21,6 +21,7 @@ if (isset ( $f )) {
 <?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 
+// Path : <?php echo $d->path.cr(); ?>
 class <?php echo $d->class; ?>{
 }
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>

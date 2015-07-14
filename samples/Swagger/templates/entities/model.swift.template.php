@@ -2,7 +2,10 @@
 
 
 include FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
+
+require_once FLEXIONS_ROOT_DIR.'/flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
 require_once FLEXIONS_SOURCE_DIR.'helpers/classes/GenerativeHelperForSwift.class.php';
+require_once FLEXIONS_MODULES_DIR.'Languages/FlexionsSwiftLang.php';
 
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */
@@ -18,19 +21,21 @@ if (isset ( $f )) {
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
 
-@class <?php echo ucfirst($d->name)?>:NSObject,NSCoding,Mappable{
+@class <?php echo ucfirst($d->name)?> : NSObject,NSCoding,Mappable{
 <?php
-// You can distinguish the first, and last property
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name = $property->name;
     if($d->firstProperty()){
         echoIndent(cr(),0);
     }
-    //@todo typed collection
-    //@todo CREATE SWIFT TOOLS SET WITH TYPE MAPPING
-    //@todo create a notion of transformer for NSURL support for example
-    echoIndent('var ' . $name .':'.ucfirst($property->type). '?' . cr(), 1);
+    if($property->type==FlexionsTypes::_COLLECTION){
+        echoIndent('var ' . $name .':['.ucfirst($property->instanceOf). ']?' . cr(), 1);
+    }else if($property->type==FlexionsTypes::_OBJECT){
+        echoIndent('var ' . $name .':'.ucfirst($property->instanceOf). '?' . cr(), 1);
+    }else{
+        echoIndent('var ' . $name .':'.FlexionsSwiftLang::nativeTypeFor($property->type). '?' . cr(), 1);
+    }
     if($d->lastProperty()){
         echoIndent(cr(),0);
     }
@@ -43,7 +48,7 @@ while ( $d ->iterateOnProperties() === true ) {
     }
 
     func encodeWithCoder(aCoder: NSCoder!) {
-        aCoder.encodeObject(self.array, forKey: "array")
+       // aCoder.encodeObject(self.array, forKey: "array")
     }
 
     // MARK: Mappable
@@ -60,6 +65,5 @@ while ( $d ->iterateOnProperties() === true ) {
     echoIndent($name.'<-["'.$name.'"]'.cr(),2);
 }?>
     }
-
 
 }<?php /*<- END OF TEMPLATE */?>

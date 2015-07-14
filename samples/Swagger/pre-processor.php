@@ -12,7 +12,7 @@ $h->version='1.0';
 $h->classPrefix=$prefix;
 
 // If you add a path to the preserve path it will be generated  only
-// If the file does not alreadey exists.
+// If the file does not already exists.
 // To regenerate delete it and re proceed to flexions
 $h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Api.class.php';
 $h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Config.php';

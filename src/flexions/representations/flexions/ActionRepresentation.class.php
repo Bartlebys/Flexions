@@ -21,79 +21,85 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
 */
 
 class ActionRepresentation {
-	
-		/**
-		 * @var array Parameters
-		 */
-		public $parameters = array();
-	
-		/**
-		 * @var Parameter Additional parameters schema
-		*/
-		public $additionalParameters;
-	
-		/**
-		 * @var string Name of the Operation
-		 */
-		public $name;
-	
-		/**
-		 * @var string HTTP method
-		 */
-		public $httpMethod;
-	
-		/**
-		 * @var string This is a short summary of what the operation does
-		 */
-		public $summary;
-	
-		/**
-		 * @var string A longer text field to explain the behavior of the operation.
-		 */
-		public $notes;
-	
-		/**
-		 * @var string HTTP URI of the Operation
-		 */
-		public $uri;
-	
-		/**
-		 * @var string Class of the Operation object
-		 */
-		public $class;
-	
-		/**
-		 * @var string This is what is returned from the method
-		 */
-		public $responseClass;
-	
-		/**
-		 * @var string Type information about the response
-		 */
-		public $responseType;
-	
-		/**
-		 * @var string Information about the response returned by the operation
-		 */
-		public $responseNotes;
-	
-	
-		/**
-		 * @var array Array of errors that could occur when running the Operation
-		 */
-		public $errorResponses;
-	
-		/**
-		 * @var ServiceDescriptionInterface
-		 */
-		public $description;
-	
 
-		/**
-		 * @var array an associative array to pass specific metadata
-		 */
-		public $metadata;
-		
+    /**
+     * @var array Parameters
+     */
+    public $parameters = array();
+
+    /**
+     * @var Parameter Additional parameters schema
+     */
+    public $additionalParameters;
+
+    /**
+     * @var string Name of the Operation
+     */
+    public $name;
+
+    /**
+     * @var string HTTP method
+     */
+    public $httpMethod;
+
+    /**
+     * @var string This is a short summary of what the operation does
+     */
+    public $summary;
+
+    /**
+     * @var string A longer text field to explain the behavior of the operation.
+     */
+    public $notes;
+
+
+    /**
+     * @var string
+     */
+    public $path;
+
+    /**
+     * @var string HTTP URI of the Operation
+     */
+    public $uri;
+
+    /**
+     * @var string Class of the Operation object
+     */
+    public $class;
+
+    /**
+     * @var string This is what is returned from the method
+     */
+    public $responseClass;
+
+    /**
+     * @var string Type information about the response
+     */
+    public $responseType;
+
+    /**
+     * @var string Information about the response returned by the operation
+     */
+    public $responseNotes;
+
+
+    /**
+     * @var array Array of errors that could occur when running the Operation
+     */
+    public $errorResponses;
+
+    /**
+     * @var ServiceDescriptionInterface
+     */
+    public $description;
+
+
+    /**
+     * @var array an associative array to pass specific metadata
+     */
+    public $metadata;
+
 }
 
 ?>

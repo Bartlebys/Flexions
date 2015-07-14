@@ -18,6 +18,7 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_PROPERTIES', 'properties');
     define('SWAGGER_DESCRIPTION', 'description');
     define('SWAGGER_FORMAT', 'format');
+    define('SWAGGER_ITEMS', 'items');
 
     define('SWAGGER_REF', '$ref');
 }
@@ -62,7 +63,7 @@ class SwaggerToFlexionsRepresentations {
                 $definitions = $json[SWAGGER_DEFINITIONS];
                 foreach ($definitions as $entityName => $descriptor) {
                     $e = new EntityRepresentation();
-                    $e->name = $entityName;
+                    $e->name = $nativePrefix.ucfirst($entityName);
                     if (array_key_exists(SWAGGER_TYPE, $descriptor)) {
                         $entityType = $descriptor[SWAGGER_TYPE];
                         if ($entityType === SWAGGER_OBJECT) {
@@ -72,35 +73,50 @@ class SwaggerToFlexionsRepresentations {
                                     // type, format, description
                                     $propertyR = new PropertyRepresentation();
                                     $propertyR->name = $propertyName;
+                                    // @todo  implementation the $ref should be inspected (and could be external)
+
                                     if (is_array($propertyValue)) {
                                         if (array_key_exists(SWAGGER_REF, $propertyValue)) {
+                                            // Its it a single reference.
                                             $ref = $propertyValue[SWAGGER_REF];
-                                            // @todo dirty implementation the ref should be inspected (and could be external)
                                             $components = explode('/', $ref);
                                             $instanceOf = end($components);
-                                            $propertyR->type = 'object';
+                                            $propertyR->type = FlexionsTypes::_OBJECT;
                                             $propertyR->instanceOf = $nativePrefix . ucfirst($instanceOf); // We add the prefix
                                             $propertyR->isGeneratedType = true;
+                                        }else{
+                                            $swaggerType=null;
+                                            if (array_key_exists(SWAGGER_TYPE, $propertyValue)) {
+                                                $swaggerType = $propertyValue[SWAGGER_TYPE];
+                                                $propertyR->metadata['SWAGGER_TYPE']=$swaggerType;
+                                            }
+                                            $swaggerFormat=null;
+                                            if (array_key_exists(SWAGGER_FORMAT, $propertyValue)) {
+                                                $swaggerFormat = $propertyValue[SWAGGER_FORMAT];
+                                                $propertyR->metadata['SWAGGER_FORMAT']=$swaggerFormat;
+                                            }
+                                            $isACollectionOfReferences=false;
+                                            if (array_key_exists(SWAGGER_ITEMS, $propertyValue)) {
+                                                if (array_key_exists(SWAGGER_REF, $propertyValue[SWAGGER_ITEMS])) {
+                                                    // It is a collection of items.
+                                                    $isACollectionOfReferences=true;
+                                                    $ref = $propertyValue[SWAGGER_ITEMS][SWAGGER_REF];
+                                                    $components = explode('/', $ref);
+                                                    $instanceOf = end($components);
+                                                    $propertyR->type = FlexionsTypes::_COLLECTION;
+                                                    $propertyR->instanceOf = $nativePrefix . ucfirst($instanceOf); // We add the prefix
+                                                    $propertyR->isGeneratedType = true;
+                                                }
+                                            }
+                                            if($isACollectionOfReferences==false){
+                                                $propertyR->type = $this->_swaggerTypeToFlexions($swaggerType,$swaggerFormat);
+                                            }
                                         }
-
-                                        if (array_key_exists(SWAGGER_TYPE, $propertyValue)) {
-                                            $swaggerType = $propertyValue[SWAGGER_TYPE];
-                                            $propertyR->type = $swaggerType;
-                                        }
-
-                                        if (array_key_exists(SWAGGER_FORMAT, $propertyValue)) {
-                                            $swaggerFormat = $propertyValue[SWAGGER_FORMAT];
-                                            // @todo we may want more precise casting int32,...
-                                            // Type mapping
-                                            //https://github.com/swagger-api/swagger-core/wiki/Datatypes
-                                        }
-
                                         if (array_key_exists(SWAGGER_DESCRIPTION, $propertyValue)) {
                                             $propertyR->description = $propertyValue[SWAGGER_DESCRIPTION];
                                         }
                                     }
                                     $e->properties[] = $propertyR;
-
                                 }
                             }
                         } else {
@@ -117,8 +133,8 @@ class SwaggerToFlexionsRepresentations {
                     $className=$this->_classNameForPath($path);
                     $action=new ActionRepresentation();
                     $action->class=$className.'EndPoint';
+                    $action->path=$path;
                     $r->actions[]=$action;
-
                 }
             }
 
@@ -128,8 +144,39 @@ class SwaggerToFlexionsRepresentations {
         }
 
         return $r;
-
     }
+
+
+    private function _swaggerTypeToFlexions($type,$format){
+        $type=strtolower($type);
+        if($type=='string'){
+            return FlexionsTypes::_STRING;
+        }
+        if($type=='integer'){
+            return FlexionsTypes::_INTEGER;
+        }
+        if($type=='long'){
+            return FlexionsTypes::_INTEGER;
+        }
+        if($type=='float'){
+            return FlexionsTypes::_FLOAT;
+        }
+        if($type=='double'){
+            return FlexionsTypes::_DOUBLE;
+        }
+        if($type=='byte'){
+            return FlexionsTypes::_BYTE;
+        }
+        if($type=='boolean'){
+            return FlexionsTypes::_BOOLEAN;
+        }
+        if($type=='date' || $type=='dateTime'){
+            return FlexionsTypes::_DATETIME;
+        }
+        return FlexionsTypes::_NOT_SUPPORTED;
+    }
+
+
 
     /**
      * @param String $path
