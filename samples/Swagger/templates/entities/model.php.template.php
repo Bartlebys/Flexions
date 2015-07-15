@@ -29,5 +29,7 @@ while ( $d ->iterateOnProperties() === true ) {
     }
 }
 ?>
+
 }
+
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>

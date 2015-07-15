@@ -63,12 +63,12 @@ require_once FLEXIONS_MODULES_DIR.'/Deploy/FTPDeploy.php';
 require_once FLEXIONS_MODULES_DIR.'/Deploy/LocalDeploy.php';
 
 // DEVELOPMENT
-if ($h->stage==DefaultStages::STAGE_PRODUCTION){
+if ($h->stage==DefaultStages::STAGE_DEVELOPMENT){
     $deploy=new LocalDeploy($h);
     // We want to copy the package 'php/' files to /Applications/MAMP/htdocs
     $deploy->copyFiles('/php/','/Applications/MAMP/htdocs/swagger-generative-sample/',true);
     // We want to copy the package 'ios/' files to the iOS sources
-    $deploy->copyFiles('/ios/','/Users/bpds/Documents/swagger-sample/',true);
+    $deploy->copyFiles('/ios/','/Users/bpds/Documents/Entrepot/Git/Public-projects/Swagger-Flexions-Swift-Sample/SwaggerFlexions/SwaggerFlexions/generated/',true);
 }
 
 // PRODUCTION

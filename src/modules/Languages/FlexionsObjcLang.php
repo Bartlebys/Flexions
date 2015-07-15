@@ -24,8 +24,6 @@ class FlexionsObjcLang implements IFlexionsLanguageMapping {
                 return 'Bool';
             case FlexionsTypes::_OBJECT:
                 return 'object';// Pseudo type (we need an instanceOf)
-            case FlexionsTypes::_ARRAY:
-                return 'NSArray';
             case FlexionsTypes::_COLLECTION:
                 return 'collection';//Pseudo type (we need an instanceOf)
             case FlexionsTypes::_FLOAT:
@@ -38,8 +36,6 @@ class FlexionsObjcLang implements IFlexionsLanguageMapping {
                 return 'NSDate';
             case FlexionsTypes::_URL:
                 return 'NSURL';
-            case FlexionsTypes::_ANY:
-                return 'id';
         }
         return FlexionsTypes::_NOT_SUPPORTED.'->'.$flexionsType;
     }

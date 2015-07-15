@@ -21,6 +21,8 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_ITEMS', 'items');
 
     define('SWAGGER_REF', '$ref');
+
+    define('SWAGGER_OPERATION_ID','operationId');
 }
 
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
@@ -55,8 +57,8 @@ class SwaggerToFlexionsRepresentations {
 
 
         if ($json[SWAGGER_VERSION] = '2.0') {
-            $r->baseUrl = $json[SWAGGER_HOST];
-            $r->apiVersion = $json[SWAGGER_BASE_PATH];
+            $r->baseUrl = $json[SWAGGER_SCHEMES][0].'://'.$json[SWAGGER_HOST].$json[SWAGGER_BASE_PATH];
+            $r->apiVersion = rtrim($json[SWAGGER_BASE_PATH],'/');
 
             // Extract the entities from definitions :
             if (array_key_exists(SWAGGER_DEFINITIONS, $json)) {
@@ -74,7 +76,6 @@ class SwaggerToFlexionsRepresentations {
                                     $propertyR = new PropertyRepresentation();
                                     $propertyR->name = $propertyName;
                                     // @todo  implementation the $ref should be inspected (and could be external)
-
                                     if (is_array($propertyValue)) {
                                         if (array_key_exists(SWAGGER_REF, $propertyValue)) {
                                             // Its it a single reference.
@@ -95,20 +96,26 @@ class SwaggerToFlexionsRepresentations {
                                                 $swaggerFormat = $propertyValue[SWAGGER_FORMAT];
                                                 $propertyR->metadata['SWAGGER_FORMAT']=$swaggerFormat;
                                             }
-                                            $isACollectionOfReferences=false;
+                                            $isACollection=false;
                                             if (array_key_exists(SWAGGER_ITEMS, $propertyValue)) {
                                                 if (array_key_exists(SWAGGER_REF, $propertyValue[SWAGGER_ITEMS])) {
                                                     // It is a collection of items.
-                                                    $isACollectionOfReferences=true;
+                                                    $isACollection=true;
                                                     $ref = $propertyValue[SWAGGER_ITEMS][SWAGGER_REF];
                                                     $components = explode('/', $ref);
                                                     $instanceOf = end($components);
                                                     $propertyR->type = FlexionsTypes::_COLLECTION;
                                                     $propertyR->instanceOf = $nativePrefix . ucfirst($instanceOf); // We add the prefix
                                                     $propertyR->isGeneratedType = true;
+                                                }else if (array_key_exists(SWAGGER_TYPE, $propertyValue[SWAGGER_ITEMS])) {
+                                                    // It may be a supported type;
+                                                    $isACollection=true;
+                                                    $propertyR->type = FlexionsTypes::_COLLECTION;
+                                                    $propertyR->instanceOf = $propertyValue[SWAGGER_ITEMS][SWAGGER_TYPE];
+                                                    $propertyR->isGeneratedType = false;
                                                 }
                                             }
-                                            if($isACollectionOfReferences==false){
+                                            if($isACollection==false){
                                                 $propertyR->type = $this->_swaggerTypeToFlexions($swaggerType,$swaggerFormat);
                                             }
                                         }
@@ -130,11 +137,21 @@ class SwaggerToFlexionsRepresentations {
             if (array_key_exists(SWAGGER_PATHS, $json)) {
                 $paths = $json[SWAGGER_PATHS];
                 foreach ($paths as $path => $descriptor) {
-                    $className=$this->_classNameForPath($path);
-                    $action=new ActionRepresentation();
-                    $action->class=$className.'EndPoint';
-                    $action->path=$path;
-                    $r->actions[]=$action;
+                    foreach ( $descriptor as $method => $methodDescriptor) {
+                        $className='';
+                        if (array_key_exists(SWAGGER_OPERATION_ID, $methodDescriptor)) {
+                            $className=$nativePrefix.ucfirst($methodDescriptor[SWAGGER_OPERATION_ID]);
+                        }else{
+                            $className=$nativePrefix.$this->_classNameForPath($path);
+                        }
+                        $action=new ActionRepresentation();
+                        $action->class=$className;
+                        $action->path=$path;
+                        $action->httpMethod=strtoupper($method);
+                        $r->actions[]=$action;
+                    }
+
+
                 }
             }
 

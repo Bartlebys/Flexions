@@ -23,6 +23,8 @@ if (isset ( $f )) {
 
 // Path : <?php echo $d->path.cr(); ?>
 class <?php echo $d->class; ?>{
+    const _HTTP_METHOD="<?php echo($d->httpMethod)?>";
+    const _PATH="<?php echo($d->path)?>";
 }
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
 

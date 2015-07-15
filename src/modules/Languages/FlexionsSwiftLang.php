@@ -20,13 +20,11 @@ class FlexionsSwiftLang implements IFlexionsLanguageMapping {
             case FlexionsTypes::_STRING:
                 return 'String';
             case FlexionsTypes::_INTEGER:
-                return 'Integer';
+                return 'Int';
             case FlexionsTypes::_BOOLEAN:
                 return 'Bool';
             case FlexionsTypes::_OBJECT:
                 return 'Object';// Pseudo type (we need an instancOf)
-            case FlexionsTypes::_ARRAY:
-                return 'Array';
             case FlexionsTypes::_COLLECTION:
                 return 'Collection';//Pseudo type (we need an instancOf)
             case FlexionsTypes::_FLOAT:
@@ -34,15 +32,13 @@ class FlexionsSwiftLang implements IFlexionsLanguageMapping {
             case FlexionsTypes::_DOUBLE:
                 return 'Double';
             case FlexionsTypes::_BYTE:
-                return 'Byte';
+                return 'UInt8';
             case FlexionsTypes::_DATETIME:
                 return 'NSDate';
             case FlexionsTypes::_URL:
                 return 'NSURL';
-            case FlexionsTypes::_ANY:
-                return 'Any';
         }
-        return FlexionsTypes::_NOT_SUPPORTED.'->'.$flexionsType;
+        return FlexionsTypes::_NOT_SUPPORTED.'//'.$flexionsType;
     }
 
 
