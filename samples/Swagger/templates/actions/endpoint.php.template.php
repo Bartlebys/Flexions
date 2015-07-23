@@ -12,7 +12,7 @@ require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 /* @var $d ActionRepresentation*/
 
 if (isset ( $f )) {
-    $f->fileName = $d->class.'.class.php';
+    $f->fileName = $d->class.'.php';
     $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'endpoints/';
 }
 
@@ -22,8 +22,8 @@ if (isset ( $f )) {
 
 // Path : <?php echo $d->path.cr(); ?>
 class <?php echo $d->class; ?>{
-    const _HTTP_METHOD="<?php echo($d->httpMethod)?>";
-    const _PATH="<?php echo($d->path)?>";
+    const HTTP_METHOD="<?php echo($d->httpMethod)?>";
+    const PATH="<?php echo($d->path)?>";
 }
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
 

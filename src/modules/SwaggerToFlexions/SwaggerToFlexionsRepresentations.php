@@ -36,7 +36,8 @@ if (!defined('SWAGGER_VERSION')) {
 
 
 /**
- * We support partially SWAGGER 2.0 but enough to modelize and generate APIS and Entities with Flexions.
+ * We support partially SWAGGER 2.0 but
+ * enough to modelize and generate APIS and Entities with Flexions.
  *
  * SWAGGER complete specs are available at :
  * https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md

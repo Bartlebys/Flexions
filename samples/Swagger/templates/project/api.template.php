@@ -21,10 +21,10 @@ if (isset ( $f )) {
 
 /* @var $action ActionRepresentation */
 foreach ($d->actions as $action ) {
-    echo('require_once "/endpoints/'.$action->class.'.class.php";'.cr());
+    echo('require_once "/endpoints/'.$action->class.'.php";'.cr());
 }?>
 
-    // Path : <?php echo $d->path.cr(); ?>
+    // Path : <?php echo $action->path.cr(); ?>
     class Api {
         function run(){
             $result=array("message"=>"OK");
