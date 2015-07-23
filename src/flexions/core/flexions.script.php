@@ -21,9 +21,9 @@ along with Flexions  If not, see <http://www.gnu.org/licenses/>
 
 */
 
-require_once FLEXIONS_ROOT_DIR.'flexions/core/Flog.class.php';
-require_once FLEXIONS_ROOT_DIR.'flexions/core/Hypotypose.class.php';
-require_once FLEXIONS_ROOT_DIR.'flexions/core/Flexed.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flog.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Hypotypose.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flexed.php';
 require_once FLEXIONS_ROOT_DIR.'flexions/core/functions.script.php';
 
 error_reporting(E_ALL | E_STRICT);

@@ -1,0 +1,14 @@
+{
+  "name": "chaosmos/flexions",
+  "description": "",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Chaosmos",
+      "email": "chaosmos@chaosmos.fr"
+    }
+  ],
+  "require": {
+  }
+}

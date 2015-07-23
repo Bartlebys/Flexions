@@ -1,7 +1,6 @@
 <?php
 
 
-// To use Geshi untar the files in dependencies/geshi/
 
 /**
  *  A postprocessor that uses geshi
@@ -10,7 +9,7 @@
  */
 
 if (isset ( $language )) {
-	include_once FLEXIONS_ROOT_DIR . 'modules/GeSHI/dependencies/geshi/geshi.php';
+	include_once FLEXIONS_MODULES_DIR.'GeSHI/dependencies/geshi/geshi.php';
 	foreach ( $h->flexedList as $loopname => $list ) {
 		foreach ( ( array ) $list as $f ) {
 			/* @var $f Flexed */

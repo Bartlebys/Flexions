@@ -1,6 +1,6 @@
 <?php
 
-require_once FLEXIONS_ROOT_DIR.'flexions/core/Hypotypose.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Hypotypose.php';
 
 class GenerativeHelper{
 

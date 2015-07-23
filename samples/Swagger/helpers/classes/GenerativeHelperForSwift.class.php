@@ -5,6 +5,8 @@ require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
 
 
 class GenerativeHelperForSwift extends  GenerativeHelper{
+
+
     static function getCurrentClassNameWithPrefix($d, $classesPrefix = "") {
         if (!$d) return '$d should be set in getCurrentClassFragment( )';
         if (property_exists($d, 'name')) {

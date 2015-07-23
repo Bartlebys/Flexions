@@ -8,8 +8,8 @@
 
 
 
-require_once FLEXIONS_ROOT_DIR.'flexions/core/Hypotypose.class.php';
-require_once FLEXIONS_ROOT_DIR.'flexions/core/Flexed.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Hypotypose.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flexed.php';
 
 interface IDeploy{
     function copyFilesImplementation($filePath,$destination);

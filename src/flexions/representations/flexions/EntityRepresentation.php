@@ -29,7 +29,7 @@ class EntityRepresentation {
 	public $name;
 	
 	/**
-	 * @var array properties of the object
+	 * @var array of PropertyRepresentation of the object
 	 */
 	public $properties=array();
 	
@@ -80,7 +80,7 @@ class EntityRepresentation {
 		$nb=count($this->properties);
 		if($this->_propertyIndex<$nb && $nb>0 ){
 			$keys  = array_keys( $this->properties);
-			return $this->properties[ $keys[$this->_propertyIndex]];
+			return $this->properties[$keys[$this->_propertyIndex]];
 		}
 		return null;
 	}

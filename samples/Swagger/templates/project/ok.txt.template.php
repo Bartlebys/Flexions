@@ -11,12 +11,10 @@
 require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 
 if (isset ( $f )) {
-    $f->fileName = 'Const.php';
-    $f->package = 'php/api/'.$h->majorVersionPathSegmentString();
+    $f->fileName = 'ok.txt';
+    $f->package = 'php/';
 }
 /* TEMPLATES STARTS HERE -> */?>
-<?php echo '<?php'?>
-<?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
-
-
-<?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
+<?php echo GenerativeHelperForPhp::defaultHeader($f,$d).cr(); ?>
+OK <?php echo cr().'Version:'.$h->version.cr().'Stage:'.ucfirst($h->stage);?>
+<?php /*<- END OF TEMPLATE */?>

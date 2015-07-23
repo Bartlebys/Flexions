@@ -1,5 +1,6 @@
 <?php
 
+
 class Flog {
 	/**
 	 * Call this method to get singleton

@@ -6,15 +6,25 @@
  * Enumerates the "primitive" type of Flexions as const
  */
 class FlexionsTypes{
-    const _STRING='string';
-    const _INTEGER='integer';
-    const _BOOLEAN='boolean';
-    const _OBJECT='object'; // Used to reference an $instanceOf
-    const _COLLECTION='collection';// Used to reference a collection of $instanceOf that can be a FlexionsType
-    const _FLOAT='float';
-    const _DOUBLE='double';
-    const _BYTE='byte';
-    const _DATETIME='dateTime';
-    const _URL='url';
-    const _NOT_SUPPORTED='Not_Supported';
+    // Basic types
+    const STRING='string';
+    const INTEGER='integer';
+    const BOOLEAN='boolean';
+    const FLOAT='float';
+    const DOUBLE='double';
+    //
+    const BYTE='byte';
+    const DATETIME='dateTime';
+    const URL='url';
+
+    const FILE='file';
+
+    // Generic type
+    const DICTIONARY='';
+    //
+    const OBJECT='object'; // Used to reference an $instanceOf
+    const COLLECTION='collection';// Used to reference a collection of $instanceOf that can be any FlexionsType
+    const ENUM='enum';// Used to reference a enumeration of $instanceOf that can be any FlexionsType
+    //
+    const NOT_SUPPORTED='Not_Supported';
 }

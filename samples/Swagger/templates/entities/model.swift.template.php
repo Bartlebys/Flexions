@@ -29,14 +29,31 @@ while ( $d ->iterateOnProperties() === true ) {
     $name = $property->name;
     if($d->firstProperty()){
         echoIndent(cr(),0);
+    }else{
+        echoIndent(cr(),0);
     }
-    if($property->type==FlexionsTypes::_COLLECTION){
+    if($property->description!=''){
+        echoIndent('//' .$property->description. cr(), 1);
+    }
+    if($property->type==FlexionsTypes::ENUM){
+        $enumTypeName=ucfirst($name);
+        echoIndent('enum ' .$enumTypeName.':'.ucfirst($property->instanceOf). '{' . cr(), 1);
+        foreach ($property->enumerations as $element) {
+            if($property->instanceOf==FlexionsTypes::STRING){
+                echoIndent('case ' .ucfirst($element).' = "'.$element.'"' . cr(), 2);
+            }else{
+                echoIndent('case ' .ucfirst($element).' = '.$element.'' . cr(), 2);
+            }
+        }
+        echoIndent('}' . cr(), 1);
+        echoIndent('var ' . $name .':'.$enumTypeName.'?' . cr(), 1);
+    }else if($property->type==FlexionsTypes::COLLECTION){
         echoIndent('var ' . $name .':['.ucfirst($property->instanceOf). ']?' . cr(), 1);
-    }else if($property->type==FlexionsTypes::_OBJECT){
+    }else if($property->type==FlexionsTypes::OBJECT){
         echoIndent('var ' . $name .':'.ucfirst($property->instanceOf). '?' . cr(), 1);
     }else{
         $nativeType=FlexionsSwiftLang::nativeTypeFor($property->type);
-        if(strpos($nativeType,FlexionsTypes::_NOT_SUPPORTED)===false){
+        if(strpos($nativeType,FlexionsTypes::NOT_SUPPORTED)===false){
             echoIndent('var ' . $name .':'.$nativeType. '?' . cr(), 1);
         }else{
             echoIndent('var ' . $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type). cr(), 1);
@@ -59,38 +76,45 @@ while ($d->iterateOnProperties() === true) {
     $flexionsType = $property->type;
     $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
     switch ($flexionsType) {
-        case FlexionsTypes::_STRING:
+        case FlexionsTypes::STRING:
             echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
             break;
-        case FlexionsTypes::_INTEGER:
+        case FlexionsTypes::INTEGER:
             echoIndent($name . '=decoder.decodeIntegerForKey("' . $name . '")' . cr(), 2);
             break;
-        case FlexionsTypes::_BOOLEAN:
+        case FlexionsTypes::BOOLEAN:
             echoIndent($name . '=decoder.decodeBoolForKey("' . $name . '")' . cr(), 2);
             break;
-        case FlexionsTypes::_OBJECT:
+        case FlexionsTypes::OBJECT:
             echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . ucfirst($property->instanceOf) . '' . cr(), 2);
             break;
-        case FlexionsTypes::_COLLECTION:
+        case FlexionsTypes::COLLECTION:
             echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? [' . ucfirst($property->instanceOf) . ']' . cr(), 2);
-            break;//Pseudo type (we need an instancOf)
-        case FlexionsTypes::_FLOAT:
+            break;
+        case FlexionsTypes::ENUM:
+            $enumTypeName=ucfirst($name);
+            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? '.$enumTypeName . cr(), 2);
+            break;
+        case FlexionsTypes::FILE:
+            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . ucfirst($property->instanceOf) . '' . cr(), 2);
+            break;
+        case FlexionsTypes::FLOAT:
             echoIndent($name . '=decoder.decodeFloatForKey("' . $name . '")' . cr(), 2);
             break;
-        case FlexionsTypes::_DOUBLE:
+        case FlexionsTypes::DOUBLE:
             echoIndent($name . '=decoder.decodeDoubleForKey("' . $name . '")' . cr(), 2);
             break;
-        case FlexionsTypes::_BYTE:
+        case FlexionsTypes::BYTE:
             echoIndent('var ref'.ucfirst($name).'=1;' . cr(), 2);
             echoIndent($name . '=decoder.decodeBytesForKey("' . $name . '",&ref'.ucfirst($name).')' . cr(), 2);
             break;
-        case FlexionsTypes::_DATETIME:
+        case FlexionsTypes::DATETIME:
             echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
             break;
-        case FlexionsTypes::_URL:
+        case FlexionsTypes::URL:
             echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
             break;
-        case FlexionsTypes::_NOT_SUPPORTED:
+        case FlexionsTypes::NOT_SUPPORTED:
             echoIndent('//'.$name .'is not supported' . cr(), 2);
             break;
     }
@@ -107,57 +131,67 @@ while ($d->iterateOnProperties() === true) {
     $flexionsType = $property->type;
     $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
     switch ($flexionsType) {
-        case FlexionsTypes::_STRING:
+        case FlexionsTypes::STRING:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_INTEGER:
+        case FlexionsTypes::INTEGER:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeInteger('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_BOOLEAN:
+        case FlexionsTypes::BOOLEAN:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeBool('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_OBJECT:
+        case FlexionsTypes::OBJECT:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_COLLECTION:
+        case FlexionsTypes::COLLECTION:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
-            break;//Pseudo type (we need an instancOf)
-        case FlexionsTypes::_FLOAT:
+            break;
+        case FlexionsTypes::ENUM:
+            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
+            echoIndent('aCoder.encodeObject("\('.$name.')",forKey:"'. $name .'")' . cr(), 3);
+            echoIndent('}'.cr(), 2);
+            break;
+        case FlexionsTypes::FILE:
+            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
+            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
+            echoIndent('}'.cr(), 2);
+            break;
+        case FlexionsTypes::FLOAT:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeFloat('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_DOUBLE:
+        case FlexionsTypes::DOUBLE:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeDouble('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_BYTE:
+        case FlexionsTypes::BYTE:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeBytes(&self.'.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_DATETIME:
+        case FlexionsTypes::DATETIME:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_URL:
+        case FlexionsTypes::URL:
             echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
             echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
             echoIndent('}'.cr(), 2);
             break;
-        case FlexionsTypes::_NOT_SUPPORTED:
+        case FlexionsTypes::NOT_SUPPORTED:
             echoIndent('//'.$name .'is not supported' . cr(), 2);
             break;
     }

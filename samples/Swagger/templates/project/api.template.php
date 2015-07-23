@@ -23,6 +23,15 @@ if (isset ( $f )) {
 foreach ($d->actions as $action ) {
     echo('require_once "/endpoints/'.$action->class.'.class.php";'.cr());
 }?>
+
+    // Path : <?php echo $d->path.cr(); ?>
+    class Api {
+        function run(){
+            $result=array("message"=>"OK");
+            return json_encode($result,400);
+        }
+    }
+
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
 
 

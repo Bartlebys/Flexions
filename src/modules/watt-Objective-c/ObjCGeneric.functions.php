@@ -20,7 +20,7 @@ You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/licenses/>
  */
 
-require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flexed.class.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flexed.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
 require_once FLEXIONS_MODULES_DIR . 'watt-Objective-c/ObjectiveCHelper.class.php';
 

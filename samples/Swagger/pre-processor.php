@@ -2,8 +2,8 @@
 
 // we load the shared variables
 include  FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
-require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerToFlexionsRepresentations.class.php';
-require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerDelegate.class.php';
+require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerToFlexionsRepresentations.php';
+require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerDelegate.php';
 
 // we instanciate the Hypotypose singleton
 $h = Hypotypose::instance();
@@ -14,7 +14,7 @@ $h->classPrefix=$prefix;
 // If you add a path to the preserve path it will be generated  only
 // If the file does not already exists.
 // To regenerate delete it and re proceed to flexions
-$h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Api.class.php';
+$h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Api.php';
 $h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Config.php';
 $h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Const.php';
 

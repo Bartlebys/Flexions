@@ -17,28 +17,34 @@ class FlexionsSwiftLang implements IFlexionsLanguageMapping {
      */
     static function nativeTypeFor($flexionsType){
         switch ($flexionsType) {
-            case FlexionsTypes::_STRING:
+            case FlexionsTypes::STRING:
                 return 'String';
-            case FlexionsTypes::_INTEGER:
+            case FlexionsTypes::INTEGER:
                 return 'Int';
-            case FlexionsTypes::_BOOLEAN:
+            case FlexionsTypes::BOOLEAN:
                 return 'Bool';
-            case FlexionsTypes::_OBJECT:
-                return 'Object';// Pseudo type (we need an instancOf)
-            case FlexionsTypes::_COLLECTION:
-                return 'Collection';//Pseudo type (we need an instancOf)
-            case FlexionsTypes::_FLOAT:
-                return 'Float';
-            case FlexionsTypes::_DOUBLE:
-                return 'Double';
-            case FlexionsTypes::_BYTE:
-                return 'UInt8';
-            case FlexionsTypes::_DATETIME:
-                return 'NSDate';
-            case FlexionsTypes::_URL:
+            case FlexionsTypes::OBJECT:
+                return 'Object';//Pseudo type (the instanceOf type will apply)
+            case FlexionsTypes::COLLECTION:
+                return 'Collection';//Pseudo type (the instanceOf type will apply)
+            case FlexionsTypes::ENUM:
+                return 'Emum';//Pseudo type (the instanceOf type will apply)
+            case FlexionsTypes::FILE:
                 return 'NSURL';
+            case FlexionsTypes::FLOAT:
+                return 'Float';
+            case FlexionsTypes::DOUBLE:
+                return 'Double';
+            case FlexionsTypes::BYTE:
+                return 'UInt8';
+            case FlexionsTypes::DATETIME:
+                return 'NSDate';
+            case FlexionsTypes::URL:
+                return 'NSURL';
+            case FlexionsTypes::DICTIONARY:
+                return '[String:Any]';
         }
-        return FlexionsTypes::_NOT_SUPPORTED.'//'.$flexionsType;
+        return FlexionsTypes::NOT_SUPPORTED;
     }
 
 

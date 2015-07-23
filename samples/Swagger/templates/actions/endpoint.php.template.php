@@ -8,7 +8,6 @@
 
 require_once FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
 
-
 /* @var $f Flexed */
 /* @var $d ActionRepresentation*/
 

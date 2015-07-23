@@ -38,13 +38,19 @@ class  PropertyRepresentation {
     public $type;
 
     /**
-     * @var  string When the type is an _OBJECT or a _COLLECTION, you can specify the class that the object must implement
+     * @var  string When the type is an _OBJECT or a _COLLECTION or an _ENUM, you can specify its class
      */
     public $instanceOf;
 
 
     /**
-     * @var bool set to true if the type is generated
+     * When $type is _ENUM you can enumerate the values in an array or an associative array
+     * @var array
+     */
+    public $enumerations = array();
+
+    /**
+     * @var bool set to true if the type is generated (allow to to discriminate primitive from generated types)
      */
     public $isGeneratedType = false;
 
@@ -82,6 +88,5 @@ class  PropertyRepresentation {
     public $metadata=array();
 
 }
-
 
 ?>
