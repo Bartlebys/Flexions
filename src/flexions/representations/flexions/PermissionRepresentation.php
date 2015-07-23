@@ -14,21 +14,27 @@ class PermissionType extends Enum{
     const API_KEY='api_key';
     const OAUTH_2="OAUTH_2";
 
-    static protected function possibleValues(){
-        return array(API_KEY,OAUTH_2);
+    static  function possibleValues(){
+        return array(
+            PermissionType::API_KEY,
+            PermissionType::OAUTH_2
+        );
     }
 }
 
 
 
-class PermissionLocation{
+class PermissionLocation extends Enum{
 
     const UNDEFINED='undefined';
     const IN_HEADERS='in_headers';
     const IN_PARAMETERS='in_parameters';
 
-    static protected function possibleValues(){
-        return array(IN_HEADERS,IN_PARAMETERS);
+    static  function possibleValues(){
+        return array(
+            PermissionLocation::IN_HEADERS,
+            PermissionLocation::IN_PARAMETERS
+        );
     }
 }
 
@@ -135,7 +141,24 @@ class PermissionRepresentationOauth extends PermissionRepresentation {
      *
      * @var array
      */
-    public $scopes=array();
+    private $_scopes=array();
+
+    public  $authorizationUrl;
+
+
+    /**
+     * @return array
+     */
+    public function getScopes() {
+        return $this->_scopes;
+    }
+
+    /**
+     * @param array $scope
+     */
+    public function addScope(Array $scope) {
+        $this->_scopes[]=$scope;
+    }
 
 
 

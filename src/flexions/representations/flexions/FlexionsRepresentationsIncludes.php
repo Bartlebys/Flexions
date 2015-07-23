@@ -25,4 +25,5 @@ require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/ActionRepres
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/EntityRepresentation.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/PropertyRepresentation.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/SecurityContextRepresentation.php';
+require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/PermissionRepresentation.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsTypes.php';

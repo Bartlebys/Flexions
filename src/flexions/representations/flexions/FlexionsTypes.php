@@ -33,7 +33,22 @@ class FlexionsTypes extends Enum {
     /**
      * @return array
      */
-    static protected function possibleValues(){
-        return array(STRING,INTEGER,BOOLEAN,FLOAT,DOUBLE,BYTE,DATETIME,URL,FILE,DICTIONARY,OBJECT,COLLECTION,ENUM,NOT_SUPPORTED);
+    static  function possibleValues(){
+        return array(
+            FlexionsTypes::STRING,
+            FlexionsTypes::INTEGER,
+            FlexionsTypes::BOOLEAN,
+            FlexionsTypes::FLOAT,
+            FlexionsTypes::DOUBLE,
+            FlexionsTypes::BYTE,
+            FlexionsTypes::DATETIME,
+            FlexionsTypes::URL,
+            FlexionsTypes::FILE,
+            FlexionsTypes::DICTIONARY,
+            FlexionsTypes::OBJECT,
+            FlexionsTypes::COLLECTION,
+            FlexionsTypes::ENUM,
+            FlexionsTypes::NOT_SUPPORTED
+        );
     }
 }

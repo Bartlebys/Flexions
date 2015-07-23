@@ -11,16 +11,17 @@ abstract class Enum {
     /**
      * @return array
      */
-    static protected function possibleValues(){
+    static  function possibleValues(){
         return array();
     }
 
     /**
      * @return true if the value is a member of the Enum
      */
-
      final function isValid($value){
-        return in_array(get_class($this)->possibleValues(),$value);
+        $a=$this->possibleValues();
+         $r=in_array($value,$a);
+         return $r;
     }
 
 }

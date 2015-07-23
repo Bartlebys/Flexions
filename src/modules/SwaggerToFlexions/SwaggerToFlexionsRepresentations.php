@@ -29,6 +29,9 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_SCHEMA', 'schema');
     define('SWAGGER_REQUIRED', 'required');
     define('SWAGGER_RESPONSES', 'responses');
+    define('SWAGGER_OAUTH_AUTHORIZATION_URL','authorizationUrl');
+    define('SWAGGER_OAUTH_SCOPES','scopes');
+    define('SWAGGER_IN','in');
     //define ('SWAGGER_HEADERS','headers');
 }
 
@@ -78,6 +81,9 @@ class SwaggerToFlexionsRepresentations {
         $json = json_decode($s, true);
         $r->metadata = $json;// We store the raw descriptor as a metadata
 
+        // Associative array
+        $permissionsByName=array();
+
         if (array_key_exists(SWAGGER_INFO, $json)) {
             if (array_key_exists(SWAGGER_INFO, $json)) {
                 $nameOfProject = $json[SWAGGER_INFO][SWAGGER_TITLE];
@@ -87,8 +93,65 @@ class SwaggerToFlexionsRepresentations {
         }
 
         if ($json[SWAGGER_VERSION] = '2.0') {
+
             $r->baseUrl = $json[SWAGGER_SCHEMES][0] . '://' . $json[SWAGGER_HOST] . $json[SWAGGER_BASE_PATH];
             $r->apiVersion = rtrim($json[SWAGGER_BASE_PATH], '/');
+
+
+            // Store a reference of PermissionRepresentation to be cloned in each action.
+            if (array_key_exists(SWAGGER_SECURITY_DEFINITIONS, $json)) {
+                $securityDefinitions = $json[SWAGGER_SECURITY_DEFINITIONS];
+                foreach ($securityDefinitions as $name => $descriptor) {
+                   if(array_key_exists(SWAGGER_TYPE, $descriptor)){
+                       $type=strtolower($descriptor[SWAGGER_TYPE]);
+                       /*@var $p PermissionRepresentation */
+                       $p = null;
+                       if($type=="oauth2"){
+                           $p=new PermissionRepresentationOauth();
+                           $p->setPermissionName($name);
+                           if(array_key_exists(SWAGGER_OAUTH_AUTHORIZATION_URL, $descriptor)){
+                             $p->authorizationUrl=$descriptor[SWAGGER_OAUTH_AUTHORIZATION_URL];
+                           }
+                           if(array_key_exists(SWAGGER_OAUTH_SCOPES, $descriptor)){
+                               $scopes=$descriptor[SWAGGER_OAUTH_SCOPES];
+                               foreach ($scopes as $name=>$description) {
+                                   if(isset($name) && isset($description)){
+                                       $p->addScope(array($name=>$description));
+                                   }else{
+                                       throw new Exception('Invalid scope' . json_encode($scopes),90);
+                                   }
+                                }
+                           }
+                       }
+                       if($type=="apikey"){
+                           $p=new PermissionRepresentationWithAccessRights();
+                           $p->setPermissionName($name);
+                           if(array_key_exists(SWAGGER_IN, $descriptor)){
+                               $in=strtolower($descriptor[SWAGGER_IN]);
+                               if($in=='header'){
+                                   $p->setLocation(PermissionLocation::IN_HEADERS);
+                               }else{
+                                   $p->setLocation(PermissionLocation::IN_PARAMETERS);
+                               }
+                           }
+
+                       }
+                       if(isset ($p)){
+                           $permissionsByName[$name] = $p;
+                       }else{
+                           throw new Exception('Unsupported PermissionRepresentation type :' . $type,100);
+                       }
+
+                    }else{
+                       throw new Exception('Malformed security definition name:' . $name.' descriptor as a json:'.json_encode($descriptor),101);
+                   }
+
+
+                }
+
+            }
+
+
 
             // #2 Extract the entities EntityRepresentation
             //from definitions :
@@ -157,7 +220,7 @@ class SwaggerToFlexionsRepresentations {
             }
 
         } else {
-            throw new Exception('Unsupported swagger version' . $json[SWAGGER_VERSION]);
+            throw new Exception('Unsupported swagger version' . $json[SWAGGER_VERSION],0);
         }
 
         return $r;
