@@ -32,6 +32,7 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_OAUTH_AUTHORIZATION_URL','authorizationUrl');
     define('SWAGGER_OAUTH_SCOPES','scopes');
     define('SWAGGER_IN','in');
+    define('SWAGGER_SECURITY','security');
     //define ('SWAGGER_HEADERS','headers');
 }
 
@@ -41,6 +42,9 @@ if (!defined('SWAGGER_VERSION')) {
 /**
  * We support partially SWAGGER 2.0 but
  * enough to modelize and generate APIS and Entities with Flexions.
+ *
+ * IMPORTANT to support login and logout generation you must include the signature in the path
+ * And add a security key that maps to the security definitions.
  *
  * SWAGGER complete specs are available at :
  * https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
@@ -56,14 +60,17 @@ if (!defined('SWAGGER_VERSION')) {
  */
 class SwaggerToFlexionsRepresentations {
 
+
     /**
      * @param $descriptorFilePath
      * @param string $nativePrefix
-     * @param ISwaggerDelegate $delegate
+     * @param ISwaggerDelegate|null $delegate
+     * @param array $signInSignature
+     * @param array $signOutSignature
      * @return ProjectRepresentation|void
      * @throws Exception
      */
-    function projectRepresentationFromSwaggerJson($descriptorFilePath, $nativePrefix = "", ISwaggerDelegate $delegate) {
+    function projectRepresentationFromSwaggerJson($descriptorFilePath, $nativePrefix = "", ISwaggerDelegate $delegate=null,array $signInSignature=array(),array $signOutSignature=array()) {
 
         if (!isset($delegate)) {
             fLog("projectRepresentationFromSwaggerJson.projectRepresentationFromSwaggerJson() module requires an ISwaggerDelegate", true);
@@ -80,9 +87,6 @@ class SwaggerToFlexionsRepresentations {
         $s = file_get_contents($descriptorFilePath);
         $json = json_decode($s, true);
         $r->metadata = $json;// We store the raw descriptor as a metadata
-
-        // Associative array
-        $permissionsByName=array();
 
         if (array_key_exists(SWAGGER_INFO, $json)) {
             if (array_key_exists(SWAGGER_INFO, $json)) {
@@ -114,9 +118,9 @@ class SwaggerToFlexionsRepresentations {
                            }
                            if(array_key_exists(SWAGGER_OAUTH_SCOPES, $descriptor)){
                                $scopes=$descriptor[SWAGGER_OAUTH_SCOPES];
-                               foreach ($scopes as $name=>$description) {
-                                   if(isset($name) && isset($description)){
-                                       $p->addScope(array($name=>$description));
+                               foreach ($scopes as $scopeName=>$description) {
+                                   if(isset($scopeName) && isset($description)){
+                                       $p->addScope(array($scopeName=>$description));
                                    }else{
                                        throw new Exception('Invalid scope' . json_encode($scopes),90);
                                    }
@@ -137,7 +141,7 @@ class SwaggerToFlexionsRepresentations {
 
                        }
                        if(isset ($p)){
-                           $permissionsByName[$name] = $p;
+                           $this->_permissionsByName[$name] = $p;
                        }else{
                            throw new Exception('Unsupported PermissionRepresentation type :' . $type,100);
                        }
@@ -148,7 +152,6 @@ class SwaggerToFlexionsRepresentations {
 
 
                 }
-
             }
 
 
@@ -213,6 +216,45 @@ class SwaggerToFlexionsRepresentations {
                             }
                         }
 
+                        // security
+
+                        if (array_key_exists(SWAGGER_SECURITY, $methodPathDescriptor)) {
+                            $security = $methodPathDescriptor[SWAGGER_SECURITY];
+                            foreach ($security as $collection) {
+                                foreach ($collection as $securityItemName=>$securityItem) {
+                                    // The security context is extracted using the action name semantics.
+
+
+                                    $actionPath=strtolower($action->class);
+                                    $actionPath=str_replace('_','',$actionPath);
+                                    $actionPath=str_replace('-','',$actionPath);
+
+                                    $containsSignInSignature=false;
+                                    foreach ($signInSignature as $signature ) {
+                                        if((strpos($actionPath,$signature)!==false)){
+                                            $containsSignInSignature=true;
+                                        }
+                                    }
+
+                                    $containsSignOutSignature=false;
+                                    foreach ($signOutSignature as $signature ) {
+                                        if((strpos($actionPath,$signature)!==false)){
+                                            $containsSignOutSignature=true;
+                                        }
+                                    }
+
+                                    if($containsSignInSignature==true){
+                                        $action->security=$this->getContextPermissionByName($securityItemName,RelationToPermission::PROVIDES);
+                                    }else if($containsSignOutSignature==true){
+                                        $action->security=$this->getContextPermissionByName($securityItemName,RelationToPermission::DISCARDS);
+                                    }else{
+                                        // By default we consider that the security is required.
+                                        $action->security=$this->getContextPermissionByName($securityItemName,RelationToPermission::REQUIRES);
+                                    }
+                                }
+                            }
+                        }
+
 
                         $r->actions[] = $action;
                     }
@@ -225,6 +267,38 @@ class SwaggerToFlexionsRepresentations {
 
         return $r;
     }
+
+
+
+    private $_permissionsByName=array();
+
+
+    /**
+     * Returns the context for a given permission name
+     * @param $name
+     * @param string $relationToPermission
+     * @throws exception
+     * @return SecurityContextRepresentation
+     */
+    private function getContextPermissionByName($name,$relationToPermission=RelationToPermission::REQUIRES){
+
+        $rtp=new RelationToPermission();
+        if(!$rtp->isValid($relationToPermission)){
+            throw new exception("invalid RelationToPermission the relation is not present in the enumeration : ".$relationToPermission,10);
+        }
+
+        if (array_key_exists($name,$this->_permissionsByName)) {
+            $permission=$this->_permissionsByName[$name];
+            $cloned=clone $permission;// We clone the permission
+            $context=new SecurityContextRepresentation();
+            $context->setPermission($cloned);
+            $context->setRelation($relationToPermission);
+            return $context;
+        }else{
+            throw new Exception('Permission with name : '.$name.' does not exists :',11);
+        }
+    }
+
 
 
     /**

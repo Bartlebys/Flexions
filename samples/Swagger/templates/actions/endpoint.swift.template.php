@@ -25,19 +25,19 @@ import Foundation
 <?php
 // We generate the parameter class if there is a least one parameter.
 if ($d->containsParametersOutOfPath()) {
-    echoIndent('class ' . $d->class . 'Parameters{'.cr(), 0);
+    echoIndent('class ' . $d->class . 'Parameters : NSObject,Mappable {'.cr().cr(), 0);
     while ($d->iterateOnParameters() === true) {
-        $property = $d->getParameter();
-        $name = $property->name;
+        $parameter = $d->getParameter();
+        $name = $parameter->name;
         if(!$d->parameterIsInPath($name)){
-            echoIndent('// ' .$property->description. cr(), 1);
+            echoIndent('// ' .$parameter->description. cr(), 1);
             if ($d->firstParameter()) {
             }
-            if($property->type==FlexionsTypes::ENUM) {
+            if($parameter->type==FlexionsTypes::ENUM) {
                 $enumTypeName = $d->name . ucfirst($name);
-                echoIndent('enum ' . $enumTypeName . ' : ' . ucfirst($property->instanceOf) . '{' . cr(), 1);
-                foreach ($property->enumerations as $element) {
-                    if ($property->instanceOf == FlexionsTypes::STRING) {
+                echoIndent('enum ' . $enumTypeName . ' : ' . ucfirst($parameter->instanceOf) . '{' . cr(), 1);
+                foreach ($parameter->enumerations as $element) {
+                    if ($parameter->instanceOf == FlexionsTypes::STRING) {
                         echoIndent('case ' . ucfirst($element) . ' = "' . $element . '"' . cr(), 2);
                     } else {
                         echoIndent('case ' . ucfirst($element) . ' = ' . $element . '' . cr(), 2);
@@ -45,24 +45,51 @@ if ($d->containsParametersOutOfPath()) {
                 }
                 echoIndent('}' . cr(), 1);
                 echoIndent('var ' . $name . ':' . $enumTypeName . '?' . cr(), 1);
-            }else if ($property->type == FlexionsTypes::COLLECTION) {
-                echoIndent('var ' . $name . ':[' . ucfirst($property->instanceOf) . ']?' . cr(), 1);
-            } else if ($property->type == FlexionsTypes::OBJECT) {
-                echoIndent('var ' . $name . ':' . ucfirst($property->instanceOf) . '?' . cr(), 1);
+            }else if ($parameter->type == FlexionsTypes::COLLECTION) {
+                echoIndent('var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']?' . cr(), 1);
+            } else if ($parameter->type == FlexionsTypes::OBJECT) {
+                echoIndent('var ' . $name . ':' . ucfirst($parameter->instanceOf) . '?' . cr(), 1);
             } else {
-                $nativeType = FlexionsSwiftLang::nativeTypeFor($property->type);
+                $nativeType = FlexionsSwiftLang::nativeTypeFor($parameter->type);
                 if (strpos($nativeType, FlexionsTypes::NOT_SUPPORTED) === false) {
                     echoIndent('var ' . $name . ':' . $nativeType . '?' . cr(), 1);
                 } else {
-                    echoIndent('var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($property->type) . cr(), 1);
+                    echoIndent('var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($parameter->type) . cr(), 1);
                 }
             }
             if ($d->lastParameter()) {
             }
         }
-
     }
-    echoIndent('}'.cr(), 0);
+    echo ("
+    override init(){}
+
+    // MARK: Mappable
+
+    required init?(_ map: Map) {
+        super.init()
+        mapping(map)
+    }
+
+    func mapping(map: Map) {
+    ");
+
+    while ( $d ->iterateOnParameters() === true ) {
+        $property = $d->getParameter();
+        $name = $property->name;
+        if(!$d->parameterIsInPath($name)){
+            echoIndent($name . ' <- map["' . $name . '"]', 1);
+            if (!$d->lastParameter()) {
+                echoIndent(cr(),0);
+            }
+        }
+    }
+    echo ("
+    }
+}
+");
+
+
 } ?>
 
 class <?php echo $d->class; ?>{
@@ -107,23 +134,49 @@ if(count($pathVariables)>0){
     }
 }
 echoIndent('if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("'.$path.'") {'.cr(),7);
-if($d->httpMethod=="GET"){
-    echoIndent('request(.GET, pathURL, parameters: ["foo": "bar"])'.cr(),7);
-    echoIndent('.validate(statusCode: 200..<300)'.cr(),8);
-    echoIndent('.validate(contentType: ["application/json"])'.cr(),8);
-        echoIndent('.response { _, _, _, error in'.cr(),8);
-            echoIndent('println(error)'.cr(),9);
-        echoIndent('}'.cr(),8);
+    $parametersString='';
+    if ($d->containsParametersOutOfPath()) {
+        $parametersString='[';
+        while ($d->iterateOnParameters() === true) {
+            $parameter = $d->getParameter();
+            $name = $parameter->name;
+            $parametersString.='"'.$name.'":parameters.'.$name;
+            if($parameter->type==FlexionsTypes::ENUM) {
+                $parametersString.='?.rawValue';
+            }
+            if (!$d->lastParameter()){
+                $parametersString.=',';
+            }
+        }
+        $parametersString.=']';
+    }
+$block="                            ".($d->containsParametersOutOfPath()?"var dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)":"var dictionary:[String:AnyObject]=[:]")."
+                                var urlRequest=HTTPManager.mutableRequestWithHeaders(Method.".$d->httpMethod.", url: pathURL)
+                                var r:Request=request(ParameterEncoding.URL.encode(urlRequest, parameters: dictionary).0)
+                                r.responseJSON(options: NSJSONReadingOptions.AllowFragments, completionHandler: { (request:NSURLRequest, response:NSHTTPURLResponse?, responseObject:AnyObject?,error:NSError?) -> Void in
+                                    HTTPManager.requestHasEnded(request)
+                                    if let e=error {
+
+                                    }else{
+
+                                    }
+                                })
+";
+
+echoIndent($block,0);
+
+if ($d->httpMethod == "GET") {
 }
-if($d->httpMethod=="POST"){
+if ($d->httpMethod == "POST") {
 
 }
-if($d->httpMethod=="PUT"){
+if ($d->httpMethod == "PUT") {
 
 }
-if($d->httpMethod=="DELETE"){
+if ($d->httpMethod == "DELETE") {
 
 }
+
 echoIndent("} else { ".cr(),7);
 echoIndent('failure(result: ["Error" :"invalid pathURL for path:'.$path.'"])'.cr(),8);
 echoIndent("}".cr(),7);

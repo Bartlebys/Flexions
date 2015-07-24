@@ -21,7 +21,8 @@ $h->preservePath[]='api/'.$h->majorVersionPathSegmentString().'Const.php';
 
 $transformer=new SwaggerToFlexionsRepresentations();
 $delegate=new SWaggerDelegate();
-$r=$transformer->projectRepresentationFromSwaggerJson($descriptorFilePath,$prefix,$delegate);
+$r = $transformer->projectRepresentationFromSwaggerJson($descriptorFilePath, $prefix, $delegate,array('login'),array('logout'));
+
 
 /// Associate the entities to the loop name
 if(! $h->setLoopDescriptor($r->entities,DefaultLoops::ENTITIES)){

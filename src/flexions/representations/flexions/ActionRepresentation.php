@@ -55,7 +55,8 @@ class ActionRepresentation {
 
 
     /**
-     * @var array  an associative array
+     * The security context for the action.
+     * @var SecurityContextRepresentation
      */
     public $security;
 

@@ -17,12 +17,13 @@ class RelationToPermission extends Enum{
     const DISCARDS='discards';  // e.g log out
 
     static  function possibleValues(){
-        return array(
+        return array(
             RelationToPermission::UNDEFINED,
             RelationToPermission::REQUIRES,
             RelationToPermission::PROVIDES,
             RelationToPermission::DISCARDS
         );
+
     }
 
 }

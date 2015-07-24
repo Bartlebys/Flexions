@@ -156,6 +156,8 @@ foreach ( $arrayOfPreProcessors as $preProcessor ) {
 		include $preProcessorPath;
 	}catch (Exception $e) {
 		fLog('PREPROCESSOR EXCEPTION ' . $e->getMessage(),true);
+        dumpLogs();
+		return;
 	}
 }
 	
@@ -188,8 +190,15 @@ if (file_exists ( $specificLoops )) {
 		fLog ( 'Looping in '.$h->getLoopName().cr(), true );
 
 		foreach ( $list as $descriptions ) {
-				// It is a description object 
-				iterateOnTemplates ( $templatesArray, $h, $descriptions, $destination );
+
+
+            try {// It is a description object
+                iterateOnTemplates($templatesArray, $h, $descriptions, $destination);
+            } catch (Exception $e) {
+                fLog('TEMPLATE EXCEPTION ' . $e->getMessage(),true);
+                dumpLogs();
+                return;
+            }
 		}
 	}
 }
@@ -222,7 +231,7 @@ if (file_exists ( $specificLoops )) {
 			// We instanciate the current Flexed
 			// will be used by the templates to define $f->fileName, $f->package
 			$f = new Flexed ();
-			
+
 			// ( ! ) Template execution
 			ob_start ();include $templatePath;$result = ob_get_clean ();
 			// (!) End of template execution
@@ -257,14 +266,26 @@ foreach ( $arrayOfPostProcessors as $postProcessor ) {
 	// Invokes the post-processor
 	$postProcessorPath = FLEXIONS_SOURCE_DIR  . $postProcessor;
     fLog ( cr().'Running:'.$postProcessorPath.cr().cr(),true );
-	include $postProcessorPath;
+    try {
+        include $postProcessorPath;
+    }catch (Exception $e) {
+        fLog('POSTPROCESSOR EXCEPTION ' . $e->getMessage(),true);
+        dumpLogs();
+        return;
+    }
 }
 
-// Dump Flog
 
-$logFolderPath = FLEXIONS_ROOT_DIR . '../out/logs/';
-if(! file_exists($logFolderPath)){
-	mkdir ( $logFolderPath, 0777, true );
+
+function dumpLogs(){
+    // Dump Flog
+
+    $logFolderPath = FLEXIONS_ROOT_DIR . '../out/logs/';
+    if(! file_exists($logFolderPath)){
+        mkdir ( $logFolderPath, 0777, true );
+    }
+    $logsFilePath = $logFolderPath . fDate () . '-logs.txt';
+    file_put_contents ( $logsFilePath, Flog::Instance ()->getLogs () );
 }
-$logsFilePath = $logFolderPath . fDate () . '-logs.txt';
-file_put_contents ( $logsFilePath, Flog::Instance ()->getLogs () );
+
+

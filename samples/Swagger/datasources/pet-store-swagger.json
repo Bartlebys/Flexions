@@ -682,6 +682,11 @@
             "type": "string"
           }
         ],
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -718,6 +723,11 @@
         "produces": [
           "application/xml",
           "application/json"
+        ],
+        "security": [
+          {
+            "api_key": []
+          }
         ],
         "parameters": [],
         "responses": {

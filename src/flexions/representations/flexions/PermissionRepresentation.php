@@ -128,7 +128,8 @@ class PermissionRepresentationWithAccessRights extends PermissionRepresentation{
 
 class PermissionRepresentationOauth extends PermissionRepresentation {
 
-    protected $location=PermissionLocation::IN_HEADERS;
+
+
 
     /**
      * Scopes let you specify exactly what type of access you need.
@@ -144,6 +145,13 @@ class PermissionRepresentationOauth extends PermissionRepresentation {
     private $_scopes=array();
 
     public  $authorizationUrl;
+
+    /**
+     * PermissionRepresentationOauth constructor.
+     */
+    public function __construct() {
+        $this->setLocation(PermissionLocation::IN_HEADERS);
+    }
 
 
     /**
