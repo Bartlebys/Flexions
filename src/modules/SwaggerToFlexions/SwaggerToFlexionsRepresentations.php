@@ -211,6 +211,9 @@ class SwaggerToFlexionsRepresentations {
                         if (array_key_exists(SWAGGER_RESPONSES, $methodPathDescriptor)) {
                             $responses = $methodPathDescriptor[SWAGGER_RESPONSES];
                             foreach ($responses as $name => $response) {
+                                if ($name=="default"){
+                                    $name="200";// We consider default as a succes.
+                                }
                                 $property = $this->_extractPropertyFrom("$name", $response, $nativePrefix);
                                 $action->responses[] = $property;
                             }

@@ -88,8 +88,6 @@ if ($d->containsParametersOutOfPath()) {
     }
 }
 ");
-
-
 } ?>
 
 class <?php echo $d->class; ?>{
@@ -107,25 +105,30 @@ if(count($pathVariables)>0){
 <?php
 $successP = $d->getSuccessResponse();
 $successTypeString = '';
-
 if ($successP->type == FlexionsTypes::COLLECTION) {
-    $successTypeString ='result:'.'[' . ucfirst($successP->instanceOf) . ']';
+    $successTypeString ='CollectionOf' . ucfirst($successP->instanceOf) . '';
 } else if ($successP->type == FlexionsTypes::OBJECT) {
-    $successTypeString = 'result:'.ucfirst($successP->instanceOf);
+    $successTypeString = ucfirst($successP->instanceOf);
 } else if ($successP->type == FlexionsTypes::DICTIONARY) {
-    $successTypeString = 'result:'.'[String:Any]';
+    $successTypeString = '[String:Any]';
 }else {
     $nativeType = FlexionsSwiftLang::nativeTypeFor($successP->type);
-    $successTypeString='result:'.$nativeType;
+    if($nativeType==FlexionsTypes::NOT_SUPPORTED){
+        $successTypeString='';
+    }else{
+        $successTypeString=$nativeType;
+    }
 }
+
+$resultSuccessTypeString=$successTypeString!=''?'result:'.$successTypeString:'';
 if ($d->containsParametersOutOfPath()) {
     echoIndent('parameters:' . $d->class . 'Parameters,' . cr(), $pathVCounter>0?6:0);
-    echoIndent('sucessHandler success:(' . $successTypeString . ')->(),'.cr(), 6);
+    echoIndent('sucessHandler success:(' . $resultSuccessTypeString . ')->(),'.cr(), 6);
 } else {
-    echoIndent('sucessHandler success:(' . $successTypeString . ')->(),'.cr(), $pathVCounter>0?6:0);
+    echoIndent('sucessHandler success:(' . $resultSuccessTypeString . ')->(),'.cr(), $pathVCounter>0?6:0);
 }
-echoIndent('failureHandler failure:(result:HTTPFailure)->()){'.cr(), 6);
-// We want to inject the path variable into the
+
+// We want to inject the path variable
 $pathVariables=GenerativeHelper::variablesFromPath($d->path);
 $path=$d->path;
 if(count($pathVariables)>0){
@@ -133,6 +136,27 @@ if(count($pathVariables)>0){
         $path=str_ireplace('{'.$pathVariable.'}','\('.$pathVariable.')',$path);
     }
 }
+
+echoIndent('failureHandler failure:(result:HTTPFailure)->()){'.cr(), 6);
+$authenticationRequired=false;
+
+if( isset($d->security) && $d->security->getRelation()==RelationToPermission::REQUIRES){
+    $authenticationRequired=true;
+}
+
+if($authenticationRequired){
+
+    // We could distinguish the permission context.
+
+    echoIndent('if HTTPManager.isAuthenticated {'.cr(),6);
+    echoIndent('var f=HTTPFailure()'.cr(), 7);
+    echoIndent('f.message="Authentication required"'.cr(), 7);
+    echoIndent('AuthorizationFacilities.authorizationRequired("for '.$d->class.'")'.cr(), 7);
+    echoIndent('failure(result: f);'.cr(), 7);
+    echoIndent('}else{'.cr(), 6);
+
+}
+
 echoIndent('if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("'.$path.'") {'.cr(),7);
     $parametersString='';
     if ($d->containsParametersOutOfPath()) {
@@ -150,32 +174,75 @@ echoIndent('if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("
         }
         $parametersString.=']';
     }
-$responseBlock=stringIndent('//OK'.cr(),0);
-$errorsResponseBlock='//Errors
-                                        var f=HTTPFailure()
-                                        f.
-                                        failure(result: ["statusCode":response?.statusCode,"error":e.description])';
-
-
+$responseBlock=cr();
 // We need to parse the responses.
-
+$successHasBeenDefined=false;
 foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
         /* @var  $responsePropertyRepresentation PropertyRepresentation */
         $code=$responsePropertyRepresentation->name;
-        if (strpos($code,'2')===0){
-            // It is a status code 2XX
-            if (isset ($responsePropertyRepresentation->instanceOf)) {
-                $classForResponse=$responsePropertyRepresentation->instanceOf;
-                $responseBlock .= stringIndent('//' . $responsePropertyRepresentation->type . " " . $responsePropertyRepresentation->instanceOf.cr(), 10);
-                $responseBlock .= stringIndent('if let JSONString = responseObject as? String {'.cr(), 10);
-                    $responseBlock .= stringIndent('if let instance = Mapper < '.$classForResponse.'>() . map(JSONString){success(result: instance);'.cr(), 11);
-                        $responseBlock .= stringIndent('success(result: instance);'.cr(), 12);
-                    $responseBlock .= stringIndent('}else{'.cr(), 11);
+                if (strpos($code,'2')===0) {
+                    // It is a status code 2XX
+                    if ($responsePropertyRepresentation->isGeneratedType) {
+                        $responseBlock .= stringIndent('if 200...299 ~= statusCode {'. cr(), 11);
+                        $responseBlock .= stringIndent('if let JSONString = responseObject as? String {' . cr(), 12);
+                        $responseBlock .= stringIndent('if let instance = Mapper <' . $successTypeString . '>() . map(JSONString){' . cr(), 13);
+                        $responseBlock .= stringIndent('success(result: instance);' . cr(), 14);
+                        $responseBlock .= stringIndent('}else{'.cr(), 13);
+                        $responseBlock .= stringIndent('var f=HTTPFailure()'.cr(), 14);
+                        $responseBlock .= stringIndent('f.message="Deserialization issue"'.cr(), 14);
+                        $responseBlock .= stringIndent('f.infos=responseObject'.cr(), 14);
+                        $responseBlock .= stringIndent('failure(result: f)'.cr(), 14);
+                        $responseBlock .= stringIndent('}'.cr(), 13);
+                        $responseBlock .= stringIndent('}'.cr(), 12);
+                        $responseBlock .= stringIndent('}'.cr(), 11);
+
+                    }else{
+                        $responseBlock .= stringIndent('if 200...299 ~= statusCode {'. cr(), 11);
+                        if( $successTypeString==""){
+                            $responseBlock .= stringIndent('success()'. cr(), 12);
+                        }else{
+                            $responseBlock .= stringIndent('if let r=responseObject as? '.$successTypeString.'{'. cr(), 12);
+                            $responseBlock .= stringIndent('success(result:r)'. cr(), 13);
+                            $responseBlock .= stringIndent('}else{'.cr(), 12);
+                            $responseBlock .= stringIndent('var f=HTTPFailure()'. cr(), 13);
+                            $responseBlock .= stringIndent('f.message="Casting error"'. cr(), 13);
+                            $responseBlock .= stringIndent('f.infos=responseObject'. cr(), 13);
+                            $responseBlock .= stringIndent('failure(result: f)'. cr(), 13);
+                            $responseBlock .= stringIndent('}'.cr(), 12);
+                        }
+                        $responseBlock .= stringIndent('}'.cr(), 11);
+
+                    }
+                    $successHasBeenDefined=true;
+                }else{
+                    // It is not a status 2XX
+                    $responseBlock .= stringIndent('if statusCode == '.$responsePropertyRepresentation->name.'{'.cr(), 11);
+                    $responseBlock .= stringIndent('var f=HTTPFailure()'.cr(), 12);
+                    $responseBlock .= stringIndent('f.message="'.$responsePropertyRepresentation->description.'"'.cr(), 12);
+                    $responseBlock .= stringIndent('f.infos=responseObject'.cr(), 12);
+                    $responseBlock .= stringIndent('failure(result: f)'.cr(), 12);
                     $responseBlock .= stringIndent('}'.cr(), 11);
-                //failure(result: ["message":"deserialization failure","json":JSONString])
-                $responseBlock .= stringIndent('}'.cr(), 10);
-            }
-     }
+                }
+}
+
+if($successHasBeenDefined==false){
+   // We need to add a success
+    $responseBlock .= stringIndent('if 200...299 ~= statusCode {'. cr(), 11);
+    if( $successTypeString==""){
+        $responseBlock .= stringIndent('success()'. cr(), 12);
+    }else{
+        $responseBlock .= stringIndent('if let r=responseObject as? '.$successTypeString.'{'. cr(), 12);
+        $responseBlock .= stringIndent('success(result:r)'. cr(), 13);
+        $responseBlock .= stringIndent('}else{'.cr(), 12);
+        $responseBlock .= stringIndent('var f=HTTPFailure()'. cr(), 13);
+        $responseBlock .= stringIndent('f.message="Casting error"'. cr(), 13);
+        $responseBlock .= stringIndent('f.infos=responseObject'. cr(), 13);
+        $responseBlock .= stringIndent('failure(result: f)'. cr(), 13);
+        $responseBlock .= stringIndent('}'.cr(), 12);
+  }
+
+
+    $responseBlock .= stringIndent('}'.cr(), 11);
 }
 
 $block="                            ".($d->containsParametersOutOfPath()?"var dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)":"var dictionary:[String:AnyObject]=[:]")."
@@ -184,34 +251,31 @@ $block="                            ".($d->containsParametersOutOfPath()?"var di
                                 r.responseJSON(options: NSJSONReadingOptions.AllowFragments, completionHandler: { (request:NSURLRequest, response:NSHTTPURLResponse?, responseObject:AnyObject?,error:NSError?) -> Void in
                                     HTTPManager.requestHasEnded(request)
                                     if let e=error {
-                                         ".$errorsResponseBlock."
+                                        //Errors
+                                        var f=HTTPFailure()
+                                        f.httpStatusCode=response?.statusCode
+                                        f.message=NSHTTPURLResponse.localizedStringForStatusCode( f.httpStatusCode)
+                                        f.infos=responseObject
+                                        failure(result: f);
                                     }else{
+                                        if let statusCode=response?.statusCode {
                                          ".$responseBlock."
+                                        }
                                     }
                                 })
 ";
-
 echoIndent($block,0);
-
-if ($d->httpMethod == "GET") {
-}
-if ($d->httpMethod == "POST") {
-
-}
-if ($d->httpMethod == "PUT") {
-
-}
-if ($d->httpMethod == "DELETE") {
-
-}
-
 echoIndent("} else { ".cr(),7);
-echoIndent('failure(result: ["Error" :"invalid pathURL for path:'.$path.'"])'.cr(),8);
+echoIndent('var f=HTTPFailure()'.cr(),8);
+echoIndent('f.message="invalid pathURL for path:'.$path.'";'.cr(),8);
+echoIndent('failure(result: f)'.cr(),8);
 echoIndent("}".cr(),7);
+if($authenticationRequired){
+    echoIndent("}".cr(),6);
+}
 ?>
 
 
     }
 }
-
 <?php /*<- END OF TEMPLATE */ ?>

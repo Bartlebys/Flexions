@@ -38,6 +38,8 @@ class HTTPManager {
 
     static var additionnalHeaders:[String:String]?
 
+    static var isAuthenticated=false
+
     static func mutableRequestWithHeaders(method:Method,url:NSURL)->NSMutableURLRequest{
         var request=NSMutableURLRequest(URL: url)
         request.HTTPMethod=method.rawValue;
@@ -62,7 +64,7 @@ class HTTPManager {
 class HTTPFailure {
     var httpStatusCode:Int!=0
     var message:String!=""
-    var infos:[String:AnyObject]!=[:]
+    var infos:AnyObject?
 }
 
 class AuthorizationFacilities{

@@ -633,7 +633,7 @@
           "application/xml",
           "application/json"
         ],
-        "": [
+        "parameters": [
           {
             "in": "body",
             "name": "body",
