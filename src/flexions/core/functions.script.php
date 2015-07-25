@@ -66,8 +66,13 @@ function tabs($n=1){
  * @param int $n
  */
 function echoIndent($string,$n=1){
-	 echo tabs($n).$string;
+	 echo stringIndent($string,$n);
 }
+
+function stringIndent($string,$n=1){
+	return tabs($n).$string;
+}
+
 
 
 /**

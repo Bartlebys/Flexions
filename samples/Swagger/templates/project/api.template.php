@@ -33,6 +33,3 @@ foreach ($d->actions as $action ) {
     }
 
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
-
-
-

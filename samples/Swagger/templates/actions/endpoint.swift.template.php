@@ -124,7 +124,7 @@ if ($d->containsParametersOutOfPath()) {
 } else {
     echoIndent('sucessHandler success:(' . $successTypeString . ')->(),'.cr(), $pathVCounter>0?6:0);
 }
-echoIndent('failureHandler failure:(result:[String:Any])->()){'.cr(), 6);
+echoIndent('failureHandler failure:(result:HTTPFailure)->()){'.cr(), 6);
 // We want to inject the path variable into the
 $pathVariables=GenerativeHelper::variablesFromPath($d->path);
 $path=$d->path;
@@ -150,15 +150,43 @@ echoIndent('if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("
         }
         $parametersString.=']';
     }
+$responseBlock=stringIndent('//OK'.cr(),0);
+$errorsResponseBlock='//Errors
+                                        var f=HTTPFailure()
+                                        f.
+                                        failure(result: ["statusCode":response?.statusCode,"error":e.description])';
+
+
+// We need to parse the responses.
+
+foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
+        /* @var  $responsePropertyRepresentation PropertyRepresentation */
+        $code=$responsePropertyRepresentation->name;
+        if (strpos($code,'2')===0){
+            // It is a status code 2XX
+            if (isset ($responsePropertyRepresentation->instanceOf)) {
+                $classForResponse=$responsePropertyRepresentation->instanceOf;
+                $responseBlock .= stringIndent('//' . $responsePropertyRepresentation->type . " " . $responsePropertyRepresentation->instanceOf.cr(), 10);
+                $responseBlock .= stringIndent('if let JSONString = responseObject as? String {'.cr(), 10);
+                    $responseBlock .= stringIndent('if let instance = Mapper < '.$classForResponse.'>() . map(JSONString){success(result: instance);'.cr(), 11);
+                        $responseBlock .= stringIndent('success(result: instance);'.cr(), 12);
+                    $responseBlock .= stringIndent('}else{'.cr(), 11);
+                    $responseBlock .= stringIndent('}'.cr(), 11);
+                //failure(result: ["message":"deserialization failure","json":JSONString])
+                $responseBlock .= stringIndent('}'.cr(), 10);
+            }
+     }
+}
+
 $block="                            ".($d->containsParametersOutOfPath()?"var dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)":"var dictionary:[String:AnyObject]=[:]")."
                                 var urlRequest=HTTPManager.mutableRequestWithHeaders(Method.".$d->httpMethod.", url: pathURL)
                                 var r:Request=request(ParameterEncoding.URL.encode(urlRequest, parameters: dictionary).0)
                                 r.responseJSON(options: NSJSONReadingOptions.AllowFragments, completionHandler: { (request:NSURLRequest, response:NSHTTPURLResponse?, responseObject:AnyObject?,error:NSError?) -> Void in
                                     HTTPManager.requestHasEnded(request)
                                     if let e=error {
-
+                                         ".$errorsResponseBlock."
                                     }else{
-
+                                         ".$responseBlock."
                                     }
                                 })
 ";

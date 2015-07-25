@@ -17,5 +17,3 @@ if (isset ( $f )) {
 <?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
-
-

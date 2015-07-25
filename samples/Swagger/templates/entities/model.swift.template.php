@@ -22,6 +22,9 @@ if (isset ( $f )) {
 
 import Foundation
 
+
+// MARK: Model <?php echo ucfirst($d->name)?>
+
 class <?php echo ucfirst($d->name)?> : NSObject,NSCoding,Mappable{
 <?php
 while ( $d ->iterateOnProperties() === true ) {
@@ -214,6 +217,38 @@ while ( $d ->iterateOnProperties() === true ) {
     echoIndent($name . ' <- map["' . $name . '"]' . cr(), 2);
 }
 ?>
+    }
+}
+
+// MARK: - Collection of <?php echo ucfirst($d->name)?>
+
+class CollectionOf<?php echo ucfirst($d->name)?> : NSObject,NSCoding,Mappable{
+
+    var items:[<?php echo ucfirst($d->name)?>]?
+
+    override init(){}
+
+    // MARK: NSCoding
+
+    required init(coder decoder: NSCoder) {
+        items=decoder.decodeObjectForKey("items") as? [<?php echo ucfirst($d->name)?>]
+    }
+
+    func encodeWithCoder(aCoder: NSCoder) {
+        if let items = self.items {
+            aCoder.encodeObject(items,forKey:"items")
+        }
+    }
+
+    // MARK: Mappable
+
+    required init?(_ map: Map) {
+        super.init()
+        mapping(map)
+    }
+
+    func mapping(map: Map) {
+        items <- map["items"]
     }
 }
 

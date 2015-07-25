@@ -59,6 +59,12 @@ class HTTPManager {
 
 }
 
+class HTTPFailure {
+    var httpStatusCode:Int!=0
+    var message:String!=""
+    var infos:[String:AnyObject]!=[:]
+}
+
 class AuthorizationFacilities{
 
     static let AUTHORIZATION_REQUIRED="authorization_required"
