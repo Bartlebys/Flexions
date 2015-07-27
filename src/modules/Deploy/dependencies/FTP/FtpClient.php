@@ -10,7 +10,7 @@ use \Exception;
  * 
  * @copyright Melih Ucar
  * @author Melih Ucar
- * @license http://opensource.org/licenses/MIT (The MIT License)
+ * @license http://opensource.org/Licenses/MIT (The MIT License)
  * 
  * Copyright (c) 2013, Melih Ucar (http://www.melihucar.net/)
  * 

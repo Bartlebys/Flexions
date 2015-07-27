@@ -2,7 +2,7 @@
 
 /*
  Created by Benoit Pereira da Silva on 20/04/2013.
-Copyright (c) 2013  http://www.pereira-da-silva.com
+Copyright (c) 2013  http://www.chaosmos.fr
 
 This file is part of Flexions
 
@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU LESSER GENERAL PUBLIC LICENSE for more details.
 
 You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-along with Flexions  If not, see <http://www.gnu.org/licenses/>
+along with Flexions  If not, see <http://www.gnu.org/Licenses/>
 */
 
 class ProjectRepresentation {

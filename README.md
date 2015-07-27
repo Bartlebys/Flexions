@@ -1,10 +1,11 @@
 # Flexions 
 
 Flexions is a simple set of scripts (written in basic PHP) to perform code generation.
-Flexions intent to be an easy to use code generator.
+Flexions intents to be an easy to use code generator.
 The simpliest way to understand how it works is to check our samples in the samples folder.  
 
-Current version 2.0
+Current version is 2.0.
+
 
 ## Flexions life cycle
 

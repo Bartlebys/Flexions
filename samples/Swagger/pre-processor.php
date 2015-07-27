@@ -1,7 +1,7 @@
 <?php
 
 // we load the shared variables
-include  FLEXIONS_SOURCE_DIR.'/SharedSwagger.php';
+include  FLEXIONS_SOURCE_DIR.'/Shared.php';
 require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerToFlexionsRepresentations.php';
 require_once FLEXIONS_MODULES_DIR . 'SwaggerToFlexions/SwaggerDelegate.php';
 

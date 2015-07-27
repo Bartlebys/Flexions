@@ -7,9 +7,9 @@ if (isset ( $f )) {
 	$f->package = "Models/";
 	$f->company = "MusicPlayer";
 	$f->prefix = $prefix;
-	$f->author = "benoit@pereira-da-silva.com";
+	$f->author = "benoit@chaosmos.fr";
 	$f->projectName = "MusicPlayer";
-	$f->license = FLEXIONS_MODULES_DIR."licenses/LGPL.template.php";
+	$f->license = FLEXIONS_MODULES_DIR."Licenses/LGPL.template.php";
 }
 
 $parentClass = "WattModel";

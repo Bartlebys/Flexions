@@ -1,7 +1,7 @@
 <?php
 
 //  Created by Benoit Pereira da Silva on 20/04/2013.
-//  Copyright (c) 2013  http://www.pereira-da-silva.com
+//  Copyright (c) 2013  http://www.chaosmos.fr
 
 // This file is part of Flexions
 
@@ -16,7 +16,7 @@
 // GNU LESSER GENERAL PUBLIC LICENSE for more details.
 
 // You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-// along with Flexions  If not, see <http://www.gnu.org/licenses/>
+// along with Flexions  If not, see <http://www.gnu.org/Licenses/>
 
 
 class DefaultLoops {
@@ -50,7 +50,7 @@ class DefaultStages{
  *  hypotypose->flexedList(s) are iterated to generate the files from  $f->source
  *
  * @package   flexions
- * @author    benoit@pereira-da-silva.com
+ * @author    benoit@chaosmos.fr
  * @version   1.0.0
  */
 final class Hypotypose extends stdClass {
