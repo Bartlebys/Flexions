@@ -23,6 +23,7 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_FORMAT', 'format');
     define('SWAGGER_ITEMS', 'items');
     define('SWAGGER_REF', '$ref');
+    define ('SWAGGER_ALL_OF','allOf');// Inheritance and composition
     define('SWAGGER_OPERATION_ID', 'operationId');
     define('SWAGGER_PARAMETERS', 'parameters');
     define('SWAGGER_NAME', 'name');
@@ -163,22 +164,51 @@ class SwaggerToFlexionsRepresentations {
                 foreach ($definitions as $entityName => $descriptor) {
                     $e = new EntityRepresentation();
                     $e->name = $nativePrefix . ucfirst($entityName);
+
+                    $properties=array();
                     if (array_key_exists(SWAGGER_TYPE, $descriptor)) {
                         $entityType = $descriptor[SWAGGER_TYPE];
                         if ($entityType === SWAGGER_OBJECT) {
                             if (array_key_exists(SWAGGER_PROPERTIES, $descriptor)) {
                                 $properties = $descriptor[SWAGGER_PROPERTIES];
-                                foreach ($properties as $propertyName => $propertyValue) {
-                                    $e->properties[] = $this->_extractPropertyFrom($propertyName, $propertyValue, $nativePrefix);
-                                }
                             }
                         }
                     } else {
-                        // Entity is not an object
+                        // Entity is not a simple object
+                        if(array_key_exists(SWAGGER_ALL_OF,$descriptor)){
+                            $allOF=$descriptor[SWAGGER_ALL_OF];
+
+                            $refs=array();
+                            foreach ($allOF as $currentItem) {
+                                if (is_array($currentItem)){
+                                    if(array_key_exists(SWAGGER_REF, $currentItem)){
+                                        $parentRef=$currentItem[SWAGGER_REF];
+                                        $refs[]=$parentRef;
+                                    }
+                                    if(array_key_exists(SWAGGER_PROPERTIES, $currentItem)){
+                                        $properties=$currentItem[SWAGGER_PROPERTIES];
+                                    }
+                                }
+                            }
+                            if(count($refs)==1){
+                                // Inheritance support
+                                $e->instanceOf=$this->typeFromRef($parentRef,$nativePrefix);
+                            }else if( count($refs)>1){
+                                // @todo composition
+                                // Requires $ref resolution
+                            }
+
+                            if(array_key_exists(SWAGGER_PROPERTIES,$allOF)){
+                                $properties=$allOF[SWAGGER_PROPERTIES];
+                            }
+                        }
+                    }
+                    // Parse the properties
+                    foreach ($properties as $propertyName => $propertyValue) {
+                        $e->properties[] = $this->_extractPropertyFrom($propertyName, $propertyValue, $nativePrefix);
                     }
                     $r->entities[] = $e;
                 }
-
             }
 
             //#3 Extract the actions ActionRepresentation
@@ -371,25 +401,37 @@ class SwaggerToFlexionsRepresentations {
         }
 
         if (array_key_exists(SWAGGER_REF, $subDictionary)) {
-            // @todo resolve really refs.
+            $ref = $subDictionary[SWAGGER_REF];
             // Its it a single reference.
             if (!isset($propertyR->type)) {
                 $propertyR->type = FlexionsTypes::OBJECT;
             }
-            $ref = $subDictionary[SWAGGER_REF];
-            $components = explode('/', $ref);
-            $instanceOf = end($components);
-            $propertyR->instanceOf = $nativePrefix . ucfirst($instanceOf); // We add the prefix
+            $propertyR->instanceOf = $this->typeFromRef($ref,$nativePrefix);
             $propertyR->isGeneratedType = true;
 
         } else {
+
+
             if (($propertyR->type == FlexionsTypes::COLLECTION) || ($propertyR->type == FlexionsTypes::ENUM)) {
                 $propertyR->instanceOf = $this->_swaggerTypeToFlexions($swaggerType, $swaggerFormat);
-            } else {
+            } else if (($propertyR->type == FlexionsTypes::OBJECT)&&(isset($propertyR->instanceOf))){
+                $propertyR->type=$propertyR->instanceOf;
+            }else{
                 $propertyR->type = $this->_swaggerTypeToFlexions($swaggerType, $swaggerFormat);
             }
         }
     }
+
+
+
+    private  function typeFromRef($ref,$nativePrefix){
+        // @todo resolve really refs ?
+        $components = explode('/', $ref);
+        $instanceOf = end($components);
+        $type=$nativePrefix . ucfirst($instanceOf); // We add the prefix
+        return $type;
+    }
+
 
     /**
      * @param $type
@@ -455,3 +497,4 @@ class SwaggerToFlexionsRepresentations {
 }
 
 ?>
+}

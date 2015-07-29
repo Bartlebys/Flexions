@@ -32,7 +32,8 @@ class EntityRepresentation {
 	 * @var array of PropertyRepresentation of the object
 	 */
 	public $properties=array();
-	
+
+
 	/**
 	 * @var  string When the type is an object, you can specify the class that the object must implement
 	*/

@@ -47,7 +47,7 @@ class GenerativeHelperForSwift extends GenerativeHelper {
         /* @var $f Flexed */
 
         if (isset($d) && isset($d->instanceOf)) {
-            return FlexionsSwiftLang::nativeTypeFor($d->instanceOf);
+            return $d->instanceOf;
         } else {
             // Default base model
             return $f->prefix . 'BaseModel';
