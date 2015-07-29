@@ -188,7 +188,7 @@ final class Hypotypose extends stdClass {
     /**
      *
      * @param string $name
-     * @return string:|NULL
+     * @return array:|NULL
      */
     public function getContentForLoopWithName($name) {
         if (array_key_exists($name, $this->_descriptor)) {

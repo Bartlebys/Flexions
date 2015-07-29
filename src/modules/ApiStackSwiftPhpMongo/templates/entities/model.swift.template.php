@@ -21,7 +21,7 @@ import Foundation
 
 // MARK: Model <?php echo ucfirst($d->name)?>
 
-class <?php echo ucfirst($d->name)?> : NSObject,NSCoding,Mappable{
+class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>{
 <?php
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
@@ -62,140 +62,20 @@ while ( $d ->iterateOnProperties() === true ) {
         echoIndent(cr(),0);
     }
 }?>
-    override init(){}
+    override init(){
+        super.init()
+    }
 
     // MARK: NSCoding
 
     required init(coder decoder: NSCoder) {
-<?php
-// NSCoding support
-while ($d->iterateOnProperties() === true) {
-    $property = $d->getProperty();
-    $name = $property->name;
-    $flexionsType = $property->type;
-    $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
-    switch ($flexionsType) {
-        case FlexionsTypes::STRING:
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
-            break;
-        case FlexionsTypes::INTEGER:
-            echoIndent($name . '=decoder.decodeIntegerForKey("' . $name . '")' . cr(), 2);
-            break;
-        case FlexionsTypes::BOOLEAN:
-            echoIndent($name . '=decoder.decodeBoolForKey("' . $name . '")' . cr(), 2);
-            break;
-        case FlexionsTypes::OBJECT:
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . ucfirst($property->instanceOf) . '' . cr(), 2);
-            break;
-        case FlexionsTypes::COLLECTION:
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? [' . ucfirst($property->instanceOf) . ']' . cr(), 2);
-            break;
-        case FlexionsTypes::ENUM:
-            $enumTypeName=ucfirst($name);
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? '.$enumTypeName . cr(), 2);
-            break;
-        case FlexionsTypes::FILE:
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . ucfirst($property->instanceOf) . '' . cr(), 2);
-            break;
-        case FlexionsTypes::FLOAT:
-            echoIndent($name . '=decoder.decodeFloatForKey("' . $name . '")' . cr(), 2);
-            break;
-        case FlexionsTypes::DOUBLE:
-            echoIndent($name . '=decoder.decodeDoubleForKey("' . $name . '")' . cr(), 2);
-            break;
-        case FlexionsTypes::BYTE:
-            echoIndent('var ref'.ucfirst($name).'=1;' . cr(), 2);
-            echoIndent($name . '=decoder.decodeBytesForKey("' . $name . '",&ref'.ucfirst($name).')' . cr(), 2);
-            break;
-        case FlexionsTypes::DATETIME:
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
-            break;
-        case FlexionsTypes::URL:
-            echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
-            break;
-        case FlexionsTypes::NOT_SUPPORTED:
-            echoIndent('//'.$name .'is not supported' . cr(), 2);
-            break;
-    }
-}
-?>
+        super.init(coder: decoder)
+<?php GenerativeHelperForSwift::echoBodyOfInitWithCoder($d,2)?>
     }
 
-    func encodeWithCoder(aCoder: NSCoder) {
-<?php
-// NSCoding support
-while ($d->iterateOnProperties() === true) {
-    $property = $d->getProperty();
-    $name = $property->name;
-    $flexionsType = $property->type;
-    $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
-    switch ($flexionsType) {
-        case FlexionsTypes::STRING:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::INTEGER:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeInteger('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::BOOLEAN:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeBool('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::OBJECT:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::COLLECTION:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::ENUM:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject("\('.$name.')",forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::FILE:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::FLOAT:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeFloat('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::DOUBLE:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeDouble('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::BYTE:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeBytes(&self.'.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::DATETIME:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::URL:
-            echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), 2);
-            echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), 3);
-            echoIndent('}'.cr(), 2);
-            break;
-        case FlexionsTypes::NOT_SUPPORTED:
-            echoIndent('//'.$name .'is not supported' . cr(), 2);
-            break;
-    }
-}
-?>
+    override func encodeWithCoder(aCoder: NSCoder) {
+        super.encodeWithCoder(aCoder)
+<?php GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d,2) ?>
     }
 
     // MARK: Mappable
@@ -205,7 +85,13 @@ while ($d->iterateOnProperties() === true) {
         mapping(map)
     }
 
-    func mapping(map: Map) {
+    override class func newInstance() -> Mappable {
+        return <?php echo ucfirst($d->name)?>()
+    }
+
+
+    override func mapping(map: Map) {
+        super.mapping(map)
 <?php
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
@@ -218,19 +104,29 @@ while ( $d ->iterateOnProperties() === true ) {
 
 // MARK: - Collection of <?php echo ucfirst($d->name)?>
 
-class CollectionOf<?php echo ucfirst($d->name)?> : NSObject,NSCoding,Mappable{
+class CollectionOf<?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
 
     var items:[<?php echo ucfirst($d->name)?>]?
 
-    override init(){}
+    override init(){
+        super.init()
+    }
+
+    override class func newInstance() -> Mappable {
+        return CollectionOf<?php echo ucfirst($d->name)?>()
+    }
+
 
     // MARK: NSCoding
 
     required init(coder decoder: NSCoder) {
+        super.init(coder: decoder)
         items=decoder.decodeObjectForKey("items") as? [<?php echo ucfirst($d->name)?>]
     }
 
-    func encodeWithCoder(aCoder: NSCoder) {
+
+    override func encodeWithCoder(aCoder: NSCoder) {
+        super.encodeWithCoder(aCoder)
         if let items = self.items {
             aCoder.encodeObject(items,forKey:"items")
         }
@@ -243,7 +139,8 @@ class CollectionOf<?php echo ucfirst($d->name)?> : NSObject,NSCoding,Mappable{
         mapping(map)
     }
 
-    func mapping(map: Map) {
+    override func mapping(map: Map) {
+        super.mapping(map)
         items <- map["items"]
     }
 }

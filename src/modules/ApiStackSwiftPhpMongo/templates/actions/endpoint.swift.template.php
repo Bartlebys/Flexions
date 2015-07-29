@@ -17,44 +17,60 @@ import Foundation
 <?php
 // We generate the parameter class if there is a least one parameter.
 if ($d->containsParametersOutOfPath()) {
-    echoIndent('class ' . $d->class . 'Parameters : NSObject,Mappable {'.cr().cr(), 0);
+    echoIndent('class ' . $d->class . 'Parameters : '. $f->prefix.'BaseModel'.' {'.cr().cr(), 0);
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
         $name = $parameter->name;
-        if(!$d->parameterIsInPath($name)){
-            echoIndent('// ' .$parameter->description. cr(), 1);
-            if ($d->firstParameter()) {
-            }
-            if($parameter->type==FlexionsTypes::ENUM) {
-                $enumTypeName = $d->name . ucfirst($name);
-                echoIndent('enum ' . $enumTypeName . ' : ' . ucfirst($parameter->instanceOf) . '{' . cr(), 1);
-                foreach ($parameter->enumerations as $element) {
-                    if ($parameter->instanceOf == FlexionsTypes::STRING) {
-                        echoIndent('case ' . ucfirst($element) . ' = "' . $element . '"' . cr(), 2);
-                    } else {
-                        echoIndent('case ' . ucfirst($element) . ' = ' . $element . '' . cr(), 2);
-                    }
-                }
-                echoIndent('}' . cr(), 1);
-                echoIndent('var ' . $name . ':' . $enumTypeName . '?' . cr(), 1);
-            }else if ($parameter->type == FlexionsTypes::COLLECTION) {
-                echoIndent('var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']?' . cr(), 1);
-            } else if ($parameter->type == FlexionsTypes::OBJECT) {
-                echoIndent('var ' . $name . ':' . ucfirst($parameter->instanceOf) . '?' . cr(), 1);
-            } else {
-                $nativeType = FlexionsSwiftLang::nativeTypeFor($parameter->type);
-                if (strpos($nativeType, FlexionsTypes::NOT_SUPPORTED) === false) {
-                    echoIndent('var ' . $name . ':' . $nativeType . '?' . cr(), 1);
+
+        echoIndent('// ' .$parameter->description. cr(), 1);
+        if ($d->firstParameter()) {
+        }
+        if($parameter->type==FlexionsTypes::ENUM) {
+            $enumTypeName = $d->name . ucfirst($name);
+            echoIndent('enum ' . $enumTypeName . ' : ' . ucfirst($parameter->instanceOf) . '{' . cr(), 1);
+            foreach ($parameter->enumerations as $element) {
+                if ($parameter->instanceOf == FlexionsTypes::STRING) {
+                    echoIndent('case ' . ucfirst($element) . ' = "' . $element . '"' . cr(), 2);
                 } else {
-                    echoIndent('var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($parameter->type) . cr(), 1);
+                    echoIndent('case ' . ucfirst($element) . ' = ' . $element . '' . cr(), 2);
                 }
             }
-            if ($d->lastParameter()) {
+            echoIndent('}' . cr(), 1);
+            echoIndent('var ' . $name . ':' . $enumTypeName . '?' . cr(), 1);
+        }else if ($parameter->type == FlexionsTypes::COLLECTION) {
+            echoIndent('var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']?' . cr(), 1);
+        } else if ($parameter->type == FlexionsTypes::OBJECT) {
+            echoIndent('var ' . $name . ':' . ucfirst($parameter->instanceOf) . '?' . cr(), 1);
+        } else {
+            $nativeType = FlexionsSwiftLang::nativeTypeFor($parameter->type);
+            if (strpos($nativeType, FlexionsTypes::NOT_SUPPORTED) === false) {
+                echoIndent('var ' . $name . ':' . $nativeType . '?' . cr(), 1);
+            } else {
+                echoIndent('var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($parameter->type) . cr(), 1);
             }
         }
+        if ($d->lastParameter()) {
+        }
+
     }
     echo ("
-    override init(){}
+    override init(){
+        super.init()
+    }
+
+     // MARK: NSCoding
+
+    required init(coder decoder: NSCoder) {
+        super.init(coder: decoder)".cr());
+    GenerativeHelperForSwift::echoBodyOfInitWithCoder($d,2);
+    echo("
+     }");
+    echo("
+    override func encodeWithCoder(aCoder: NSCoder) {
+        super.encodeWithCoder(aCoder)".cr());
+    GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d,2);
+    echo("    }
+
 
     // MARK: Mappable
 
@@ -63,18 +79,22 @@ if ($d->containsParametersOutOfPath()) {
         mapping(map)
     }
 
-    func mapping(map: Map) {
-    ");
+    override class func newInstance() -> Mappable {
+        return ".$d->class."Parameters()
+    }
+
+    override func mapping(map: Map) {
+        super.mapping(map)".cr());
 
     while ( $d ->iterateOnParameters() === true ) {
         $property = $d->getParameter();
         $name = $property->name;
-        if(!$d->parameterIsInPath($name)){
-            echoIndent($name . ' <- map["' . $name . '"]', 1);
+       // if(!$d->parameterIsInPath($name)){
+            echoIndent($name . ' <- map["' . $name . '"]', 2);
             if (!$d->lastParameter()) {
                 echoIndent(cr(),0);
             }
-        }
+        //}
     }
     echo ("
     }
@@ -83,12 +103,14 @@ if ($d->containsParametersOutOfPath()) {
 } ?>
 
 class <?php echo $d->class; ?>{
+
     static func execute(<?php
 // We want to inject the path variable into the
 $pathVariables=GenerativeHelper::variablesFromPath($d->path);
 $pathVCounter=0;
 if(count($pathVariables)>0){
     foreach ($pathVariables as $pathVariable ) {
+        // Suspended
         echoIndent($pathVariable.':String,'.cr(),$pathVCounter==0?0:6);
         $pathVCounter++;
     }

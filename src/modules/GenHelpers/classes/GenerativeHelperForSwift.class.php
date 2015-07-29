@@ -4,7 +4,7 @@ require_once 'GenerativeHelper.php';
 require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
 
 
-class GenerativeHelperForSwift extends  GenerativeHelper{
+class GenerativeHelperForSwift extends GenerativeHelper {
 
 
     static function getCurrentClassNameWithPrefix($d, $classesPrefix = "") {
@@ -25,21 +25,176 @@ class GenerativeHelperForSwift extends  GenerativeHelper{
 //  https://github.com/benoit-pereira-da-silva/Flexions
 //
 ";
-        $willBePreserved=GenerativeHelper::flexedWillBePreserved($f);
-        if ($willBePreserved==false){
+        $willBePreserved = GenerativeHelper::flexedWillBePreserved($f);
+        if ($willBePreserved == false) {
             // We distinguish files that are generated once from "re-generable files"
-            $swiftHeader.= "// DO NOT MODIFY THIS FILE YOUR MODIFICATIONS WOULD BE ERASED ON NEXT GENERATION!
+            $swiftHeader .= "// DO NOT MODIFY THIS FILE YOUR MODIFICATIONS WOULD BE ERASED ON NEXT GENERATION!
 // IF NECESSARY YOU CAN MARK THIS FILE TO BE PRESERVED
 // IN THE PREPROCESSOR BY ADDING IN Hypotypose::instance().preservePath
 //
 ";
         }
 
-        $swiftHeader.="// Copyright (c) 2015  $f->company  All rights reserved.
+        $swiftHeader .= "// Copyright (c) 2015  $f->company  All rights reserved.
 //";
         return $swiftHeader;
 
     }
+
+
+    static function getBaseClass($f, $d) {
+        /* @var $d EntityRepresentation */
+        /* @var $f Flexed */
+
+        if (isset($d) && isset($d->instanceOf)) {
+            return FlexionsSwiftLang::nativeTypeFor($d->instanceOf);
+        } else {
+            // Default base model
+            return $f->prefix . 'BaseModel';
+        }
+    }
+
+
+    //  NSCODING support
+
+    static function echoBodyOfInitWithCoder($d, $increment) {
+
+        // NSCoding support for entities and parameters classes.
+        // $d may be ActionRepresentation or EntityRepresentation
+        $isEntity=($d instanceof EntityRepresentation);
+
+        while ($isEntity?$d->iterateOnProperties():$d->iterateOnParameters() === true) {
+            $property = $isEntity?$d->getProperty():$d->getParameter();
+            $name = $property->name;
+            $flexionsType = $property->type;
+            $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
+            switch ($flexionsType) {
+                case FlexionsTypes::STRING:
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), $increment);
+                    break;
+                case FlexionsTypes::INTEGER:
+                    echoIndent($name . '=decoder.decodeIntegerForKey("' . $name . '")' . cr(), $increment);
+                    break;
+                case FlexionsTypes::BOOLEAN:
+                    echoIndent($name . '=decoder.decodeBoolForKey("' . $name . '")' . cr(), $increment);
+                    break;
+                case FlexionsTypes::OBJECT:
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . ucfirst($property->instanceOf) . '' . cr(), $increment);
+                    break;
+                case FlexionsTypes::COLLECTION:
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? [' . ucfirst($property->instanceOf) . ']' . cr(), $increment);
+                    break;
+                case FlexionsTypes::ENUM:
+                    $enumTypeName = ucfirst($name);
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $enumTypeName . cr(), $increment);
+                    break;
+                case FlexionsTypes::FILE:
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' .$nativeType . '' . cr(), $increment);
+                    break;
+                case FlexionsTypes::FLOAT:
+                    echoIndent($name . '=decoder.decodeFloatForKey("' . $name . '")' . cr(), $increment);
+                    break;
+                case FlexionsTypes::DOUBLE:
+                    echoIndent($name . '=decoder.decodeDoubleForKey("' . $name . '")' . cr(), $increment);
+                    break;
+                case FlexionsTypes::BYTE:
+                    echoIndent('var ref' . ucfirst($name) . '=1;' . cr(), $increment);
+                    echoIndent($name . '=decoder.decodeBytesForKey("' . $name . '",&ref' . ucfirst($name) . ')' . cr(), $increment);
+                    break;
+                case FlexionsTypes::DATETIME:
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
+                    break;
+                case FlexionsTypes::URL:
+                    echoIndent($name . '=decoder.decodeObjectForKey("' . $name . '") as? ' . $nativeType . '' . cr(), 2);
+                    break;
+                case FlexionsTypes::NOT_SUPPORTED:
+                    echoIndent('//' . $name . 'is not supported' . cr(), $increment);
+                    break;
+            }
+        }
+
+    }
+
+
+    static  function echoBodyOfEncodeWithCoder($d,$increment){
+        $incrementPlusOne=$increment+1;
+        // NSCoding support for entities and parameters classes.
+        // $d may be ActionRepresentation or EntityRepresentation
+        $isEntity=($d instanceof EntityRepresentation);
+
+        while ($isEntity?$d->iterateOnProperties():$d->iterateOnParameters() === true) {
+            $property = $isEntity?$d->getProperty():$d->getParameter();
+            $name = $property->name;
+            $flexionsType = $property->type;
+            $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
+            switch ($flexionsType) {
+                case FlexionsTypes::STRING:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::INTEGER:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeInteger('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::BOOLEAN:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeBool('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::OBJECT:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::COLLECTION:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::ENUM:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject("\('.$name.')",forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::FILE:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::FLOAT:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeFloat('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::DOUBLE:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeDouble('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::BYTE:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeBytes(&self.'.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::DATETIME:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::URL:
+                    echoIndent('if let '.$name.' = self.'.$name.' {'.cr(), $increment);
+                    echoIndent('aCoder.encodeObject('.$name.',forKey:"'. $name .'")' . cr(), $incrementPlusOne);
+                    echoIndent('}'.cr(), $increment);
+                    break;
+                case FlexionsTypes::NOT_SUPPORTED:
+                    echoIndent('//'.$name .'is not supported' . cr(), $increment);
+                    break;
+            }
+        }
+    }
+
 }
 
 ?>

@@ -24,7 +24,8 @@ along with Flexions  If not, see <http://www.gnu.org/Licenses/>
 require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flog.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/core/Hypotypose.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/core/Flexed.php';
-require_once FLEXIONS_ROOT_DIR.'flexions/core/functions.script.php';
+require_once FLEXIONS_ROOT_DIR.  'flexions/core/functions.script.php';
+require_once FLEXIONS_ROOT_DIR.  'flexions/representations/flexions/FlexionsRepresentationsIncludes.php';
 
 error_reporting(E_ALL | E_STRICT);
 date_default_timezone_set ( 'UTC' );
@@ -230,7 +231,18 @@ if (file_exists ( $specificLoops )) {
 			
 			// We instanciate the current Flexed
 			// will be used by the templates to define $f->fileName, $f->package
-			$f = new Flexed ();
+			$f = new Flexed ($h->classPrefix);
+
+            // Let's pre-populate Project related infos.
+            $arrayOfProject=$h->getContentForLoopWithName(DefaultLoops::PROJECT);
+            if(is_array($arrayOfProject)){
+                if(count($arrayOfProject)==1){
+                     /* @var $projectRepresentation ProjectRepresentation */
+                    $projectRepresentation=$arrayOfProject[0];
+                    $f->projectName=$projectRepresentation->name;
+
+                }
+            }
 
 			// ( ! ) Template execution
 			ob_start ();include $templatePath;$result = ob_get_clean ();

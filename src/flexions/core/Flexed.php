@@ -117,8 +117,15 @@ class Flexed {
 	 * @var bool set to true if preserved by Hypotypose->preservePath
      */
 	var $wasPreserved=false;
-	
-	
+
+	/**
+	 * Flexed constructor.
+	 */
+	public function __construct($prefix='') {
+		$this->prefix=$prefix;
+	}
+
+
 }
 
 ?>
