@@ -1,5 +1,9 @@
 <?php
 
+
+// DEFINE IN THIS FILE ANY SHARED GLOBAL SETUPS
+// THIS FILE SHOULD BE INCLUDED IN YOUR TEMPLATES
+
 /* @var $f Flexed */
 
 require_once FLEXIONS_MODULES_DIR . 'Utils/Pluralization.php';

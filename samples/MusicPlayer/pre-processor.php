@@ -4,7 +4,7 @@ require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/FlexionsRepr
 require_once FLEXIONS_MODULES_DIR.'XcDataModelXMLImporter/XcdatamodelXMLToFlexionsRepresentation.php';
 require_once FLEXIONS_MODULES_DIR . 'XcDataModelXMLImporter/XcdataModelDelegate.php';
 
-include  FLEXIONS_SOURCE_DIR.'/SharedMusicPlayer.php';// we load the shared variables
+include  FLEXIONS_SOURCE_DIR.'/Shared.php';// we load the shared variables
 
 // we instanciate the Hypotypose singleton
 $h = Hypotypose::instance();

@@ -1,5 +1,9 @@
 <?php
 
+// DEFINE IN THIS FILE ANY SHARED GLOBAL SETUPS
+// THIS FILE SHOULD BE INCLUDED IN YOUR TEMPLATES
+
+
 $prefix = "MusicPlayer";
 
 /* @var $f Flexed */

@@ -228,21 +228,10 @@ if (file_exists ( $specificLoops )) {
 			if (! isset ( $d )) {
 				throw new Exception( 'Descriptor variable $d must be set for the templates. Your preprocessor should have populated an iterable list of data for the descriptor for the loop : '.$loopName );
 			}
-			
+
 			// We instanciate the current Flexed
 			// will be used by the templates to define $f->fileName, $f->package
 			$f = new Flexed ($h->classPrefix);
-
-            // Let's pre-populate Project related infos.
-            $arrayOfProject=$h->getContentForLoopWithName(DefaultLoops::PROJECT);
-            if(is_array($arrayOfProject)){
-                if(count($arrayOfProject)==1){
-                     /* @var $projectRepresentation ProjectRepresentation */
-                    $projectRepresentation=$arrayOfProject[0];
-                    $f->projectName=$projectRepresentation->name;
-
-                }
-            }
 
 			// ( ! ) Template execution
 			ob_start ();include $templatePath;$result = ob_get_clean ();
