@@ -275,6 +275,7 @@ foreach ( $arrayOfPostProcessors as $postProcessor ) {
         return;
     }
 }
+dumpLogs();
 
 
 
