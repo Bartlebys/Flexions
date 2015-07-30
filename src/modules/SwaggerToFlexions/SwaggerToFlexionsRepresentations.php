@@ -472,8 +472,10 @@ class SwaggerToFlexionsRepresentations {
         if ($type == 'date' || $type == 'dateTime') {
             return FlexionsTypes::DATETIME;
         }
-        // NOT USED ACTUALLY
-        //case FlexionsTypes::_DICTIONARY:
+        // EXTENSION TO SWAGGER
+        if ($type == 'dictionary') {
+           return FlexionsTypes::DICTIONARY;
+        }
 
 
         return FlexionsTypes::NOT_SUPPORTED;

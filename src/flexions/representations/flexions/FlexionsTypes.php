@@ -22,7 +22,7 @@ class FlexionsTypes extends Enum {
     const FILE='file';
 
     // Generic structure
-    const DICTIONARY='';
+    const DICTIONARY='dictionary';
     //
     const OBJECT='object'; // Used to reference an $instanceOf
     const COLLECTION='collection';// Used to reference a collection of $instanceOf that can be any FlexionsType
