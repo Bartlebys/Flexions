@@ -51,7 +51,11 @@ logMessage("Recreating the collections");
 /* @var $d ProjectRepresentation */
 /* @var $entity EntityRepresentation */
 foreach ($d->entities as $entity ) {
-    $pluralized=lcfirst(Pluralization::pluralize($entity->name));
+    $name=$entity->name;
+    if(isset($prefix)){
+        $name=str_replace($prefix,'',$name);
+    }
+    $pluralized=lcfirst(Pluralization::pluralize($name));
     echoIndent('logMessage("Creating the '.$pluralized.' collection");'.cr(),0);
     echoIndent('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");'.cr(),0);
 }

@@ -345,21 +345,13 @@ class SwaggerToFlexionsRepresentations {
         $propertyR = new PropertyRepresentation();
         $propertyR->name = $propertyName;
         if (is_array($propertyValue)) {
-
+            $context=$propertyValue;
             if (array_key_exists(SWAGGER_SCHEMA, $propertyValue)) {
                 // Seen in parameters.
-                $this->_parsePropertyType($propertyR, $propertyValue[SWAGGER_SCHEMA], $nativePrefix);
-            } else {
-                // Most common
-                $this->_parsePropertyType($propertyR, $propertyValue, $nativePrefix);
+                $context=$propertyValue[SWAGGER_SCHEMA];
             }
-
-            if (array_key_exists(SWAGGER_DESCRIPTION, $propertyValue)) {
-                $propertyR->description = $propertyValue[SWAGGER_DESCRIPTION];
-            }
-            if (array_key_exists(SWAGGER_REQUIRED, $propertyValue)) {
-                $propertyR->required = $propertyValue[SWAGGER_REQUIRED];
-            }
+            // Most common
+            $this->_parsePropertyType($propertyR, $context, $nativePrefix);
         }
         return $propertyR;
     }
@@ -420,6 +412,14 @@ class SwaggerToFlexionsRepresentations {
                 $propertyR->type = $this->_swaggerTypeToFlexions($swaggerType, $swaggerFormat);
             }
         }
+
+        if (array_key_exists(SWAGGER_DESCRIPTION, $subDictionary)) {
+            $propertyR->description = $subDictionary[SWAGGER_DESCRIPTION];
+        }
+        if (array_key_exists(SWAGGER_REQUIRED, $subDictionary)) {
+            $propertyR->required = $subDictionary[SWAGGER_REQUIRED];
+        }
+
     }
 
 
@@ -463,6 +463,10 @@ class SwaggerToFlexionsRepresentations {
         }
         if ($type == 'file') {
             return FlexionsTypes::FILE;
+        }
+        // Non standard Swagger
+        if ($type == 'url') {
+            return FlexionsTypes::URL;
         }
 
         if ($type == 'date' || $type == 'dateTime') {

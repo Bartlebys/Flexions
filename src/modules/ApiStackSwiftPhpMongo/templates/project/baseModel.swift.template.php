@@ -19,15 +19,36 @@ if (isset ( $f )) {
 
 import Foundation
 
+
 class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
 
-    override init(){}
+    // This id can be created locally or be created server side as a Mongo ID
+    internal var _UDID:String?
+    private var _mongoID:[String:String]=[:]
+
+    var UDID:String{
+        get{
+            if _UDID==nil {
+                _UDID=NSProcessInfo.processInfo().globallyUniqueString
+            }
+            return _UDID!
+        }
+    }
+
+
+    override init(){
+    }
 
     // MARK: NSCoding
 
-    required init(coder decoder: NSCoder) {}
+    required init(coder decoder: NSCoder) {
+        _mongoID=decoder.decodeObjectForKey("_id") as! [String:String]
+        _UDID = _mongoID["$id"]
+    }
 
-    func encodeWithCoder(aCoder: NSCoder) {}
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(_mongoID,forKey:"_id")
+    }
 
     // MARK: Mappable
 
@@ -41,8 +62,10 @@ class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
     }
 
 
-    func mapping(map: Map) {}
+    func mapping(map: Map) {
+        _mongoID <- map["_id"]
+        _UDID = _mongoID["$id"]
+    }
 
 
 }
-
