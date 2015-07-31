@@ -1,9 +1,6 @@
 ## Todo List 
 
-- find a solution to exclude some CRUD enpoints (in the crud generator)
 - specify dictionary extension (not in swagger actually)
-
-- support the example swagger tag : example
-- semantic discrimination of Abstract from the name of the Class
+- support the example swagger tag
 - support  composition via multiple "allOf": [{"$ref": "#/definitions/Model"}]                
 - modules cloner that can be used in a preprocessor to copy a project shell (called a prototype)

@@ -101,48 +101,4 @@ while ( $d ->iterateOnProperties() === true ) {
 ?>
     }
 }
-
-// MARK: - Collection of <?php echo ucfirst($d->name)?>
-
-class CollectionOf<?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
-
-    var items:[<?php echo ucfirst($d->name)?>]?
-
-    override init(){
-        super.init()
-    }
-
-    override class func newInstance() -> Mappable {
-        return CollectionOf<?php echo ucfirst($d->name)?>()
-    }
-
-
-    // MARK: NSCoding
-
-    required init(coder decoder: NSCoder) {
-        super.init(coder: decoder)
-        items=decoder.decodeObjectForKey("items") as? [<?php echo ucfirst($d->name)?>]
-    }
-
-
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)
-        if let items = self.items {
-            aCoder.encodeObject(items,forKey:"items")
-        }
-    }
-
-    // MARK: Mappable
-
-    required init?(_ map: Map) {
-        super.init()
-        mapping(map)
-    }
-
-    override func mapping(map: Map) {
-        super.mapping(map)
-        items <- map["items"]
-    }
-}
-
 <?php /*<- END OF TEMPLATE */?>

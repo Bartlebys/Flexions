@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 require_once FLEXIONS_MODULES_DIR . '/ApiStackSwiftPhpMongo/templates/Requires.php';
 

@@ -24,12 +24,80 @@ foreach ($d->entities as $entity ) {
     if(isset($prefix)){
         $name=str_replace($prefix,'',$name);
     }
-    //$pluralized=lcfirst(Pluralization::pluralize($name));
+
+
+    //$pluralized=lcfirst(P
+    //luralization::pluralize($name));
     $counter++;
     $lastEntity=false;
     if ($counter==count($d->entities)){
         $lastEntity=true;
     }
+
+    // EXCLUSION Of CRUD
+    // You can exclude entities containing a given string
+    //
+    $shouldBeExcluded=false;
+    $exclusion=array();
+    if(isset($excludeEntitiesWith)){
+        $exclusion=$excludeEntitiesWith;
+    }
+    foreach ($exclusion as $exclusionString ) {
+        if(strpos($name,$exclusionString)!==false){
+            $shouldBeExcluded=true;
+        }
+    }
+    if($shouldBeExcluded){
+        continue;//Let's exclude this entity from the CRUD
+    }
+
+    // DO NO SUPPORT DELETION
+    $isUndeletable=false;
+    $undeletable=array();
+    if(isset($unDeletableEntitiesWith)){
+        $undeletable=$unDeletableEntitiesWith;
+    }
+    foreach ($undeletable as $undeletableString ) {
+        if(strpos($name,$undeletableString)!==false){
+            $isUndeletable=true;
+        }
+    }
+    $deletionBlock=',
+      "delete" : {
+        "summary" : "Deletes a '.$name.'",
+        "description" : "",
+        "operationId" : "delete'.ucfirst($name).'",
+        "produces" : [
+                "application/json"
+            ],
+        "parameters" : [
+          {
+              "name" : "api_key",
+            "in" : "header",
+            "required" : false,
+            "type" : "string"
+          },
+          {
+            "name" : "'.lcfirst($name).'Id",
+            "in" : "path",
+            "description" : "'.ucfirst($name).' id to delete",
+            "required" : true,
+            "type" : "integer",
+            "format" : "int64"
+          }
+        ],
+        "responses" : {
+                "400" : {
+                    "description" : "Invalid '.$name.' value"
+          }
+        },
+        "security" : [
+          {
+              "api_key" : []
+          }
+        ]
+      }';
+
     $block='
     "/'.$name.'" : {
         "post" : {
@@ -48,7 +116,7 @@ foreach ($d->entities as $entity ) {
         "parameters" : [
           {
             "in" : "body",
-            "name" : "body",
+            "name" : "'.lcfirst($name).'",
             "description" : "'.$name.' object that needs to be added to the store",
             "required" : true,
             "schema" : {
@@ -83,7 +151,7 @@ foreach ($d->entities as $entity ) {
         "parameters" : [
           {
               "in" : "body",
-            "name" : "body",
+            "name" : "'.lcfirst($name).'",
             "description" : "'.ucfirst($name).' object that needs to be added to the store",
             "required" : true,
             "schema" : {
@@ -119,7 +187,7 @@ foreach ($d->entities as $entity ) {
             ],
         "parameters" : [
           {
-             "name" : "'.$name.'Id",
+             "name" : "'.lcfirst($name).'Id",
             "in" : "path",
             "description" : "ID of '.$name.' to return",
             "required" : true,
@@ -146,42 +214,12 @@ foreach ($d->entities as $entity ) {
               "api_key" : []
           }
         ]
-      },
-      "delete" : {
-        "summary" : "Deletes a '.$name.'",
-        "description" : "",
-        "operationId" : "delete'.ucfirst($name).'",
-        "produces" : [
-                "application/json"
-            ],
-        "parameters" : [
-          {
-              "name" : "api_key",
-            "in" : "header",
-            "required" : false,
-            "type" : "string"
-          },
-          {
-            "name" : "'.$name.'Id",
-            "in" : "path",
-            "description" : "'.ucfirst($name).' id to delete",
-            "required" : true,
-            "type" : "integer",
-            "format" : "int64"
-          }
-        ],
-        "responses" : {
-                "400" : {
-                    "description" : "Invalid '.$name.' value"
-          }
-        },
-        "security" : [
-          {
-              "api_key" : []
-          }
-        ]
-      }
-    }';
+      }';
+    if($isUndeletable==false){
+        $block.=$deletionBlock;
+    }
+    $block.='
+}';
     if(!$lastEntity){
         $block.=',';
     }
