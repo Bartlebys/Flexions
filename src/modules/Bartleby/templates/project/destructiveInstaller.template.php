@@ -1,39 +1,41 @@
 <?php
 
-require_once FLEXIONS_MODULES_DIR . '/ApiStackSwiftPhpMongo/templates/Requires.php';
+require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 /* @var $f Flexed */
 
 
 if (isset ( $f )) {
     $f->fileName = 'destructiveInstaller.php';
-    $f->package = "php/tools/";
+    $f->package = "php/tools/generated/";
 }
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
-
 /**
-* A destructive installer script for <?php echo $f->projectName ?>
-*/
+*
+* This script should be destroyed and not deployed.
+* A destructive installer script for YouDub
+*
+**/
+
+namespace Bartleby;
+require_once dirname(dirname(__DIR__)).'/Configuration.php';
+
+$configuration=new Configuration(__DIR__,BARTLEBY_ROOT_FOLDER);
 
 function logMessage($message=""){
-    echo ($message."\n");
+echo ($message."\n");
 }
-
 $today = date("Ymd-H:m:s");
 logMessage ("Running installer on ".$today);
-
 try {
-    logMessage("Connecting to ".DB_NAME);
-    $m = new MongoClient();
-
+logMessage("Connecting to MONGO");
+$m = new MongoClient();
 } catch (Exception $e) {
-    logMessage("Mongo client must be installed ". $e->getMessage());
+logMessage("Mongo client must be installed ". $e->getMessage());
 }
-logMessage("Connected  to ".DB_NAME);
-
-
-$db = $m->selectDB(DB_NAME);// Selecting  base
+logMessage("Selecting the database  ".$configuration->get_MONGO_DB_NAME());
+$db = $m->selectDB($configuration->get_MONGO_DB_NAME());// Selecting  base
 
 logMessage("Erasing all the collections if necessary");
 // Erase all the collections
@@ -41,10 +43,9 @@ logMessage("Erasing all the collections if necessary");
 $collectionList=$db->listCollections();
 logMessage("Number of collection ".count($collectionList));
 foreach ($collectionList as $collection) {
-    logMessage("Droping ".$collection->getName());
-    $collection->drop();
+logMessage("Droping ".$collection->getName());
+$collection->drop();
 }
-
 logMessage("Recreating the collections");
 // Collection creation
 <?php

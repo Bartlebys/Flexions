@@ -66,7 +66,7 @@ foreach ($d->entities as $entity ) {
       "delete" : {
         "summary" : "Deletes a '.$name.'",
         "description" : "",
-        "operationId" : "delete'.ucfirst($name).'",
+        "operationId" : "'.ucfirst($name).'",
         "produces" : [
                 "application/json"
             ],
@@ -106,7 +106,7 @@ foreach ($d->entities as $entity ) {
             ],
         "summary" : "Add a new '.$name.' to the system",
         "description" : "",
-        "operationId" : "add'.ucfirst($name).'",
+        "operationId" : "'.ucfirst($name).'",
         "consumes" : [
                 "application/json"
             ],
@@ -141,7 +141,7 @@ foreach ($d->entities as $entity ) {
             ],
         "summary" : "Update an existing '.$name.'",
         "description" : "",
-        "operationId" : "update'.ucfirst($name).'",
+        "operationId" : "'.ucfirst($name).'",
         "consumes" : [
                 "application/json"
             ],
@@ -177,11 +177,11 @@ foreach ($d->entities as $entity ) {
         ]
       }
     },
-    "/'.$name.'/{'.$name.'Id}" : {
+    "/'.$name.'/{'.lcfirst($name).'Id}" : {
         "get" : {
         "summary" : "Find '.$name.' by ID",
         "description" : "Returns a single '.$name.'",
-        "operationId" : "get'.ucfirst($name).'ById",
+        "operationId" : "'.ucfirst($name).'",
         "produces" : [
                 "application/json"
             ],

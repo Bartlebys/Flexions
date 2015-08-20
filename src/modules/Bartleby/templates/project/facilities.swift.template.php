@@ -1,6 +1,6 @@
 <?php
 
-require_once FLEXIONS_MODULES_DIR . '/ApiStackSwiftPhpMongo/templates/Requires.php';
+require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
 
 /* @var $f Flexed */

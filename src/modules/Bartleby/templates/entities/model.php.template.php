@@ -1,21 +1,22 @@
 <?php
 
-require_once FLEXIONS_MODULES_DIR . '/ApiStackSwiftPhpMongo/templates/Requires.php';
+require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */
 
 if (isset ( $f )) {
-    $f->fileName = ucfirst($d->name).'.class.php';
-    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'models/';
+    $classNameWithoutPrefix=ucfirst(substr($d->name,strlen($h->classPrefix)));
+    $f->fileName = $classNameWithoutPrefix.'.php';
+    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/models/';
 }
 
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 
-class <?php echo ucfirst($d->name)?>{
+class <?php echo $classNameWithoutPrefix?>{
 <?php
 /* @var $property PropertyRepresentation */
 
