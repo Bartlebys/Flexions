@@ -7,10 +7,11 @@ require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 if (isset ( $f )) {
     $f->fileName = 'destructiveInstaller.php';
-    $f->package = "php/tools/generated/";
+    $f->package = "php/";
 }
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
+
 /**
 *
 * This script should be destroyed and not deployed.
@@ -19,12 +20,13 @@ if (isset ( $f )) {
 **/
 
 namespace Bartleby;
-require_once dirname(dirname(__DIR__)).'/Configuration.php';
+use \MongoClient;
+require_once __DIR__.'/Configuration.php';
 
 $configuration=new Configuration(__DIR__,BARTLEBY_ROOT_FOLDER);
 
 function logMessage($message=""){
-echo ($message."\n");
+echo ($message."<br>\n");
 }
 $today = date("Ymd-H:m:s");
 logMessage ("Running installer on ".$today);
@@ -55,6 +57,9 @@ foreach ($d->entities as $entity ) {
     $name=$entity->name;
     if(isset($prefix)){
         $name=str_replace($prefix,'',$name);
+    }
+    if (isset($excludeEntitiesWith) && in_array($name,$excludeEntitiesWith)){
+        continue;
     }
     $pluralized=lcfirst(Pluralization::pluralize($name));
     echoIndent('logMessage("Creating the '.$pluralized.' collection");'.cr(),0);

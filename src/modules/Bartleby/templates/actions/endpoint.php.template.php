@@ -1,4 +1,4 @@
- <?php
+<?php
 
 require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
@@ -29,24 +29,33 @@ if (isset ( $f )) {
  }
 
  class  <?php echo $classNameWithoutPrefix; ?> extends MongoEndPoint {
-
-     function POST(<?php echo $callDataClassName; ?> $parameters) {
+<?php
+if($d->httpMethod=='POST') {
+    echo('
+     function POST('.$callDataClassName.' $parameters) {
         return new JsonResponse(NULL, 200);
-     }
-
-     function GET(<?php echo $callDataClassName; ?> $parameters) {
-        return new JsonResponse(array('authenticated'=>$this->isAuthenticated()), 200);
-     }
-
-     function PUT(<?php echo $callDataClassName; ?> $parameters) {
+     }');
+}elseif ($d->httpMethod=='GET'){
+    echo('
+     function GET('.$callDataClassName.' $parameters) {
         return new JsonResponse(NULL, 200);
-     }
-
-     function DELETE(<?php echo $callDataClassName; ?> $parameters) {
-        return new JsonResponse(NULL, 202);
-     }
+     }'
+    );
+}elseif ($d->httpMethod=='PUT'){
+    echo('
+     function PUT('.$callDataClassName.' $parameters) {
+        return new JsonResponse(NULL, 200);
+     }'
+    );
+}else {
+    echo('
+     function DELETE('.$callDataClassName.' $parameters) {
+        return new JsonResponse(NULL, 200);
+     }'
+    );
+}
+?>
 
  }
 
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>
-

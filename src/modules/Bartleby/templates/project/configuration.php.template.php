@@ -55,8 +55,8 @@ class GeneratedConfiguration extends MongoConfiguration {
 
     protected function _getEndPointsRouteAliases () {
         $mapping = array(
-            '/user/login' => 'Auth',// Will use the HTTP method (POST,GET,PUT,DELETE)
-            '/user/logout' => array('Auth','DELETE'), // Will call explicitly DELETE
+            '/user/login' => 'Auth',// Will can use any the HTTP method (POST,GET,PUT,DELETE)
+            '/user/logout' => array('Auth','DELETE'), // Will call explicitly DELETE (equivalent to explicit call of DELETE login)
 <?php
 $history=array();
 /* @var $d ProjectRepresentation */
@@ -65,7 +65,7 @@ foreach ($d->actions as $action ) {
     $path=$action->path;
     $path=ltrim($path,'/');
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
-    $string= '\'/'.lcfirst($path).'\'=>\''.$classNameWithoutPrefix.'\',';
+    $string= '\''.$action->httpMethod.':/'.lcfirst($path).'\'=>\''.$classNameWithoutPrefix.'\',';
     if(!in_array($string,$history)){
         $history[]=$string;
         echoIndent($string.cr(),3);
