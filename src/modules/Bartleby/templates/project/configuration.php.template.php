@@ -36,7 +36,7 @@ class GeneratedConfiguration extends MongoConfiguration {
 
         $this->_STAGE=Stages::DEVELOPMENT;
         $this->_VERSION='<?php echo $d->apiVersion; ?>';
-        $this->_SALT='<?php echo uniqid('bartleby-'); ?>';
+        $this->_SALT='SALT TO BE SET';
 
         // MONGO DB
         $this->_MONGO_DB_NAME='<?php echo ucfirst($f->projectName); ?>';
@@ -65,7 +65,7 @@ foreach ($d->actions as $action ) {
     $path=$action->path;
     $path=ltrim($path,'/');
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
-    $string= '\''.$action->httpMethod.':/'.lcfirst($path).'\'=>\''.$classNameWithoutPrefix.'\',';
+    $string= '\''.$action->httpMethod.':/'.lcfirst($path).'\'=>array(\''.$classNameWithoutPrefix.'\',\'call\'),';
     if(!in_array($string,$history)){
         $history[]=$string;
         echoIndent($string.cr(),3);

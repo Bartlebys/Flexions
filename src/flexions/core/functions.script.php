@@ -69,6 +69,10 @@ function echoIndent($string,$n=1){
 	 echo stringIndent($string,$n);
 }
 
+function echoIndentCR($string,$n=1){
+	echo stringIndent($string,$n).cr();
+}
+
 function stringIndent($string,$n=1){
 	return tabs($n).$string;
 }

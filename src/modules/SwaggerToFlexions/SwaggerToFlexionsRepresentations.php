@@ -228,6 +228,13 @@ class SwaggerToFlexionsRepresentations {
                         $action->path = $path;
                         $action->httpMethod = strtoupper($method);
 
+                        if(array_key_exists(SWAGGER_TAGS,$methodPathDescriptor)){
+                            $tags=$methodPathDescriptor[SWAGGER_TAGS];
+                            if(is_array($tags)&&count($tags)>0){
+                                $action->collectionName=$tags[0];
+                            }
+                        }
+
                         if (array_key_exists(SWAGGER_PARAMETERS, $methodPathDescriptor)) {
                             $parameters = $methodPathDescriptor[SWAGGER_PARAMETERS];
                             foreach ($parameters as $parameter) {

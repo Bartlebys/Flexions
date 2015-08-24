@@ -74,6 +74,8 @@ foreach ($d->entities as $entity ) {
         }
     }
 
+    $pluralizedName=lcfirst(Pluralization::pluralize($name));
+
     ////////////////////////////
     // SINGLE INSTANCE CRUD
     ////////////////////////////
@@ -82,11 +84,11 @@ foreach ($d->entities as $entity ) {
     "/'.$name.'" : {
         "post" : {
             "tags" : [
-                "'.$name.'"
+                "'.$pluralizedName.'"
             ],
-        "summary" : "Add a new '.$name.' to the system",
+        "summary" : "Creates a new '.$name.' to the system",
         "description" : "",
-        "operationId" : "add'.ucfirst($name).'",
+        "operationId" : "create'.ucfirst($name).'",
         "consumes" : [
                 "application/json"
             ],
@@ -121,6 +123,9 @@ foreach ($d->entities as $entity ) {
     $readBlock= '
     "/'.$name.'/{'.lcfirst($name).'Id}" : {
         "get" : {
+            "tags" : [
+                "'.$pluralizedName.'"
+            ],
             "summary" : "Find '.$name.' by ID",
             "description" : "Returns a single '.$name.'",
             "operationId" : "get'.ucfirst($name).'ById",
@@ -161,7 +166,7 @@ foreach ($d->entities as $entity ) {
     $updateBlock=',
         "put" : {
             "tags" : [
-                "'.$name.'"
+                "'.$pluralizedName.'"
             ],
         "summary" : "Update an existing '.$name.'",
         "description" : "",
@@ -174,7 +179,7 @@ foreach ($d->entities as $entity ) {
             ],
         "parameters" : [
           {
-              "in" : "body",
+            "in" : "body",
             "name" : "'.lcfirst($name).'",
             "description" : "'.ucfirst($name).' object that needs to be added to the store",
             "required" : true,
@@ -203,6 +208,9 @@ foreach ($d->entities as $entity ) {
 
     $deleteBlock=',
         "delete" : {
+            "tags" : [
+                "'.$pluralizedName.'"
+            ],
             "summary" : "Deletes a '.$name.'",
             "description" : "",
             "operationId" : "delete'.ucfirst($name).'",
@@ -253,52 +261,55 @@ foreach ($d->entities as $entity ) {
     // COLLECTIONS  CRUD
     ////////////////////////////
 
-    $pluralizedName=Pluralization::pluralize($name);
+
 
     $createCollectionBlock='
-    "/'.$pluralizedName.'" : {
+    "/'.ucfirst($pluralizedName).'" : {
         "post" : {
             "tags" : [
                 "'.$pluralizedName.'"
             ],
-        "summary" : "Add '.$pluralizedName.' to the system",
-        "description" : "",
-        "operationId" : "add'.ucfirst($pluralizedName).'",
-        "consumes" : [
-                "application/json"
-            ],
-        "produces" : [
-                "application/json"
-            ],
-        "parameters" : [
-         {
-            "in" : "body",
-            "name" : "'.lcfirst($pluralizedName).'",
-            "description" : "Collection of '.$name.' that needs to be added",
-            "required" : true,
-            "schema": {
-                        "type": "array",
-                        "items":
-                        {
-                            "$ref": "#/definitions/'.ucfirst($name).'"
+            "summary" : "Create '.$pluralizedName.' to the system",
+            "description" : "",
+            "operationId" : "create'.ucfirst($pluralizedName).'",
+            "consumes" : [
+                    "application/json"
+                ],
+            "produces" : [
+                    "application/json"
+                ],
+            "parameters" : [
+             {
+                "in" : "body",
+                "name" : "'.lcfirst($pluralizedName).'",
+                "description" : "Collection of '.$name.' that needs to be added",
+                "required" : true,
+                "schema": {
+                            "type": "array",
+                            "items":
+                            {
+                                "$ref": "#/definitions/'.ucfirst($name).'"
+                             }
                          }
+              }
+            ],
+            "responses" : {
+                    "405" : {
+                        "description" : "Invalid input"
                      }
-          }
-        ],
-        "responses" : {
-                "405" : {
-                    "description" : "Invalid input"
-                 }
-        },
-        "security" : [
-          {
-            "api_key" : []
-          }
-        ]
+            },
+            "security" : [
+              {
+                "api_key" : []
+              }
+            ]
      },
     ';
 
     $readCollectionBlock= '    "get" : {
+            "tags" : [
+                "'.$pluralizedName.'"
+            ],
             "summary" : "Find '.$pluralizedName.' by ID",
             "description" : "Returns a collection of '.$name.'",
             "operationId" : "get'.ucfirst($pluralizedName).'ByIds",
@@ -307,12 +318,14 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
-                "name" : "'.lcfirst($pluralizedName).'Ids",
+                "name" : "ids",
                 "in" : "path",
                 "description" : "IDS of the '.$pluralizedName.' to return",
                 "required" : true,
-                "type" : "integer",
-                "format" : "int64"
+                 "type": "array",
+                 "items": {
+                     "type": "string"
+                  }
               }
             ],
             "responses" : {
@@ -345,49 +358,52 @@ foreach ($d->entities as $entity ) {
             "tags" : [
                 "'.$pluralizedName.'"
             ],
-        "summary" : "Update an existing '.$name.'",
-        "description" : "",
-        "operationId" : "update'.ucfirst($name).'",
-        "consumes" : [
-                "application/json"
+            "summary" : "Update an existing '.$name.'",
+            "description" : "",
+            "operationId" : "update'.ucfirst($pluralizedName).'",
+            "consumes" : [
+                    "application/json"
+                ],
+            "produces" : [
+                    "application/json"
+                ],
+            "parameters" : [
+              {
+                "in" : "body",
+                "name" : "'.lcfirst($pluralizedName).'",
+                "description" : "Collection of '.ucfirst($name).' to update",
+                "required" : true,
+                "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/'.ucfirst($name).'"
+                             }
+                    }
+              }
             ],
-        "produces" : [
-                "application/json"
-            ],
-        "parameters" : [
-          {
-              "in" : "body",
-            "name" : "'.lcfirst($pluralizedName).'",
-            "description" : "Collection of '.ucfirst($name).' to update",
-            "required" : true,
-            "schema": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/'.ucfirst($name).'"
-                         }
-                }
-          }
-        ],
-        "responses" : {
-          "400" : {
-             "description" : "Invalid IDS supplied"
-          },
-          "404" : {
-                    "description" : "'.ucfirst($pluralizedName).' not found"
-          },
-          "405" : {
-                    "description" : "Validation exception"
-          }
-        },
-        "security" : [
-          {
-              "api_key" : []
-          }
-        ]
+            "responses" : {
+              "400" : {
+                 "description" : "Invalid IDS supplied"
+              },
+              "404" : {
+                        "description" : "'.ucfirst($pluralizedName).' not found"
+              },
+              "405" : {
+                        "description" : "Validation exception"
+              }
+            },
+            "security" : [
+                     {
+                      "api_key" : []
+                    }
+                ]
       }';
 
     $deleteCollectionBlock=',
         "delete" : {
+            "tags" : [
+                "'.$pluralizedName.'"
+            ],
             "summary" : "Deletes some '.$pluralizedName.'",
             "description" : "",
             "operationId" : "delete'.ucfirst($pluralizedName).'",

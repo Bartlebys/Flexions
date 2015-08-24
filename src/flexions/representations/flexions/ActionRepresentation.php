@@ -33,6 +33,9 @@ class ActionRepresentation {
     public $class;
 
 
+    /* @var string the collection name if relevent*/
+    public $collectionName;
+
     /**
      * @var array of PropertyRepresentation
      */

@@ -15,8 +15,24 @@ if (isset ( $f )) {
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
+namespace Bartleby\Models;
 
-class <?php echo $classNameWithoutPrefix?>{
+require_once BARTLEBY_ROOT_FOLDER.'/core/Model.php';
+use Bartleby\Core\Model;
+
+
+<?php while ($d->iterateOnProperties()){
+    $property=$d->getProperty();
+    if($property->isGeneratedType){
+        $className=$property->instanceOf;
+        $className=$h->ucFirstRemovePrefixFromString($className);
+        echoIndentCR('require_once dirname(__DIR__).\'/models/'.$className.'.php\';',0);
+        echoIndentCR('use Bartleby\Models\\'.$className.';',0);
+    }
+} ?>
+
+
+class <?php echo $classNameWithoutPrefix?> extends Model{
 <?php
 /* @var $property PropertyRepresentation */
 
@@ -33,6 +49,30 @@ while ( $d ->iterateOnProperties() === true ) {
     }
 }
 ?>
+
+    function classMapping(array $mapping=array()){
+<?php while ($d->iterateOnProperties()){
+    $property=$d->getProperty();
+    $typeOfProp=$property->type;
+    $o=FlexionsTypes::OBJECT;
+    $c=FlexionsTypes::COLLECTION;
+    if (($typeOfProp===$o)||($typeOfProp===$c)){
+        $type=$property->instanceOf;
+        if($property->isGeneratedType) {
+            $type = $h->ucFirstRemovePrefixFromString($type);
+        }
+    }
+
+    if ($property->type==FlexionsTypes::COLLECTION){
+        echoIndentCR( '$mapping[\''.$property->name.'\']=array(\''.$type.'\');',2);
+    }else{
+        echoIndentCR( '$mapping[\''.$property->name.'\']=\''.$type.'\';',2);
+    }
+
+
+}?>
+    return parent::classMapping($mapping);
+    }
 
 }
 

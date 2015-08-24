@@ -249,6 +249,17 @@ final class Hypotypose extends stdClass {
         }
         return $flatList;
     }
+
+
+    public function removePrefixFromString($string){
+        // $classNameWithoutPrefix=ucfirst(substr($d->class,strlen($h->classPrefix)));
+        return substr($string,strlen($this->classPrefix));;
+    }
+
+
+    public function ucFirstRemovePrefixFromString($string){
+        return ucfirst($this->removePrefixFromString($string));
+    }
 }
 
 ?>
