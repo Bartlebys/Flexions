@@ -99,7 +99,7 @@ foreach ($d->entities as $entity ) {
           {
             "in" : "body",
             "name" : "'.lcfirst($name).'",
-            "description" : "'.$name.' object that needs to be added",
+            "description" : "The instance of'.$name.' that needs to be added",
             "required" : true,
             "schema" : {
               "$ref" : "#/definitions/'.ucfirst($name).'"
@@ -136,7 +136,7 @@ foreach ($d->entities as $entity ) {
               {
                 "name" : "'.lcfirst($name).'Id",
                 "in" : "path",
-                "description" : "ID of '.$name.' to return",
+                "description" : "The unique identifier the the of '.$name.'",
                 "required" : true,
                 "type" : "string"
               }
@@ -181,7 +181,7 @@ foreach ($d->entities as $entity ) {
           {
             "in" : "body",
             "name" : "'.lcfirst($name).'",
-            "description" : "'.ucfirst($name).' object that needs to be added to the store",
+            "description" : "The '.ucfirst($name).' instance to update",
             "required" : true,
             "schema" : {
               "$ref" : "#/definitions/'.ucfirst($name).'"
@@ -219,7 +219,7 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
-                  "name" : "api_key",
+                "name" : "api_key",
                 "in" : "header",
                 "required" : false,
                 "type" : "string"
@@ -227,10 +227,9 @@ foreach ($d->entities as $entity ) {
               {
                 "name" : "'.lcfirst($name).'Id",
                 "in" : "path",
-                "description" : "'.ucfirst($name).' id to delete",
+                "description" : "The identifier of the '.ucfirst($name).' to be deleted",
                 "required" : true,
-                "type" : "integer",
-                "format" : "int64"
+                "type" : "string"
               }
             ],
             "responses" : {
@@ -320,7 +319,7 @@ foreach ($d->entities as $entity ) {
               {
                 "name" : "ids",
                 "in" : "path",
-                "description" : "IDS of the '.$pluralizedName.' to return",
+                "description" : "The IDS of the '.$pluralizedName.' to return",
                 "required" : true,
                  "type": "array",
                  "items": {
@@ -412,18 +411,20 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
-                  "name" : "api_key",
+                "name" : "api_key",
                 "in" : "header",
                 "required" : false,
                 "type" : "string"
               },
               {
-                "name" : "'.lcfirst($pluralizedName).'Ids",
+                "name" : "ids",
                 "in" : "path",
-                "description" : "'.ucfirst($pluralizedName).' Ids to delete",
+                "description" : "The ids of '.$pluralizedName.' to delete",
                 "required" : true,
-                "type" : "integer",
-                "format" : "int64"
+                 "type": "array",
+                 "items": {
+                     "type": "string"
+                  }
               }
             ],
             "responses" : {
@@ -447,9 +448,61 @@ foreach ($d->entities as $entity ) {
         $block.=$deleteCollectionBlock;
     }
     $block.='}';
+    $block.=',';
+
+
+    ////////////////////////////
+    // GETTER BY QUERY
+    ////////////////////////////
+
+
+    $genericQueryGetBlock= '
+        "/'.ucfirst($pluralizedName).'byQuery" : {
+         "get" : {
+            "tags" : [
+                "'.$pluralizedName.'"
+            ],
+            "summary" : "Find '.$pluralizedName.' by query (check $q, $s, $f in Bartleby\'s MongoCallDataRawWrapper)",
+            "description" : "Returns a collection of '.$name.'",
+            "operationId" : "get'.ucfirst($pluralizedName).'ByQuery",
+            "produces" : [
+                    "application/json"
+                ],
+            "parameters" : [],
+            "responses" : {
+               "200" : {
+                        "description" : "successful operation",
+               "schema": {
+                    "type": "array",
+                    "items": {
+                    "$ref": "#/definitions/'.ucfirst($name).'"
+                }
+              },
+              "204" : {
+                        "description" : "'.ucfirst($pluralizedName).' no supplied ids"
+              }
+              ,
+              "400" : {
+                        "description" : "Invalid IDS supplied"
+              },
+              "404" : {
+                        "description" : "'.ucfirst($pluralizedName).' not found"
+              }
+            },
+            "security" : [
+              {
+                  "api_key" : []
+              }
+            ]
+          }
+        }
+      }'
+    ;
+    $block.=$genericQueryGetBlock;
     if(!$lastEntity){
         $block.=',';
     }
+
     //$block.='}}}'.cr();
     echo $block;
 }

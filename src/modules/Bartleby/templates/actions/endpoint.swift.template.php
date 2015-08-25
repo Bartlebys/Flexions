@@ -55,13 +55,6 @@ if ($d->containsParametersOutOfPath()) {
 
     }
 
-    if($d->httpMethod=="PUT"||
-        $d->httpMethod=="POST"||
-        $d->httpMethod=="DELETE"
-    ){
-        echoIndent("//You can provide a command that allows to Do/Undo/Redo this action".cr(),1);
-        echoIndent("var command:".$h->classPrefix."Command?".cr(),1);
-    }
     echo ("
 
     override init(){

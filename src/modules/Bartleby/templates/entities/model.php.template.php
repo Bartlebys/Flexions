@@ -19,8 +19,6 @@ namespace Bartleby\Models;
 
 require_once BARTLEBY_ROOT_FOLDER.'/core/Model.php';
 use Bartleby\Core\Model;
-
-
 <?php while ($d->iterateOnProperties()){
     $property=$d->getProperty();
     if($property->isGeneratedType){
@@ -31,8 +29,8 @@ use Bartleby\Core\Model;
     }
 } ?>
 
-
 class <?php echo $classNameWithoutPrefix?> extends Model{
+
 <?php
 /* @var $property PropertyRepresentation */
 
@@ -40,15 +38,50 @@ class <?php echo $classNameWithoutPrefix?> extends Model{
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name=$property->name;
-    if($d->firstProperty()){
-        echoIndent('var $'.$name.';'.cr(),1);
-    }else if ($d->lastProperty()){
-        echoIndent('var $'.$name.';',1);
-    }else{
-        echoIndent('var $'.$name.';'.cr(),1);
+    $typeOfProp=$property->type;
+    $o=FlexionsTypes::OBJECT;
+    $c=FlexionsTypes::COLLECTION;
+    if (($typeOfProp===$o)||($typeOfProp===$c)) {
+        $typeOfProp = $h->ucFirstRemovePrefixFromString($property->instanceOf);
+        if($typeOfProp==$c){
+            $typeOfProp=' array of '.$typeOfProp;
+        }
     }
+
+
+    if($property->type==FlexionsTypes::ENUM){
+        $enumTypeName=ucfirst($name);
+        $typeOfProp=$property->instanceOf.' '.$typeOfProp;
+        echoIndentCR('// Enumeration of possibles values of '.$name, 1);
+        foreach ($property->enumerations as $element) {
+            if($property->instanceOf==FlexionsTypes::STRING){
+                echoIndentCR('const ' .$enumTypeName.'_'.ucfirst($element).' = "'.$element.'";' ,1);
+            }else{
+                echoIndentCR('const ' .$enumTypeName.'_'.ucfirst($element).' = '.$element.';', 1);
+            }
+        }
+    }
+    echoIndentCR('/* @var '.$typeOfProp.' '.$property->description.' */',1);
+    if($d->firstProperty()){
+        echoIndentCR('public $'.$name.';',1);
+    }else if ($d->lastProperty()){
+        echoIndent('public $'.$name.';',1);
+    }else{
+        echoIndentCR('public $'.$name.';',1);
+    };
+    echoIndentCR('',0);
+
+
+
+    if($d->lastProperty()){
+        echoIndent(cr(),0);
+    }
+
+
+
 }
 ?>
+
 
     function classMapping(array $mapping=array()){
 <?php while ($d->iterateOnProperties()){
@@ -56,22 +89,21 @@ while ( $d ->iterateOnProperties() === true ) {
     $typeOfProp=$property->type;
     $o=FlexionsTypes::OBJECT;
     $c=FlexionsTypes::COLLECTION;
-    if (($typeOfProp===$o)||($typeOfProp===$c)){
-        $type=$property->instanceOf;
-        if($property->isGeneratedType) {
+    if (($typeOfProp===$o)||($typeOfProp===$c)) {
+        $type = $property->instanceOf;
+        if ($property->isGeneratedType) {
             $type = $h->ucFirstRemovePrefixFromString($type);
         }
-    }
-
-    if ($property->type==FlexionsTypes::COLLECTION){
-        echoIndentCR( '$mapping[\''.$property->name.'\']=array(\''.$type.'\');',2);
-    }else{
-        echoIndentCR( '$mapping[\''.$property->name.'\']=\''.$type.'\';',2);
+        if ($property->type == FlexionsTypes::COLLECTION) {
+            echoIndentCR('$mapping[\'' . $property->name . '\']=array(\'' . $type . '\');', 2);
+        } else {
+            echoIndentCR('$mapping[\'' . $property->name . '\']=\'' . $type . '\';', 2);
+        }
     }
 
 
 }?>
-    return parent::classMapping($mapping);
+        return parent::classMapping($mapping);
     }
 
 }
