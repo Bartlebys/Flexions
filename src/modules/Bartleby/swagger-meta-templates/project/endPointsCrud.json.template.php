@@ -80,46 +80,7 @@ foreach ($d->entities as $entity ) {
     // SINGLE INSTANCE CRUD
     ////////////////////////////
 
-    $createBlock='
-    "/'.$name.'" : {
-        "post" : {
-            "tags" : [
-                "'.$pluralizedName.'"
-            ],
-        "summary" : "Creates a new '.$name.' to the system",
-        "description" : "",
-        "operationId" : "create'.ucfirst($name).'",
-        "consumes" : [
-                "application/json"
-            ],
-        "produces" : [
-                "application/json"
-            ],
-        "parameters" : [
-          {
-            "in" : "body",
-            "name" : "'.lcfirst($name).'",
-            "description" : "The instance of'.$name.' that needs to be added",
-            "required" : true,
-            "schema" : {
-              "$ref" : "#/definitions/'.ucfirst($name).'"
-            }
-          }
-        ],
-        "responses" : {
-                "405" : {
-                    "description" : "Invalid input"
-          }
-        },
-        "security" : [
-          {
-              "api_key" : []
-          }
-        ]
-      }
-    },';
-
-
+    // The read block is the only one with the id in the path
     $readBlock= '
     "/'.$name.'/{'.lcfirst($name).'Id}" : {
         "get" : {
@@ -160,8 +121,51 @@ foreach ($d->entities as $entity ) {
                   "api_key" : []
               }
             ]
-          }'
+          }
+        },'
     ;
+
+    $createBlock='
+    "/'.$name.'" :
+     {
+        "post" : {
+            "tags" : [
+                "'.$pluralizedName.'"
+            ],
+        "summary" : "Creates a new '.$name.' to the system",
+        "description" : "",
+        "operationId" : "create'.ucfirst($name).'",
+        "consumes" : [
+                "application/json"
+            ],
+        "produces" : [
+                "application/json"
+            ],
+        "parameters" : [
+          {
+            "in" : "body",
+            "name" : "'.lcfirst($name).'",
+            "description" : "The instance of'.$name.' that needs to be added",
+            "required" : true,
+            "schema" : {
+              "$ref" : "#/definitions/'.ucfirst($name).'"
+            }
+          }
+        ],
+        "responses" : {
+                "405" : {
+                    "description" : "Invalid input"
+          }
+        },
+        "security" : [
+          {
+              "api_key" : []
+          }
+        ]
+      }
+    ';
+
+
 
     $updateBlock=',
         "put" : {
@@ -244,16 +248,23 @@ foreach ($d->entities as $entity ) {
             ]
         }';
 
-    $block=$createBlock;
-    $block.=$readBlock;
+    $block=$readBlock;
+    $block.=$createBlock;
+
     if($isUnModifiable==false){
         $block.=$updateBlock;
     }
     if($isUndeletable==false){
         $block.=$deleteBlock;
     }
-    $block.='}';
-    $block.=',';
+    if($isUnModifiable==true && $isUndeletable==true){
+        $block.='}';
+        $block.=',';
+    }else{
+        $block.='}';
+        $block.=',';
+    }
+
 
 
     ////////////////////////////
@@ -457,7 +468,7 @@ foreach ($d->entities as $entity ) {
 
 
     $genericQueryGetBlock= '
-        "/'.ucfirst($pluralizedName).'byQuery" : {
+        "/'.ucfirst($pluralizedName).'ByQuery" : {
          "get" : {
             "tags" : [
                 "'.$pluralizedName.'"

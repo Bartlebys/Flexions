@@ -85,7 +85,7 @@ if($d->httpMethod=='POST') {
     function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
         /* @var \MongoCollection */
-        $collection = $db->{'.$d->collectionName.'};
+        $collection = $db->'.$d->collectionName.';
         // Default write policy
         $options = array (
             "w" => 1,
@@ -108,14 +108,20 @@ if($d->httpMethod=='POST') {
             :
             '$r = $collection->batchInsert( $obj,$options );'
         ).'
-
-            if ($r!==false ) {
-                return new JsonResponse($r,200);
+             if ($r[\'ok\']==1) {
+                return new JsonResponse(NULL,200);
             } else {
-                return new JsonResponse(NULL,412);
+                return new JsonResponse($r,412);
             }
-        } catch ( MongoCursorException $e ) {
-            return new JsonResponse(\'MongoCursorException\' . $e->getCode() . \' \' . $e->getMessage(), 417);
+        } catch ( \Exception $e ) {
+            return new JsonResponse( array (\'code\'=>$e->getCode(),
+                                            \'message\'=>$e->getMessage(),
+                                            \'file\'=>$e->getFile(),
+                                            \'line\'=>$e->getLine(),
+                                            \'trace\'=>$e->getTraceAsString()
+                                            ),
+                                            417
+                                    );
         }
         return new JsonResponse(NULL, 200);
      }'
@@ -126,7 +132,7 @@ if($d->httpMethod=='POST') {
      function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
         /* @var \MongoCollection */
-        $collection = $db->{'.$d->collectionName.'};
+        $collection = $db->'.$d->collectionName.';
         // result fields
         $f=$parameters->getValueForKey(MongoCallDataRawWrapper::result_fields);
         '.
@@ -134,7 +140,7 @@ if($d->httpMethod=='POST') {
 
              ($parameterIsNotAcollection)?
 
-        '$q = array (\'_id\' =>new MongoId ($parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.')));'
+        '$q = array (\'_id\' =>$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.'));'
 
             :
         ''.
@@ -151,11 +157,7 @@ if($d->httpMethod=='POST') {
 
         '$ids=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
         if(isset ($ids) && count($ids)){
-            $mongoIds=array();
-            foreach ($ids as $stringId) {
-                $mongoIds[]=new \MongoId($stringId);
-            }
-            $q = array( array( \'$in\' => $mongoIds ));
+            $q = array( \'_id\'=>array( \'$in\' => $ids ));
         }else{
             return new JsonResponse(NULL,204);
         }'
@@ -167,13 +169,27 @@ if($d->httpMethod=='POST') {
     (
 
         ($parameterIsNotAcollection)?'
-           $r = $collection->findOne ( $q , $f );'
+
+           if(isset($f)){
+                $r = $collection->findOne( $q , $f );
+           }else{
+                $r = $collection->findOne($q);
+           }
+            if (isset($r)) {
+                return new JsonResponse($r,200);
+            } else {
+                return new JsonResponse(NULL,404);
+            }'
 
             :
 
             '
            $r=array();
-           $cursor = $collection->find( $q , $f );
+           if(isset($f)){
+                $cursor = $collection->find( $q , $f );
+           }else{
+                $cursor = $collection->find($q);
+           }
            // Sort ?
            $s=$parameters->getValueForKey(MongoCallDataRawWrapper::sort);
            if (isset($s) && count($s)>0){
@@ -184,15 +200,23 @@ if($d->httpMethod=='POST') {
 				$r [] = $obj;
 			}
 		   }
-            '
-    )
-            .'if ( count($r)>0 ) {
+
+            if (count($r)>0 ) {
                 return new JsonResponse($r,200);
             } else {
                 return new JsonResponse(NULL,404);
-            }
-        } catch ( MongoCursorException $e ) {
-            return new JsonResponse(\'MongoCursorException\' . $e->getCode() . \' \' . $e->getMessage(), 417);
+            }'
+    )
+            .'
+       } catch ( \Exception $e ) {
+            return new JsonResponse( array (\'code\'=>$e->getCode(),
+                                            \'message\'=>$e->getMessage(),
+                                            \'file\'=>$e->getFile(),
+                                            \'line\'=>$e->getLine(),
+                                            \'trace\'=>$e->getTraceAsString()
+                                            ),
+                                            417
+                                    );
         }
         return new JsonResponse(NULL, 200);
      }');
@@ -201,7 +225,7 @@ if($d->httpMethod=='POST') {
     function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
         /* @var \MongoCollection */
-        $collection = $db->{'.$d->collectionName.'};
+        $collection = $db->'.$d->collectionName.';
         // Default write policy
         $options = array (
             "w" => 1,
@@ -214,30 +238,57 @@ if($d->httpMethod=='POST') {
         if(!isset($obj)){
           return new JsonResponse(\'Invalid void object\',406);
         }
-        $q = array (\'_id\' =>new MongoId ($obj[\'_id\']));'
+        $q = array (\'_id\' =>$obj[\'_id\']);'
             :
             '$arrayOfObject=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
-        if(!isset($arrayOfObject) || (is_array($$arrayOfObject) && count($$arrayOfObject)<1) ){
+        if(!isset($arrayOfObject) || (is_array($arrayOfObject) && count($arrayOfObject)<1) ){
             return new JsonResponse(\'Invalid void array\',406);
         }'
         )
         .'
         try {
             '.(($parameterIsNotAcollection)?
-            '$r = $collection->update ($q, $obj,$options );//Result???'
-            :
-            'foreach ($$arrayOfObject as $obj){
-                $q = array (\'_id\' =>new MongoId ($obj[\'_id\']));
-                $r = $collection->update( $q, $obj,$options);// Result ??
-             }'
-        ).'
-            if ($r!==false ) {
-                return new JsonResponse($r,200);
+            '$r = $collection->update ($q, $obj,$options );
+            if ($r[\'ok\']==1) {
+              if(array_key_exists(\'updatedExisting\',$r)){
+                    $existed=$r[\'updatedExisting\'];
+                    if($existed==true){
+                        return new JsonResponse(NULL,200);
+                    }else{
+                        return new JsonResponse(NULL,404);
+                    }
+                }
+                return new JsonResponse(NULL,200);
             } else {
-                return new JsonResponse(NULL,412);
-            }
-        } catch ( MongoCursorException $e ) {
-            return new JsonResponse(\'MongoCursorException\' . $e->getCode() . \' \' . $e->getMessage(), 417);
+                return new JsonResponse($r,412);
+            }'
+            :
+            'foreach ($arrayOfObject as $obj){
+                $q = array (\'_id\' => $obj[\'_id\']);
+                $r = $collection->update( $q, $obj,$options);
+                if ($r[\'ok\']==1) {
+                    if (array_key_exists(\'updatedExisting\', $r)) {
+                        $existed = $r[\'updatedExisting\'];
+                        if ($existed == false) {
+                            return new JsonResponse($q,404);
+                        }
+                    }
+                }else{
+                    return new JsonResponse($q,412);
+                }
+             }
+            return new JsonResponse(NULL,200);'
+        ).'
+
+        } catch ( \Exception $e ) {
+            return new JsonResponse( array (\'code\'=>$e->getCode(),
+                                            \'message\'=>$e->getMessage(),
+                                            \'file\'=>$e->getFile(),
+                                            \'line\'=>$e->getLine(),
+                                            \'trace\'=>$e->getTraceAsString()
+                                            ),
+                                            417
+                                    );
         }
         return new JsonResponse(NULL, 200);
      }'
@@ -248,7 +299,7 @@ if($d->httpMethod=='POST') {
     function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
         /* @var \MongoCollection */
-        $collection = $db->{'.$d->collectionName.'};
+        $collection = $db->'.$d->collectionName.';
         // Default write policy
         $options = array (
             "w" => 1,
@@ -258,17 +309,13 @@ if($d->httpMethod=='POST') {
     (
         ($parameterIsNotAcollection)?
 
-            '$q = array (\'_id\' =>new MongoId ($parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.')));'
+            '$q = array (\'_id\' =>$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.'));'
 
             :
 
             '$ids=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
         if(isset ($ids) && count($ids)>0){
-            $mongoIds=array();
-            foreach ($ids as $stringId) {
-                 $mongoIds[]=new \MongoId($stringId);
-            }
-            $q = array( array( \'$in\' => $mongoIds ));
+            $q = array( \'_id\' =>array( \'$in\' => $ids ));
         }else{
             return new JsonResponse(NULL,204);
         }'
@@ -277,13 +324,24 @@ if($d->httpMethod=='POST') {
         .'
         try {
             $r = $collection->remove ( $q,$options );
-            if ($r!==false ) {
-                return new JsonResponse($r,200);
+             if ($r[\'ok\']==1) {
+                 if($r[\'n\']>=1){
+                     return new JsonResponse(NULL,200);
+                 }else{
+                     return new JsonResponse(NULL,404);
+                 }
             } else {
-                return new JsonResponse(NULL,412);
+                return new JsonResponse($r,412);
             }
-        } catch ( MongoCursorException $e ) {
-            return new JsonResponse(\'MongoCursorException\' . $e->getCode() . \' \' . $e->getMessage(), 417);
+        } catch ( \Exception $e ) {
+            return new JsonResponse( array (\'code\'=>$e->getCode(),
+                                            \'message\'=>$e->getMessage(),
+                                            \'file\'=>$e->getFile(),
+                                            \'line\'=>$e->getLine(),
+                                            \'trace\'=>$e->getTraceAsString()
+                                            ),
+                                            417
+                                    );
         }
         return new JsonResponse(NULL, 200);
      }'
