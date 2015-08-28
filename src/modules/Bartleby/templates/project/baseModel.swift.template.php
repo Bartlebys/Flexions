@@ -18,7 +18,7 @@ if (isset ( $f )) {
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
 import Foundation
-
+//import ObjectMapper
 
 class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
 
@@ -57,10 +57,13 @@ class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
         mapping(map)
     }
 
-    class func newInstance() -> Mappable {
-        return <?php echo($d->classPrefix.'BaseModel')?>()
+/*
+
+    static func newInstance(map: Map) -> Mappable? {
+        return <?php echo($d->classPrefix.'BaseModel')?>(map)
     }
 
+*/
 
     func mapping(map: Map) {
         _mongoID <- map["_id"]

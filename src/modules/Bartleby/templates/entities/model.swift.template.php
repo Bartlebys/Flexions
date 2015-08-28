@@ -17,7 +17,7 @@ if (isset ( $f )) {
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
 import Foundation
-
+//import ObjectMapper
 
 // MARK: Model <?php echo ucfirst($d->name)?>
 
@@ -81,14 +81,14 @@ while ( $d ->iterateOnProperties() === true ) {
     // MARK: Mappable
 
     required init?(_ map: Map) {
-        super.init()
+        super.init(map)
         mapping(map)
     }
-
-    override class func newInstance() -> Mappable {
-        return <?php echo ucfirst($d->name)?>()
+/*
+    override static func newInstance(map: Map) -> Mappable? {
+        return <?php echo ucfirst($d->name)?>(map)
     }
-
+*/
 
     override func mapping(map: Map) {
         super.mapping(map)
@@ -101,4 +101,46 @@ while ( $d ->iterateOnProperties() === true ) {
 ?>
     }
 }
+
+
+
+class <?php echo 'CollectionOf'.ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
+
+
+    public var items:[<?php echo ucfirst($d->name)?>]?
+
+    override init(){
+    }
+
+    // MARK: NSCoding
+
+    required init(coder decoder: NSCoder) {
+        items=decoder.decodeObjectForKey("items")
+    }
+
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(items,forKey:"items")
+    }
+
+    // MARK: Mappable
+
+    required init?(_ map: Map) {
+     super.init()
+     mapping(map)
+    }
+
+    /*
+
+    static func newInstance(map: Map) -> Mappable? {
+    return <?php echo($h->classPrefix.'BaseModel')?>(map)
+    }
+
+    */
+
+    func mapping(map: Map) {
+        items <- map["items"]
+    }
+
+}
+
 <?php /*<- END OF TEMPLATE */?>

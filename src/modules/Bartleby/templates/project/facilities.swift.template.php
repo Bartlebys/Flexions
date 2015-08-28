@@ -17,6 +17,7 @@ if (isset ( $f )) {
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
 import Foundation
+import Alamofire
 
 class Configuration {
 
@@ -36,8 +37,8 @@ class HTTPManager {
 
     static var isAuthenticated=false
 
-    static func mutableRequestWithHeaders(method:Method,url:NSURL)->NSMutableURLRequest{
-        var request=NSMutableURLRequest(URL: url)
+    static func mutableRequestWithHeaders(method:Alamofire.Method,url:NSURL)->NSMutableURLRequest{
+        let request=NSMutableURLRequest(URL: url)
         request.HTTPMethod=method.rawValue;
         request.addValue(HTTPManager.deviceIdentifier, forHTTPHeaderField: "Device-Identifier")
         request.addValue(HTTPManager.userAgent, forHTTPHeaderField: "User-Agent" )
@@ -50,6 +51,7 @@ class HTTPManager {
         }
         return request
     }
+
 
     static func requestHasEnded(request:NSURLRequest){
          NSNotificationCenter.defaultCenter().postNotificationName(END_OF_NSURLREQUEST, object: request)
