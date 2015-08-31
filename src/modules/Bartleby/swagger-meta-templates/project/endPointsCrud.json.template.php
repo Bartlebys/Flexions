@@ -82,7 +82,7 @@ foreach ($d->entities as $entity ) {
 
     // The read block is the only one with the id in the path
     $readBlock= '
-    "/'.$name.'/{'.lcfirst($name).'Id}" : {
+    "/'.lcfirst($name).'/{'.lcfirst($name).'Id}" : {
         "get" : {
             "tags" : [
                 "'.$pluralizedName.'"
@@ -126,7 +126,7 @@ foreach ($d->entities as $entity ) {
     ;
 
     $createBlock='
-    "/'.$name.'" :
+    "/'.lcfirst($name).'" :
      {
         "post" : {
             "tags" : [
@@ -274,7 +274,7 @@ foreach ($d->entities as $entity ) {
 
 
     $createCollectionBlock='
-    "/'.ucfirst($pluralizedName).'" : {
+    "/'.lcfirst($pluralizedName).'" : {
         "post" : {
             "tags" : [
                 "'.$pluralizedName.'"
@@ -468,7 +468,7 @@ foreach ($d->entities as $entity ) {
 
 
     $genericQueryGetBlock= '
-        "/'.ucfirst($pluralizedName).'ByQuery" : {
+        "/'.lcfirst($pluralizedName).'ByQuery" : {
          "get" : {
             "tags" : [
                 "'.$pluralizedName.'"
@@ -480,7 +480,8 @@ foreach ($d->entities as $entity ) {
                     "application/json"
                 ],
             "parameters" : [],
-            "responses" : {
+            "responses" :
+            {
                "200" : {
                         "description" : "successful operation",
                "schema": {
@@ -489,10 +490,10 @@ foreach ($d->entities as $entity ) {
                     "$ref": "#/definitions/'.ucfirst($name).'"
                 }
               },
+
               "204" : {
-                        "description" : "'.ucfirst($pluralizedName).' no supplied ids"
-              }
-              ,
+                      "description" : "'.ucfirst($pluralizedName).' no supplied ids"
+              },
               "400" : {
                         "description" : "Invalid IDS supplied"
               },

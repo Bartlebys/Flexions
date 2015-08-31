@@ -14,7 +14,7 @@ if (isset ($f)) {
 
 import Foundation
 import Alamofire
-//import ObjectMapper
+import ObjectMapper
 
 <?php
 // We generate the parameter class if there is a least one parameter.
@@ -125,7 +125,7 @@ if(count($pathVariables)>0){
 $successP = $d->getSuccessResponse();
 $successTypeString = '';
 if ($successP->type == FlexionsTypes::COLLECTION) {
-    $successTypeString ='CollectionOf' . ucfirst($successP->instanceOf) . '';
+    $successTypeString = Pluralization::pluralize($successP->instanceOf).'Collection';//'CollectionOf' . ucfirst($successP->instanceOf) . '';
 } else if ($successP->type == FlexionsTypes::OBJECT) {
     $successTypeString = ucfirst($successP->instanceOf);
 } else if ($successP->type == FlexionsTypes::DICTIONARY) {
@@ -203,13 +203,13 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
                     // It is a status code 2XX
                     if ($responsePropertyRepresentation->isGeneratedType) {
                         $responseBlock .= stringIndent('if 200...299 ~= statusCode {'. cr(), 11);
-                        $responseBlock .= stringIndent('if let JSONString = response as? String {' . cr(), 12);
+                        $responseBlock .= stringIndent('if let JSONString = result.value as? String {' . cr(), 12);
                         $responseBlock .= stringIndent('if let instance = Mapper <' . $successTypeString . '>() . map(JSONString){' . cr(), 13);
                         $responseBlock .= stringIndent('success(result: instance);' . cr(), 14);
                         $responseBlock .= stringIndent('}else{'.cr(), 13);
                         $responseBlock .= stringIndent('let f=HTTPFailure()'.cr(), 14);
                         $responseBlock .= stringIndent('f.message="Deserialization issue"'.cr(), 14);
-                        $responseBlock .= stringIndent('f.infos=responseObject'.cr(), 14);
+                        $responseBlock .= stringIndent('f.infos=response'.cr(), 14);
                         $responseBlock .= stringIndent('failure(result: f)'.cr(), 14);
                         $responseBlock .= stringIndent('}'.cr(), 13);
                         $responseBlock .= stringIndent('}'.cr(), 12);
@@ -220,7 +220,7 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
                         if( $successTypeString==""){
                             $responseBlock .= stringIndent('success()'. cr(), 12);
                         }else{
-                            $responseBlock .= stringIndent('if let r=response as? '.$successTypeString.'{'. cr(), 12);
+                            $responseBlock .= stringIndent('if let r=result.value as? '.$successTypeString.'{'. cr(), 12);
                             $responseBlock .= stringIndent('success(result:r)'. cr(), 13);
                             $responseBlock .= stringIndent('}else{'.cr(), 12);
                             $responseBlock .= stringIndent('let f=HTTPFailure()'. cr(), 13);
@@ -235,7 +235,7 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
                     $successHasBeenDefined=true;
                 }else{
                     // It is not a status 2XX
-                    $responseBlock .= stringIndent('if statusCode == '.$responsePropertyRepresentation->name.'{'.cr(), 11);
+                    $responseBlock .= stringIndent('if statusCode >= 300 {'.cr(), 11);
                     $responseBlock .= stringIndent('let f=HTTPFailure()'.cr(), 12);
                     $responseBlock .= stringIndent('f.message="'.$responsePropertyRepresentation->description.'"'.cr(), 12);
                     $responseBlock .= stringIndent('f.infos=response'.cr(), 12);
@@ -250,7 +250,7 @@ if($successHasBeenDefined==false){
     if( $successTypeString==""){
         $responseBlock .= stringIndent('success()'. cr(), 12);
     }else{
-        $responseBlock .= stringIndent('if let r=response as? '.$successTypeString.'{'. cr(), 12);
+        $responseBlock .= stringIndent('if let r=result.value as? '.$successTypeString.'{'. cr(), 12);
         $responseBlock .= stringIndent('success(result:r)'. cr(), 13);
         $responseBlock .= stringIndent('}else{'.cr(), 12);
         $responseBlock .= stringIndent('let f=HTTPFailure()'. cr(), 13);
@@ -264,7 +264,7 @@ if($successHasBeenDefined==false){
     $responseBlock .= stringIndent('}'.cr(), 11);
 }
 
-$block="                            ".($d->containsParametersOutOfPath()?"let dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)":"var dictionary:[String:AnyObject]=[:]")."
+$block="                            ".($d->containsParametersOutOfPath()?"let dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)":"let dictionary:[String:AnyObject]=[:]")."
                                 let urlRequest=HTTPManager.mutableRequestWithHeaders(Method.".$d->httpMethod.", url: pathURL)
                                 let r:Request=request(ParameterEncoding.URL.encode(urlRequest, parameters: dictionary).0)
                                 r.responseJSON(completionHandler: { (request, response, result) -> Void in

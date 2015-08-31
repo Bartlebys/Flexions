@@ -17,7 +17,7 @@ if (isset ( $f )) {
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
 import Foundation
-//import ObjectMapper
+import ObjectMapper
 
 // MARK: Model <?php echo ucfirst($d->name)?>
 
@@ -84,11 +84,11 @@ while ( $d ->iterateOnProperties() === true ) {
         super.init(map)
         mapping(map)
     }
-/*
-    override static func newInstance(map: Map) -> Mappable? {
+
+    override class func newInstance(map: Map) -> Mappable? {
         return <?php echo ucfirst($d->name)?>(map)
     }
-*/
+
 
     override func mapping(map: Map) {
         super.mapping(map)
@@ -104,21 +104,23 @@ while ( $d ->iterateOnProperties() === true ) {
 
 
 
-class <?php echo 'CollectionOf'.ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
+class <?php echo Pluralization::pluralize($d->name).'Collection'?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
 
 
-    public var items:[<?php echo ucfirst($d->name)?>]?
+    var items:[<?php echo ucfirst($d->name)?>]?
 
     override init(){
+        super.init()
     }
 
     // MARK: NSCoding
 
     required init(coder decoder: NSCoder) {
-        items=decoder.decodeObjectForKey("items")
+        super.init(coder:decoder)
+        items=decoder.decodeObjectForKey("items") as? [<?php echo ucfirst($d->name)?>]
     }
 
-    func encodeWithCoder(aCoder: NSCoder) {
+    override func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(items,forKey:"items")
     }
 
@@ -129,15 +131,13 @@ class <?php echo 'CollectionOf'.ucfirst($d->name)?> : <?php echo GenerativeHelpe
      mapping(map)
     }
 
-    /*
 
-    static func newInstance(map: Map) -> Mappable? {
-    return <?php echo($h->classPrefix.'BaseModel')?>(map)
+    override class func newInstance(map: Map) -> Mappable? {
+    return <?php echo Pluralization::pluralize($d->name).'Collection'?>(map)
     }
 
-    */
 
-    func mapping(map: Map) {
+    override func mapping(map: Map) {
         items <- map["items"]
     }
 
