@@ -62,21 +62,30 @@ while ( $d ->iterateOnProperties() === true ) {
         echoIndent(cr(),0);
     }
 }?>
+
+<?php if( $modelsShouldConformToNSCoding ) {
+
+    echo('
+    // MARK: NSCoding
+
+    required init(coder decoder: NSCoder) {
+        super.init(coder: decoder)'.cr());
+    GenerativeHelperForSwift::echoBodyOfInitWithCoder($d, 2);
+    echo( '
+    }
+
+    override func encodeWithCoder(aCoder: NSCoder) {
+        super.encodeWithCoder(aCoder)'.cr());
+    GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d, 2);
+    echo('
+    }
+   ');
+    }
+?>
     override init(){
         super.init()
     }
 
-    // MARK: NSCoding
-
-    required init(coder decoder: NSCoder) {
-        super.init(coder: decoder)
-<?php GenerativeHelperForSwift::echoBodyOfInitWithCoder($d,2)?>
-    }
-
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)
-<?php GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d,2) ?>
-    }
 
     // MARK: Mappable
 
@@ -103,37 +112,37 @@ while ( $d ->iterateOnProperties() === true ) {
 }
 
 
-
 class <?php echo Pluralization::pluralize($d->name).'Collection'?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
 
 
     var items:[<?php echo ucfirst($d->name)?>]?
 
-    override init(){
-        super.init()
-    }
 
+    <?php if( $modelsShouldConformToNSCoding ) {
+    echo('
     // MARK: NSCoding
 
     required init(coder decoder: NSCoder) {
         super.init(coder:decoder)
-        items=decoder.decodeObjectForKey("items") as? [<?php echo ucfirst($d->name)?>]
+        items=decoder.decodeObjectForKey("items") as? ['.ucfirst($d->name).']
     }
 
     override func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(items,forKey:"items")
     }
-
+');
+}
+?>
     // MARK: Mappable
 
     required init?(_ map: Map) {
-     super.init()
-     mapping(map)
+        super.init(map)
+        mapping(map)
     }
 
 
     override class func newInstance(map: Map) -> Mappable? {
-    return <?php echo Pluralization::pluralize($d->name).'Collection'?>(map)
+        return <?php echo Pluralization::pluralize($d->name).'Collection'?>(map)
     }
 
 

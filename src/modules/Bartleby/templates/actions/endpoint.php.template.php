@@ -99,8 +99,8 @@ if($d->httpMethod=='POST') {
             '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');'
         )
         .'
-        if(!isset($obj)){
-          return new JsonResponse(\'Void submission\',400);
+        if(!isset($obj) || count($parameters->getDictionary())==0){
+          return new JsonResponse(\'Void submission\',406);
         }
         try {
             '.(($parameterIsNotAcollection)?
@@ -235,7 +235,7 @@ if($d->httpMethod=='POST') {
         (
         ($parameterIsNotAcollection)?
         '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
-        if(!isset($obj)){
+         if(!isset($obj) || count($parameters->getDictionary())==0){
           return new JsonResponse(\'Invalid void object\',406);
         }
         $q = array (\'_id\' =>$obj[\'_id\']);'

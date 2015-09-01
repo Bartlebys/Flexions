@@ -57,25 +57,31 @@ if ($d->containsParametersOutOfPath()) {
 
     }
 
-    echo ("
-
+    echo ('
     override init(){
         super.init()
     }
+');
+    if( $modelsShouldConformToNSCoding ) {
 
+    echo('
      // MARK: NSCoding
 
     required init(coder decoder: NSCoder) {
-        super.init(coder: decoder)".cr());
-    GenerativeHelperForSwift::echoBodyOfInitWithCoder($d,2);
-    echo("
-     }");
-    echo("
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)".cr());
-    GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d,2);
-    echo("    }
+        super.init(coder: decoder)'.cr());
+        GenerativeHelperForSwift::echoBodyOfInitWithCoder($d,2);
+        echo('
+    }
 
+    override func encodeWithCoder(aCoder: NSCoder) {
+        super.encodeWithCoder(aCoder)'.cr());
+    GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d,2);
+        echo('
+    }');
+
+    }
+
+    echo('
 
     // MARK: Mappable
 
@@ -83,23 +89,21 @@ if ($d->containsParametersOutOfPath()) {
         super.init(map)
         mapping(map)
     }
-/*
+
      override static func newInstance(map: Map) -> Mappable?{
-        return ".$d->class."Parameters(map)
+        return '.$d->class.'Parameters(map)
     }
-*/
+
     override func mapping(map: Map) {
-        super.mapping(map)".cr());
+        super.mapping(map)'.cr());
 
     while ( $d ->iterateOnParameters() === true ) {
         $property = $d->getParameter();
         $name = $property->name;
-       // if(!$d->parameterIsInPath($name)){
-            echoIndent($name . ' <- map["' . $name . '"]', 2);
+        echoIndent($name . ' <- map["' . $name . '"]', 2);
             if (!$d->lastParameter()) {
                 echoIndent(cr(),0);
             }
-        //}
     }
     echo ("
     }
@@ -139,7 +143,13 @@ if ($successP->type == FlexionsTypes::COLLECTION) {
     }
 }
 
-$resultSuccessTypeString=$successTypeString!=''?'result:'.$successTypeString:'';
+if($successP->isGeneratedType==true){
+    $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successTypeString));
+}else{
+    $successParameterName='result';
+}
+$resultSuccessTypeString=$successTypeString!=''?$successParameterName.':'.$successTypeString:'';
+
 if ($d->containsParametersOutOfPath()) {
     echoIndent('parameters:' . $d->class . 'Parameters,' . cr(), $pathVCounter>0?6:0);
     echoIndent('sucessHandler success:(' . $resultSuccessTypeString . ')->(),'.cr(), 6);
@@ -205,7 +215,7 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
                         $responseBlock .= stringIndent('if 200...299 ~= statusCode {'. cr(), 11);
                         $responseBlock .= stringIndent('if let JSONString = result.value as? String {' . cr(), 12);
                         $responseBlock .= stringIndent('if let instance = Mapper <' . $successTypeString . '>() . map(JSONString){' . cr(), 13);
-                        $responseBlock .= stringIndent('success(result: instance);' . cr(), 14);
+                        $responseBlock .= stringIndent('success('.$successParameterName.': instance);' . cr(), 14);
                         $responseBlock .= stringIndent('}else{'.cr(), 13);
                         $responseBlock .= stringIndent('let f=HTTPFailure()'.cr(), 14);
                         $responseBlock .= stringIndent('f.message="Deserialization issue"'.cr(), 14);
@@ -221,7 +231,7 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
                             $responseBlock .= stringIndent('success()'. cr(), 12);
                         }else{
                             $responseBlock .= stringIndent('if let r=result.value as? '.$successTypeString.'{'. cr(), 12);
-                            $responseBlock .= stringIndent('success(result:r)'. cr(), 13);
+                            $responseBlock .= stringIndent('success('.$successParameterName.':r)'. cr(), 13);
                             $responseBlock .= stringIndent('}else{'.cr(), 12);
                             $responseBlock .= stringIndent('let f=HTTPFailure()'. cr(), 13);
                             $responseBlock .= stringIndent('f.message="Casting error"'. cr(), 13);
@@ -251,7 +261,7 @@ if($successHasBeenDefined==false){
         $responseBlock .= stringIndent('success()'. cr(), 12);
     }else{
         $responseBlock .= stringIndent('if let r=result.value as? '.$successTypeString.'{'. cr(), 12);
-        $responseBlock .= stringIndent('success(result:r)'. cr(), 13);
+        $responseBlock .= stringIndent('success('.$successParameterName.':r)'. cr(), 13);
         $responseBlock .= stringIndent('}else{'.cr(), 12);
         $responseBlock .= stringIndent('let f=HTTPFailure()'. cr(), 13);
         $responseBlock .= stringIndent('f.message="Casting error"'. cr(), 13);
@@ -266,7 +276,7 @@ if($successHasBeenDefined==false){
 
 $block="                            ".($d->containsParametersOutOfPath()?"let dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)":"let dictionary:[String:AnyObject]=[:]")."
                                 let urlRequest=HTTPManager.mutableRequestWithHeaders(Method.".$d->httpMethod.", url: pathURL)
-                                let r:Request=request(ParameterEncoding.URL.encode(urlRequest, parameters: dictionary).0)
+                                let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: dictionary).0)
                                 r.responseJSON(completionHandler: { (request, response, result) -> Void in
                                   HTTPManager.requestHasEnded(request!)
                                     if result.isFailure {

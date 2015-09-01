@@ -20,35 +20,45 @@ if (isset ( $f )) {
 import Foundation
 import ObjectMapper
 
-class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
+class <?php echo($d->classPrefix.'BaseModel')?> : <?php if ($modelsShouldConformToNSCoding==true){ echo ('NSObject,NSCoding,Mappable{'); } else {echo ('Mappable{');}?>
 
-    // This id can be created locally or be created server side as a Mongo ID
-    internal var _UDID:String?
-    private var _mongoID:[String:String]=[:]
+    // This id is always  created locally and used as primary index by MONGO
+    internal var _id:String?
 
     var UDID:String{
         get{
-            if _UDID==nil {
-                _UDID=NSProcessInfo.processInfo().globallyUniqueString
-            }
-            return _UDID!
+            self._createUDIDifNecessary()
+            return _id!
+        }
+    }
+
+    private func _createUDIDifNecessary(){
+        if _id==nil {
+            _id=NSProcessInfo.processInfo().globallyUniqueString
         }
     }
 
 
-    override init(){
-        super.init()
-    }
 
+<?php if( $modelsShouldConformToNSCoding ) {
+
+echo('
     // MARK: NSCoding
 
+    override init(){
+        super.init()
+        self._createUDIDifNecessary()
+    }
+
     required init(coder decoder: NSCoder) {
-        _mongoID=decoder.decodeObjectForKey("_id") as! [String:String]
-        _UDID = _mongoID["$id"]
+        _id=decoder.decodeObjectForKey("_id") as? String
+         if _id==nil {
+            _id=NSProcessInfo.processInfo().globallyUniqueString
+        }
     }
 
     func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(_mongoID,forKey:"_id")
+        aCoder.encodeObject(_id,forKey:"_id")
     }
 
     // MARK: Mappable
@@ -57,7 +67,20 @@ class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
         super.init()
         mapping(map)
     }
+    ');
+}else{
+    echo('
+    init(){
+        self._createUDIDifNecessary()
+    }
 
+    required init?(_ map: Map) {
+        mapping(map)
+    }
+
+    ');
+}
+?>
 
     class func newInstance(map: Map) -> Mappable? {
         return <?php echo($d->classPrefix.'BaseModel')?>(map)
@@ -65,8 +88,10 @@ class <?php echo($d->classPrefix.'BaseModel')?>: NSObject,NSCoding,Mappable{
 
 
     func mapping(map: Map) {
-        _mongoID <- map["_id"]
-        _UDID = _mongoID["$id"]
+        _id <- map["_id"]
+        if _id==nil {
+            _id=NSProcessInfo.processInfo().globallyUniqueString
+        }
     }
 
 

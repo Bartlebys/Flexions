@@ -253,7 +253,12 @@ final class Hypotypose extends stdClass {
 
     public function removePrefixFromString($string){
         // $classNameWithoutPrefix=ucfirst(substr($d->class,strlen($h->classPrefix)));
-        return substr($string,strlen($this->classPrefix));;
+        if(isset($this->classPrefix) && strpos($string,$this->classPrefix)===0){
+            return substr($string,strlen($this->classPrefix));;
+        }else{
+            return $string;
+        }
+
     }
 
 
