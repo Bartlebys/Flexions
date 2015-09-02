@@ -66,17 +66,36 @@ function tabs($n=1){
  * @param int $n
  */
 function echoIndent($string,$n=1){
-	 echo stringIndent($string,$n);
-}
-
-function echoIndentCR($string,$n=1){
-	echo stringIndent($string,$n).cr();
+	 echo (stringIndent($string,$n));
 }
 
 function stringIndent($string,$n=1){
-	return tabs($n).$string;
+    if ($string==''){
+        return tabs($n).$string;
+    }
+	$newString='';
+	$lines=explode("\n",$string);
+    $counter=0;
+    $nbLines=count($lines);
+	foreach ($lines as $line) {
+        if($line!==''){
+            $newString .= tabs($n).$line;
+            if($counter>0){
+                $newString .= cr();
+            }
+        }
+        $counter++;
+	}
+	return $newString;
 }
 
+function echoIndentCR($string,$n=1){
+    echo (stringIndent($string,$n).cr());
+}
+
+function stringIndentCR($string,$n=1){
+    return stringIndent($string,$n).cr();
+}
 
 
 /**

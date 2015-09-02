@@ -22,48 +22,46 @@ import ObjectMapper
 // MARK: Model <?php echo ucfirst($d->name)?>
 
 class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>{
+
 <?php
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name = $property->name;
-    if($d->firstProperty()){
-        echoIndent(cr(),0);
-    }else{
-        echoIndent(cr(),0);
-    }
     if($property->description!=''){
-        echoIndent('//' .$property->description. cr(), 1);
+        echoIndentCR('//' .$property->description. cr(), 1);
     }
     if($property->type==FlexionsTypes::ENUM){
         $enumTypeName=ucfirst($name);
-        echoIndent('enum ' .$enumTypeName.':'.ucfirst($property->instanceOf). '{' . cr(), 1);
+        echoIndentCR('enum ' .$enumTypeName.':'.ucfirst($property->instanceOf). '{', 1);
         foreach ($property->enumerations as $element) {
             if($property->instanceOf==FlexionsTypes::STRING){
-                echoIndent('case ' .ucfirst($element).' = "'.$element.'"' . cr(), 2);
+                echoIndentCR('case ' .ucfirst($element).' = "'.$element.'"', 2);
             }else{
-                echoIndent('case ' .ucfirst($element).' = '.$element.'' . cr(), 2);
+                echoIndentCR('case ' .ucfirst($element).' = '.$element.'', 2);
             }
         }
-        echoIndent('}' . cr(), 1);
-        echoIndent('var ' . $name .':'.$enumTypeName.'?' . cr(), 1);
+        echoIndentCR('}', 1);
+        echoIndentCR('var ' . $name .':'.$enumTypeName.'?', 1);
     }else if($property->type==FlexionsTypes::COLLECTION){
-        echoIndent('var ' . $name .':['.ucfirst($property->instanceOf). ']?' . cr(), 1);
+        echoIndentCR('var ' . $name .':['.ucfirst($property->instanceOf). ']?', 1);
     }else if($property->type==FlexionsTypes::OBJECT){
-        echoIndent('var ' . $name .':'.ucfirst($property->instanceOf). '?' . cr(), 1);
+        echoIndentCR('var ' . $name .':'.ucfirst($property->instanceOf). '?', 1);
     }else{
         $nativeType=FlexionsSwiftLang::nativeTypeFor($property->type);
         if(strpos($nativeType,FlexionsTypes::NOT_SUPPORTED)===false){
-            echoIndent('var ' . $name .':'.$nativeType. '?' . cr(), 1);
+            echoIndentCR('var ' . $name .':'.$nativeType. '?', 1);
         }else{
-            echoIndent('var ' . $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type). cr(), 1);
+            echoIndentCR('var ' . $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type), 1);
         }
     }
-    if($d->lastProperty()){
-        echoIndent(cr(),0);
-    }
+
+    echoIndentCR('',0);
+
 }?>
 
-<?php if( $modelsShouldConformToNSCoding ) {
+<?php
+
+if( $modelsShouldConformToNSCoding ) {
 
     echo('
     // MARK: NSCoding
@@ -80,7 +78,8 @@ while ( $d ->iterateOnProperties() === true ) {
     echo('
     }
    ');
-    }
+}
+
 ?>
     override init(){
         super.init()
@@ -105,7 +104,7 @@ while ( $d ->iterateOnProperties() === true ) {
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name = $property->name;
-    echoIndent($name . ' <- map["' . $name . '"]' . cr(), 2);
+    echoIndentCR($name . ' <- map["' . $name . '"]', 2);
 }
 ?>
     }

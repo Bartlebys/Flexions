@@ -353,12 +353,7 @@ foreach ($d->entities as $entity ) {
               "404" : {
                         "description" : "'.ucfirst($pluralizedName).' not found"
               }
-            },
-            "security" : [
-              {
-                  "api_key" : []
-              }
-            ]
+            }
           }
         }'
     ;
@@ -401,12 +396,7 @@ foreach ($d->entities as $entity ) {
               "405" : {
                         "description" : "Validation exception"
               }
-            },
-            "security" : [
-                     {
-                      "api_key" : []
-                    }
-                ]
+            }
       }';
 
     $deleteCollectionBlock=',
@@ -500,12 +490,7 @@ foreach ($d->entities as $entity ) {
               "404" : {
                         "description" : "'.ucfirst($pluralizedName).' not found"
               }
-            },
-            "security" : [
-              {
-                  "api_key" : []
-              }
-            ]
+            }
           }
         }
       }'
