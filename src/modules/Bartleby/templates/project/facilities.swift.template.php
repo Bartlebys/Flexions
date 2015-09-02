@@ -58,11 +58,19 @@ class HTTPManager {
     }
 
 }
+struct HTTPFailure : CustomStringConvertible {
 
-class HTTPFailure {
+    var relatedURL:NSURL?
     var httpStatusCode:Int!=0
-    var message:String!=""
+    var message:String!="Undefined message"
     var infos:AnyObject?
+
+    internal var description: String {
+        get{
+            return "URL:\(relatedURL)\nHTTP Status Code:\(httpStatusCode)\nMessage:\(message)\nInfos:\(infos)"
+        }
+    }
+
 }
 
 class AuthorizationFacilities{
