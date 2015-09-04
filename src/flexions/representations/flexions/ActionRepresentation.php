@@ -259,7 +259,7 @@ class ActionRepresentation {
         }
         $default=new PropertyRepresentation();
         $default->name="default";
-        $default->type=FlexionsTypes::DICTIONARY;
+        $default->type=FlexionsTypes::VOID;
 
         return $default;
     }

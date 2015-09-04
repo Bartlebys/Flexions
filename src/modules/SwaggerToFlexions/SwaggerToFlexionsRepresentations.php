@@ -218,6 +218,11 @@ class SwaggerToFlexionsRepresentations {
 
                     foreach ($pathDescriptor as $method => $methodPathDescriptor) {
                         $className = '';
+
+                        // TEMPPPP
+                        if(!is_array($methodPathDescriptor)){
+                            $kkk="A";
+                        }
                         if (array_key_exists(SWAGGER_OPERATION_ID, $methodPathDescriptor)) {
                             $className = $nativePrefix . ucfirst($methodPathDescriptor[SWAGGER_OPERATION_ID]);
                         } else {

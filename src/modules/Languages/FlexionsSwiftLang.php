@@ -42,7 +42,7 @@ class FlexionsSwiftLang implements IFlexionsLanguageMapping {
             case FlexionsTypes::URL:
                 return 'NSURL';
             case FlexionsTypes::DICTIONARY:
-                return '[String:Any]';
+                return 'Dictionary<String, AnyObject>';
         }
         return FlexionsTypes::NOT_SUPPORTED;
     }

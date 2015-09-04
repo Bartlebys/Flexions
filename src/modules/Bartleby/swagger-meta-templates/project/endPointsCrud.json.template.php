@@ -82,7 +82,7 @@ foreach ($d->entities as $entity ) {
 
     // The read block is the only one with the id in the path
     $readBlock= '
-    "/'.lcfirst($name).'/{'.lcfirst($name).'Id}" : {
+        "/'.lcfirst($name).'/{'.lcfirst($name).'Id}" : {
         "get" : {
             "tags" : [
                 "'.$pluralizedName.'"
@@ -100,21 +100,19 @@ foreach ($d->entities as $entity ) {
                 "description" : "The unique identifier the the of '.$name.'",
                 "required" : true,
                 "type" : "string"
-              }
+              },
+
             ],
             "responses" : {
                     "200" : {
                         "description" : "successful operation",
-                "schema" : {
+                         "schema" : {
                             "$ref" : "#/definitions/'.ucfirst($name).'"
-                }
-              },
-              "400" : {
-                        "description" : "Invalid ID supplied"
-              },
-              "404" : {
-                        "description" : "'.ucfirst($name).' not found"
-              }
+                        }
+                    },
+                    "404" : {
+                         "description" : "'.ucfirst($name).' not found"
+                    }
             },
             "security" : [
               {
@@ -246,7 +244,8 @@ foreach ($d->entities as $entity ) {
                   "api_key" : []
               }
             ]
-        }';
+        }
+     ';
 
     $block=$readBlock;
     $block.=$createBlock;
@@ -264,7 +263,6 @@ foreach ($d->entities as $entity ) {
         $block.='}';
         $block.=',';
     }
-
 
 
     ////////////////////////////
@@ -336,16 +334,39 @@ foreach ($d->entities as $entity ) {
                  "items": {
                      "type": "string"
                   }
-              }
+              },
+              {
+                "in" : "body",
+                "name" : "result_fields",
+                "description" : "the result fields (MONGO DB)",
+                "required" : true,
+                "schema": {
+                            "type": "array",
+                            "items":
+                            {
+                                "type": "string"
+                             }
+                         }
+              },
+              {
+                "in" : "body",
+                "name" : "sort",
+                "description" : "the sort (MONGO DB)",
+                "required" : true,
+                "type":  "dictionary"
+               }
             ],
             "responses" : {
                "200" : {
-                        "description" : "successful operation",
-               "schema": {
-                    "type": "array",
-                    "items": {
-                    "$ref": "#/definitions/'.ucfirst($name).'"
-                }
+
+                       "description" : "successful operation",
+                       "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/'.ucfirst($name).'"
+                            }
+                       }
+
               },
               "400" : {
                         "description" : "Invalid IDS supplied"
@@ -355,7 +376,7 @@ foreach ($d->entities as $entity ) {
               }
             }
           }
-        }'
+        '
     ;
 
     $updateCollectionBlock=',
@@ -401,6 +422,7 @@ foreach ($d->entities as $entity ) {
 
     $deleteCollectionBlock=',
         "delete" : {
+
             "tags" : [
                 "'.$pluralizedName.'"
             ],
@@ -431,7 +453,7 @@ foreach ($d->entities as $entity ) {
             "responses" : {
                     "400" : {
                         "description" : "Invalid '.$pluralizedName.' value"
-              }
+                    }
             },
             "security" : [
               {
@@ -448,8 +470,14 @@ foreach ($d->entities as $entity ) {
     if($isUndeletable==false){
         $block.=$deleteCollectionBlock;
     }
-    $block.='}';
-    $block.=',';
+    if($isUnModifiable==true && $isUndeletable==true){
+        $block.=cr().'}';
+        $block.=',';
+    }else{
+        $block.=cr().'}';
+        $block.=',';
+    }
+
 
 
     ////////////////////////////
@@ -457,50 +485,75 @@ foreach ($d->entities as $entity ) {
     ////////////////////////////
 
 
-    $genericQueryGetBlock= '
+    $genericQueryGetPathBlock= '
         "/'.lcfirst($pluralizedName).'ByQuery" : {
-         "get" : {
-            "tags" : [
-                "'.$pluralizedName.'"
-            ],
-            "summary" : "Find '.$pluralizedName.' by query (check $q, $s, $f in Bartleby\'s MongoCallDataRawWrapper)",
-            "description" : "Returns a collection of '.$name.'",
-            "operationId" : "get'.ucfirst($pluralizedName).'ByQuery",
-            "produces" : [
-                    "application/json"
+            "get" : {
+                "tags" : [
+                    "'.$pluralizedName.'"
                 ],
-            "parameters" : [],
-            "responses" :
-            {
-               "200" : {
-                        "description" : "successful operation",
-               "schema": {
-                    "type": "array",
-                    "items": {
-                    "$ref": "#/definitions/'.ucfirst($name).'"
+                "summary" : "Find '.$pluralizedName.' by query (check $q, $s, $f in Bartleby\'s MongoCallDataRawWrapper)",
+                "description" : "Returns a collection of '.$name.'",
+                "operationId" : "get'.ucfirst($pluralizedName).'ByQuery",
+                "produces" : [
+                        "application/json"
+                    ],
+                 "parameters" : [
+                     {
+                        "in" : "body",
+                        "name" : "result_fields",
+                        "description" : "the result fields (MONGO DB)",
+                        "required" : true,
+                        "schema": {
+                                    "type": "array",
+                                    "items":
+                                    {
+                                        "type": "string"
+                                     }
+                                 }
+                      },
+                       {
+                        "in" : "body",
+                        "name" : "sort",
+                        "description" : "the sort (MONGO DB)",
+                        "required" : true,
+                        "type":  "dictionary"
+                      },
+                      {
+                        "in" : "body",
+                        "name" : "query",
+                        "description" : "the query (MONGO DB)",
+                        "required" : true,
+                        "type":  "dictionary"
+                      }
+                  ]
+                ,
+                "responses" : {
+                   "200" : {
+                             "description" : "successful operation",
+                              "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/'.ucfirst($name).'"
+                                    }
+                              }
+                   },
+                  "400" : {
+                            "description" : "Invalid IDS supplied"
+                  },
+                  "404" : {
+                            "description" : "'.ucfirst($pluralizedName).' not found"
+                  }
                 }
-              },
-
-              "204" : {
-                      "description" : "'.ucfirst($pluralizedName).' no supplied ids"
-              },
-              "400" : {
-                        "description" : "Invalid IDS supplied"
-              },
-              "404" : {
-                        "description" : "'.ucfirst($pluralizedName).' not found"
-              }
             }
-          }
         }
-      }'
+        '
     ;
-    $block.=$genericQueryGetBlock;
+    $block.=$genericQueryGetPathBlock;
     if(!$lastEntity){
         $block.=',';
+    }else{
     }
 
-    //$block.='}}}'.cr();
     echo $block;
 }
 ?>

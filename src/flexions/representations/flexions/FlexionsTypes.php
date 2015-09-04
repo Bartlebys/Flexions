@@ -30,6 +30,8 @@ class FlexionsTypes extends Enum {
     //
     const NOT_SUPPORTED='Not_Supported';
 
+    const VOID='void';
+
     /**
      * @return array
      */
@@ -48,7 +50,8 @@ class FlexionsTypes extends Enum {
             FlexionsTypes::OBJECT,
             FlexionsTypes::COLLECTION,
             FlexionsTypes::ENUM,
-            FlexionsTypes::NOT_SUPPORTED
+            FlexionsTypes::NOT_SUPPORTED,
+            FlexionsTypes::VOID
         );
     }
 }

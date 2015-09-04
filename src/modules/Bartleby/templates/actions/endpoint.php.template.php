@@ -73,10 +73,17 @@ while ($d->iterateOnParameters() === true) {
 // If there is no parameters it means it is a generic Get endpoint based on request.
 
 $lastParameterName=isset($name)?$name:'NO_PARAMETERS';
-$isGenericGETEndpoint=(($d->httpMethod=='GET')&& ($lastParameterName=='NO_PARAMETERS'));
+
+
+
+
 $parameterIsNotAcollection=(!$parameterIsAcollection);
-if ($isGenericGETEndpoint==true){
-   $parameterIsNotAcollection=false;
+
+$successP = $d->getSuccessResponse();
+if ($successP->type == FlexionsTypes::COLLECTION) {
+    $resultIsNotACollection = false;
+}else{
+    $resultIsNotACollection=true;
 }
 
 
@@ -93,7 +100,7 @@ if($d->httpMethod=='POST') {
         );
         '.
         (
-        ($parameterIsNotAcollection)?
+        ($parameterIsNotAcollection===true)?
             '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');'
             :
             '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');'
@@ -103,7 +110,7 @@ if($d->httpMethod=='POST') {
           return new JsonResponse(\'Void submission\',406);
         }
         try {
-            '.(($parameterIsNotAcollection)?
+            '.(($parameterIsNotAcollection===true)?
             '$r = $collection->insert ( $obj,$options );'
             :
             '$r = $collection->batchInsert( $obj,$options );'
@@ -123,58 +130,63 @@ if($d->httpMethod=='POST') {
                                             417
                                     );
         }
-        return new JsonResponse(NULL, 200);
+        return new JsonResponse(NULL,200);
      }'
     );
 }elseif ($d->httpMethod=='GET'){
+
+
+    $isGenericGETEndpoint=(strpos($d->class,'ByQuery')!==false);
+    $isGETByIdsEndpoint=(strpos($d->class,'ByIds')!==false);
+    if($isGenericGETEndpoint==false && $isGETByIdsEndpoint==false){
+        $isGETByIdEndpoint=true;
+    }else{
+        $isGETByIdEndpoint=false;
+    }
+
+
 
     echo('
      function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
         /* @var \MongoCollection */
-        $collection = $db->'.$d->collectionName.';
-        // result fields
-        $f=$parameters->getValueForKey(MongoCallDataRawWrapper::result_fields);
-        '.
-    (
+        $collection = $db->'.$d->collectionName.';'.cr());
 
-             ($parameterIsNotAcollection)?
-
-        '$q = array (\'_id\' =>$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.'));'
-
-            :
-        ''.
-    (
-
-            ($isGenericGETEndpoint)?
-        '//we use the parametric query
-        $q=$parameters->getValueForKey(MongoCallDataRawWrapper::query);
+    if ($isGETByIdEndpoint===true){
+        //echo('// $isGETByIdEndpoint');
+        echo(
+'         $q = array (\'_id\' =>$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.'));
         if (isset($q)&& count($q)>0){
         }else{
             return new JsonResponse(\'Query is void\',412);
-        }'
-            :
-
-        '$ids=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+        }');
+    }elseif ($isGETByIdsEndpoint===true){
+        echo(
+'        $ids=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+        $f=$parameters->getValueForKey(MongoCallDataRawWrapper::result_fields);
         if(isset ($ids) && count($ids)){
             $q = array( \'_id\'=>array( \'$in\' => $ids ));
         }else{
             return new JsonResponse(NULL,204);
         }'
-    )
+    );
+    } elseif ($isGenericGETEndpoint===true){
+        echo(
+'       $q = $parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+       $f=$parameters->getValueForKey('.$callDataClassName.'::result_fields);');
+    }
 
-)
-        .'
+
+    echo('
         try {'.
     (
 
-        ($parameterIsNotAcollection)?'
+        ($resultIsNotACollection===true)?
 
-           if(isset($f)){
-                $r = $collection->findOne( $q , $f );
-           }else{
-                $r = $collection->findOne($q);
-           }
+            // RESULT IS NOT A COLLECTION
+
+            '
+            $r = $collection->findOne($q);
             if (isset($r)) {
                 return new JsonResponse($r,200);
             } else {
@@ -182,22 +194,23 @@ if($d->httpMethod=='POST') {
             }'
 
             :
+            // RESULT IS A COLLECTION
 
             '
-           $r=array();
+           $r=array(\'items\'=>array());
            if(isset($f)){
                 $cursor = $collection->find( $q , $f );
            }else{
                 $cursor = $collection->find($q);
            }
            // Sort ?
-           $s=$parameters->getValueForKey(MongoCallDataRawWrapper::sort);
+           $s=$parameters->getValueForKey('.$callDataClassName.'::sort);
            if (isset($s) && count($s)>0){
               $cursor=$cursor->sort($s);
            }
            if ($cursor->count ( TRUE ) > 0) {
 			foreach ( $cursor as $obj ) {
-				$r [] = $obj;
+				$r[\'items\'][] = $obj;
 			}
 		   }
 
@@ -206,8 +219,7 @@ if($d->httpMethod=='POST') {
             } else {
                 return new JsonResponse(NULL,404);
             }'
-    )
-            .'
+    ) .'
        } catch ( \Exception $e ) {
             return new JsonResponse( array (\'code\'=>$e->getCode(),
                                             \'message\'=>$e->getMessage(),
@@ -218,8 +230,11 @@ if($d->httpMethod=='POST') {
                                             417
                                     );
         }
-        return new JsonResponse(NULL, 200);
+        return new JsonResponse(NULL,200);
      }');
+
+
+
 }elseif ($d->httpMethod=='PUT'){
     echo('
     function call('.$callDataClassName.' $parameters) {
@@ -233,7 +248,7 @@ if($d->httpMethod=='POST') {
         );
         '.
         (
-        ($parameterIsNotAcollection)?
+        ($parameterIsNotAcollection===true)?
         '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
          if(!isset($obj) || count($parameters->getDictionary())==0){
           return new JsonResponse(\'Invalid void object\',406);
@@ -247,7 +262,7 @@ if($d->httpMethod=='POST') {
         )
         .'
         try {
-            '.(($parameterIsNotAcollection)?
+            '.(($parameterIsNotAcollection===true)?
             '$r = $collection->update ($q, $obj,$options );
             if ($r[\'ok\']==1) {
               if(array_key_exists(\'updatedExisting\',$r)){
@@ -290,7 +305,7 @@ if($d->httpMethod=='POST') {
                                             417
                                     );
         }
-        return new JsonResponse(NULL, 200);
+        return new JsonResponse(NULL,200);
      }'
     );
 }elseif ($d->httpMethod=='DELETE'){
@@ -307,7 +322,7 @@ if($d->httpMethod=='POST') {
         );
         '.
     (
-        ($parameterIsNotAcollection)?
+        ($parameterIsNotAcollection===true)?
 
             '$q = array (\'_id\' =>$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.'));'
 
@@ -343,7 +358,7 @@ if($d->httpMethod=='POST') {
                                             417
                                     );
         }
-        return new JsonResponse(NULL, 200);
+        return new JsonResponse(NULL,200);
      }'
     );
 }else{

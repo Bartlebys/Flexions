@@ -60,7 +60,6 @@ if ($d->containsParametersOutOfPath()) {
             }
         }
     }
-
     echo ('
     override init(){
         super.init()
@@ -138,7 +137,7 @@ if(count($pathVariables)>0){
 $successP = $d->getSuccessResponse();
 $successTypeString = '';
 if ($successP->type == FlexionsTypes::COLLECTION) {
-    $successTypeString = Pluralization::pluralize($successP->instanceOf).'Collection';//'CollectionOf' . ucfirst($successP->instanceOf) . '';
+    $successTypeString = Pluralization::pluralize($successP->instanceOf).'Collection';
 } else if ($successP->type == FlexionsTypes::OBJECT) {
     $successTypeString = ucfirst($successP->instanceOf);
 } else if ($successP->type == FlexionsTypes::DICTIONARY) {
@@ -236,8 +235,13 @@ if let instance = Mapper <' . $successTypeString . '>() . map(result.value){
 }
 
 if( ! isset($successMicroBlock)){
-    $successMicroBlock =stringIndent(
-        '
+
+    if($successTypeString==''){
+        // there is no return type
+        $successMicroBlock =stringIndentCR('success()',4);
+    }else{
+        $successMicroBlock =stringIndent(
+            '
 if let r=result.value as? ' . $successTypeString . '{
     success(' . $successParameterName . ':r)
  }else{
@@ -247,7 +251,10 @@ if let r=result.value as? ' . $successTypeString . '{
     f.message="Deserialization issue"
     f.infos=response
     failure(result: f)
-}',5);
+}',2);
+    }
+
+
 }
 
 $parameterEncodingString='JSON';
@@ -271,10 +278,10 @@ if !HTTPManager.isAuthenticated {
     echoIndentCR(
 '
 if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("'.$path.'") {
-     '.(($d->containsParametersOutOfPath()?'let dictionary:[String:AnyObject]?=Mapper().toJSON(parameters)':'let dictionary:[String:AnyObject]=[:]')).'
+    '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
     let urlRequest=HTTPManager.mutableRequestWithHeaders(Method.'.$d->httpMethod.', url: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
-    r.responseJSON(completionHandler: { (request, response, result) -> Void in
+    r.'.(($successTypeString=='')?'responseString':'responseJSON').'(completionHandler: { (request, response, result) -> Void in
         HTTPManager.requestHasEnded(request!)
         if result.isFailure {
             var f=HTTPFailure()

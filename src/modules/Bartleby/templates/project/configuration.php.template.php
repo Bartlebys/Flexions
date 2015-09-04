@@ -69,7 +69,7 @@ foreach ($d->actions as $action ) {
     $string= '\''.$action->httpMethod.':/'.lcfirst($path).'\'=>array(\''.$classNameWithoutPrefix.'\',\'call\'),';
     if(!in_array($string,$history)){
         $history[]=$string;
-        echoIndent($string.cr(),3);
+        echoIndentCR($string,3);
     }
 }
 ?>

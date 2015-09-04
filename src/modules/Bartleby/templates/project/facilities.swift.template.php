@@ -19,6 +19,7 @@ if (isset ( $f )) {
 import Foundation
 import Alamofire
 
+
 class Configuration {
 
     static let baseUrl=NSURL(string:"<?php echo($d->baseUrl)?>")
