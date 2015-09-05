@@ -110,6 +110,7 @@ while ( $d ->iterateOnProperties() === true ) {
     }
 }
 
+<?php /*
 
 class <?php echo Pluralization::pluralize($d->name).'Collection'?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
 
@@ -150,5 +151,5 @@ class <?php echo Pluralization::pluralize($d->name).'Collection'?> : <?php echo 
     }
 
 }
-
+*/?>
 <?php /*<- END OF TEMPLATE */?>

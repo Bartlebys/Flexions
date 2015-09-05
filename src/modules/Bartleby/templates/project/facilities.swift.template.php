@@ -68,7 +68,7 @@ struct HTTPFailure : CustomStringConvertible {
 
     internal var description: String {
         get{
-            return "URL:\(relatedURL)\nHTTP Status Code:\(httpStatusCode)\nMessage:\(message)\nInfos:\(infos)"
+            return "\nURL:\(relatedURL)\nHTTP Status Code:\(httpStatusCode)\nMessage:\(message)\nInfos:\(infos)"
         }
     }
 

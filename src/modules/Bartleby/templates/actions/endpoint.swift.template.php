@@ -137,11 +137,11 @@ if(count($pathVariables)>0){
 $successP = $d->getSuccessResponse();
 $successTypeString = '';
 if ($successP->type == FlexionsTypes::COLLECTION) {
-    $successTypeString = Pluralization::pluralize($successP->instanceOf).'Collection';
+    $successTypeString = '['.$successP->instanceOf.']';
 } else if ($successP->type == FlexionsTypes::OBJECT) {
     $successTypeString = ucfirst($successP->instanceOf);
 } else if ($successP->type == FlexionsTypes::DICTIONARY) {
-    $successTypeString = '[String:Any]';
+    $successTypeString = 'Dictionary<String, AnyObject>';
 }else {
     $nativeType = FlexionsSwiftLang::nativeTypeFor($successP->type);
     if($nativeType==FlexionsTypes::NOT_SUPPORTED){
@@ -151,12 +151,23 @@ if ($successP->type == FlexionsTypes::COLLECTION) {
     }
 }
 
-if($successP->isGeneratedType==true){
-    $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successTypeString));
+$resultSuccessIsACollection=($successP->type == FlexionsTypes::COLLECTION);
+
+
+if($resultSuccessIsACollection){
+    $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successP->instanceOf));
 }else{
-    $successParameterName='result';
+    if($successP->isGeneratedType==true){
+        $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successTypeString));
+    }else{
+        $successParameterName='result';
+    }
 }
+
+
 $resultSuccessTypeString=$successTypeString!=''?$successParameterName.':'.$successTypeString:'';
+
+
 
 if ($d->containsParametersOutOfPath()) {
     echoIndentCR('parameters:' . $d->class . 'Parameters,' , $pathVCounter>0?6:0);
@@ -218,14 +229,13 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
             if($responsePropertyRepresentation->isGeneratedType) {
                 // We wanna cast the result if there is one specified
                 $successMicroBlock = stringIndent(
-'
-if let instance = Mapper <' . $successTypeString . '>() . map(result.value){
+''.(($resultSuccessIsACollection)?'if let instance = Mapper <' . $successP->instanceOf . '>().mapArray(result.value){':'if let instance = Mapper <' . $successTypeString . '>().map(result.value){').'
     success(' . $successParameterName . ': instance)
   }else{
     var f=HTTPFailure()
     f.relatedURL=request?.URL
     f.httpStatusCode=statusCode
-    f.message="Deserialization issue"
+    f.message="Deserialization issue\n\(result.value)"
     f.infos=response
     failure(result: f)
 }',5);
@@ -248,7 +258,7 @@ if let r=result.value as? ' . $successTypeString . '{
     var f=HTTPFailure()
     f.relatedURL=request?.URL
     f.httpStatusCode=statusCode
-    f.message="Deserialization issue"
+    f.message="Deserialization issue\n\(result.value)"
     f.infos=response
     failure(result: f)
 }',2);
@@ -288,7 +298,7 @@ if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("'.$path.'") 
             if let r = response{
                 f.relatedURL=request?.URL
                 f.httpStatusCode=r.statusCode
-                f.message=NSHTTPURLResponse.localizedStringForStatusCode( f.httpStatusCode)
+                f.message="\(result.value)"
                 f.infos=r
             }else{
                 f.relatedURL=request?.URL
@@ -306,7 +316,7 @@ if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("'.$path.'") 
                     var f=HTTPFailure()
                     f.relatedURL=request?.URL
                     f.httpStatusCode=statusCode
-                    f.message=NSHTTPURLResponse.localizedStringForStatusCode(statusCode)
+                    f.message="\(result.value)"
                     f.infos=response
                     failure(result: f)
                 }

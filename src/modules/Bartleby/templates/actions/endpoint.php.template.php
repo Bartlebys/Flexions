@@ -86,8 +86,16 @@ if ($successP->type == FlexionsTypes::COLLECTION) {
     $resultIsNotACollection=true;
 }
 
+$isGenericGETEndpoint=(strpos($d->class,'ByQuery')!==false);
+$isGETByIdsEndpoint=(strpos($d->class,'ByIds')!==false);
+if($isGenericGETEndpoint==false && $isGETByIdsEndpoint==false){
+    $isGETByIdEndpoint=true;
+}else{
+    $isGETByIdEndpoint=false;
+}
 
-if($d->httpMethod=='POST') {
+
+if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
     echo('
     function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
@@ -133,17 +141,7 @@ if($d->httpMethod=='POST') {
         return new JsonResponse(NULL,200);
      }'
     );
-}elseif ($d->httpMethod=='GET'){
-
-
-    $isGenericGETEndpoint=(strpos($d->class,'ByQuery')!==false);
-    $isGETByIdsEndpoint=(strpos($d->class,'ByIds')!==false);
-    if($isGenericGETEndpoint==false && $isGETByIdsEndpoint==false){
-        $isGETByIdEndpoint=true;
-    }else{
-        $isGETByIdEndpoint=false;
-    }
-
+}elseif ( $d->httpMethod=='GET' || $isGenericGETEndpoint===true ){
 
 
     echo('
@@ -162,8 +160,8 @@ if($d->httpMethod=='POST') {
         }');
     }elseif ($isGETByIdsEndpoint===true){
         echo(
-'        $ids=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
-        $f=$parameters->getValueForKey(MongoCallDataRawWrapper::result_fields);
+'        $ids=$parameters->getValueForKey('.$callDataClassName.'::ids);
+        $f=$parameters->getValueForKey('.$callDataClassName.'::result_fields);
         if(isset ($ids) && count($ids)){
             $q = array( \'_id\'=>array( \'$in\' => $ids ));
         }else{
@@ -197,20 +195,20 @@ if($d->httpMethod=='POST') {
             // RESULT IS A COLLECTION
 
             '
-           $r=array(\'items\'=>array());
+           $r=array();
            if(isset($f)){
                 $cursor = $collection->find( $q , $f );
            }else{
                 $cursor = $collection->find($q);
            }
            // Sort ?
-           $s=$parameters->getValueForKey('.$callDataClassName.'::sort);
+           $s=$parameters->getCastedDictionaryForKey('.$callDataClassName.'::sort);
            if (isset($s) && count($s)>0){
               $cursor=$cursor->sort($s);
            }
            if ($cursor->count ( TRUE ) > 0) {
 			foreach ( $cursor as $obj ) {
-				$r[\'items\'][] = $obj;
+				$r[] = $obj;
 			}
 		   }
 

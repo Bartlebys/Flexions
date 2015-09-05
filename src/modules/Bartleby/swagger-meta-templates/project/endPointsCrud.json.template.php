@@ -89,7 +89,7 @@ foreach ($d->entities as $entity ) {
             ],
             "summary" : "Find '.$name.' by ID",
             "description" : "Returns a single '.$name.'",
-            "operationId" : "get'.ucfirst($name).'ById",
+            "operationId" : "read'.ucfirst($name).'ById",
             "produces" : [
                     "application/json"
                 ],
@@ -100,7 +100,7 @@ foreach ($d->entities as $entity ) {
                 "description" : "The unique identifier the the of '.$name.'",
                 "required" : true,
                 "type" : "string"
-              },
+              }
 
             ],
             "responses" : {
@@ -320,7 +320,7 @@ foreach ($d->entities as $entity ) {
             ],
             "summary" : "Find '.$pluralizedName.' by ID",
             "description" : "Returns a collection of '.$name.'",
-            "operationId" : "get'.ucfirst($pluralizedName).'ByIds",
+            "operationId" : "read'.ucfirst($pluralizedName).'ByIds",
             "produces" : [
                     "application/json"
                 ],
@@ -485,15 +485,18 @@ foreach ($d->entities as $entity ) {
     ////////////////////////////
 
 
+    // We use POST to pass a query
+    // Other Reading endpoint are cachable not those one ()
+
     $genericQueryGetPathBlock= '
         "/'.lcfirst($pluralizedName).'ByQuery" : {
-            "get" : {
+            "post" : {
                 "tags" : [
                     "'.$pluralizedName.'"
                 ],
                 "summary" : "Find '.$pluralizedName.' by query (check $q, $s, $f in Bartleby\'s MongoCallDataRawWrapper)",
                 "description" : "Returns a collection of '.$name.'",
-                "operationId" : "get'.ucfirst($pluralizedName).'ByQuery",
+                "operationId" : "read'.ucfirst($pluralizedName).'ByQuery",
                 "produces" : [
                         "application/json"
                     ],
