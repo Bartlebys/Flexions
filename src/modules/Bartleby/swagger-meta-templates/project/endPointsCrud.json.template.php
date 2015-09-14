@@ -113,12 +113,7 @@ foreach ($d->entities as $entity ) {
                     "404" : {
                          "description" : "'.ucfirst($name).' not found"
                     }
-            },
-            "security" : [
-              {
-                  "api_key" : []
-              }
-            ]
+            }
           }
         },'
     ;
@@ -154,12 +149,7 @@ foreach ($d->entities as $entity ) {
                 "405" : {
                     "description" : "Invalid input"
           }
-        },
-        "security" : [
-          {
-              "api_key" : []
-          }
-        ]
+        }
       }
     ';
 
@@ -200,12 +190,7 @@ foreach ($d->entities as $entity ) {
           "405" : {
                     "description" : "Validation exception"
           }
-        },
-        "security" : [
-          {
-              "api_key" : []
-          }
-        ]
+        }
       }';
 
     $deleteBlock=',
@@ -221,12 +206,6 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
-                "name" : "api_key",
-                "in" : "header",
-                "required" : false,
-                "type" : "string"
-              },
-              {
                 "name" : "'.lcfirst($name).'Id",
                 "in" : "path",
                 "description" : "The identifier of the '.ucfirst($name).' to be deleted",
@@ -238,12 +217,7 @@ foreach ($d->entities as $entity ) {
                     "400" : {
                         "description" : "Invalid '.$name.' value"
               }
-            },
-            "security" : [
-              {
-                  "api_key" : []
-              }
-            ]
+            }
         }
      ';
 
@@ -305,12 +279,7 @@ foreach ($d->entities as $entity ) {
                     "405" : {
                         "description" : "Invalid input"
                      }
-            },
-            "security" : [
-              {
-                "api_key" : []
-              }
-            ]
+            }
      },
     ';
 
@@ -434,12 +403,6 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
-                "name" : "api_key",
-                "in" : "header",
-                "required" : false,
-                "type" : "string"
-              },
-              {
                 "name" : "ids",
                 "in" : "path",
                 "description" : "The ids of '.$pluralizedName.' to delete",
@@ -454,12 +417,7 @@ foreach ($d->entities as $entity ) {
                     "400" : {
                         "description" : "Invalid '.$pluralizedName.' value"
                     }
-            },
-            "security" : [
-              {
-                  "api_key" : []
-              }
-            ]
+            }
         }';
 
     $block.=$createCollectionBlock;

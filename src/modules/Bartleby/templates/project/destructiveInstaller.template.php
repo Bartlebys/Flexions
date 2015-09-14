@@ -23,6 +23,9 @@ namespace Bartleby;
 use \MongoClient;
 require_once __DIR__.'/Configuration.php';
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $configuration=new Configuration(__DIR__,BARTLEBY_ROOT_FOLDER);
 
 function logMessage($message=""){
@@ -62,8 +65,8 @@ foreach ($d->entities as $entity ) {
         continue;
     }
     $pluralized=lcfirst(Pluralization::pluralize($name));
-    echoIndent('logMessage("Creating the '.$pluralized.' collection");'.cr(),0);
-    echoIndent('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");'.cr(),0);
+    echoIndentCR('logMessage("Creating the '.$pluralized.' collection");',0);
+    echoIndentCR('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");',0);
 }
 ?>
 <?php /*<- END OF TEMPLATE */?>

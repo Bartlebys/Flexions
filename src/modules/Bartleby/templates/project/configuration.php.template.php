@@ -54,15 +54,53 @@ class GeneratedConfiguration extends MongoConfiguration {
         return new RoutesAliases($mapping);
     }
 
+/*
+    In your Configuration you can override the aliases.
+
+    protected function _getPagesRouteAliases () {
+        $routes=parent::_getEndPointsRouteAliases();
+        $mapping = array(
+        ''=>'Start',
+        'time'=>'Time',
+        '*' => 'NotFound'
+        );
+        $routes->addAliasesToMapping($mapping);
+    return $routes;
+    }
+
+    protected function _getEndPointsRouteAliases () {
+        $routes=parent::_getEndPointsRouteAliases();
+        $mapping = array(
+        'POST:/user/{userId}/comments'=>array('CommentsByUser','POST_method_for_demo'),
+        'DELETE:/user/{userId}/comments'=>array('CommentsByUser','DELETE'),
+        'time'=>'SSETime' // A server sent event sample
+        );
+        $routes->addAliasesToMapping($mapping);
+        return $routes;
+    }
+
+
+*/
+
     protected function _getEndPointsRouteAliases () {
         $mapping = array(
-            '/user/login' => 'Auth',// Will can use any the HTTP method (POST,GET,PUT,DELETE)
+            '/user/login' => 'Auth',// Will can use any the HTTP method (GET)
             '/user/logout' => array('Auth','DELETE'), // Will call explicitly DELETE (equivalent to explicit call of DELETE login)
 <?php
 $history=array();
 /* @var $d ProjectRepresentation */
 /* @var $action ActionRepresentation */
 foreach ($d->actions as $action ) {
+
+    $shouldBeExlcuded=false;
+    foreach ($h->excludePath as $pathToExclude ) {
+        if(strpos($action->class.'.php',$pathToExclude)!==false){
+            $shouldBeExlcuded=true;
+        }
+    }
+    if($shouldBeExlcuded==true){
+        continue;
+    }
     $path=$action->path;
     $path=ltrim($path,'/');
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));

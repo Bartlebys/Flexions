@@ -121,6 +121,17 @@ function hypotyposeToFiles() {
 			$path=$f->packagePath . $f->fileName;
 			// We put to file once only per destination
 			if(in_array($path, $history)==false){
+
+				$shouldBeExlcuded=false;
+				foreach ($h->excludePath as $pathToExclude ) {
+					if(strpos($path,$pathToExclude)!==false){
+						$shouldBeExlcuded=true;
+					}
+				}
+				if($shouldBeExlcuded==true){
+					continue;
+				}
+
 				$shouldBePreserved=false;
 				foreach ($h->preservePath as $pathToPreserve ) {
 					if(strpos($path,$pathToPreserve)!==false){

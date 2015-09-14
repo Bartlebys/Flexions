@@ -34,7 +34,7 @@ class <?php echo($d->classPrefix.'BaseModel')?> : <?php if ($modelsShouldConform
 
     private func _createUDIDifNecessary(){
         if _id==nil {
-            _id=NSProcessInfo.processInfo().globallyUniqueString
+            _id=NSUUID().UUIDString
         }
     }
 
@@ -53,7 +53,7 @@ echo('
     required init(coder decoder: NSCoder) {
         _id=decoder.decodeObjectForKey("_id") as? String
          if _id==nil {
-            _id=NSProcessInfo.processInfo().globallyUniqueString
+            _id=NSUUID().UUIDString
         }
     }
 
@@ -90,7 +90,7 @@ echo('
     func mapping(map: Map) {
         _id <- map["_id"]
         if _id==nil {
-            _id=NSProcessInfo.processInfo().globallyUniqueString
+            _id=NSUUID().UUIDString
         }
     }
 

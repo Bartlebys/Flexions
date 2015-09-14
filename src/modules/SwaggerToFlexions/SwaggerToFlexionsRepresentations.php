@@ -39,9 +39,8 @@ if (!defined('SWAGGER_VERSION')) {
 
 
 
-
 /**
- * We support partially SWAGGER 2.0 but
+ * We support partially SWAGGER 2.0
  * enough to modelize and generate APIS and Entities with Flexions.
  *
  * IMPORTANT to support login and logout generation you must include the signature in the path
@@ -219,10 +218,6 @@ class SwaggerToFlexionsRepresentations {
                     foreach ($pathDescriptor as $method => $methodPathDescriptor) {
                         $className = '';
 
-                        // TEMPPPP
-                        if(!is_array($methodPathDescriptor)){
-                            $kkk="A";
-                        }
                         if (array_key_exists(SWAGGER_OPERATION_ID, $methodPathDescriptor)) {
                             $className = $nativePrefix . ucfirst($methodPathDescriptor[SWAGGER_OPERATION_ID]);
                         } else {
@@ -287,7 +282,7 @@ class SwaggerToFlexionsRepresentations {
                                             $containsSignOutSignature=true;
                                         }
                                     }
-
+                                    
                                     if($containsSignInSignature==true){
                                         $action->security=$this->getContextPermissionByName($securityItemName,RelationToPermission::PROVIDES);
                                     }else if($containsSignOutSignature==true){

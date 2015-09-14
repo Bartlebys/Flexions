@@ -57,9 +57,16 @@ final class Hypotypose extends stdClass {
 
 
     /**
+     *  Excluded path are generated but not dumped
      * @var array
      */
     public $preservePath = array();
+
+    /**
+     * Excluded path are generated but not dumped
+     * @var array
+     */
+    public $excludePath = array();
 
 
     /**
