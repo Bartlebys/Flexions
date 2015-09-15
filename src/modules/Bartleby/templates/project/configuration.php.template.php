@@ -46,7 +46,48 @@ class GeneratedConfiguration extends MongoConfiguration {
         $this->_APN_PASS_PHRASE='donkeys_also_can_be_good_citizens';
         $this->_APN_PORT=2195;
 
+        $this->_configurePermissions();
+
     }
+
+    private function _configurePermissions(){
+
+        $this->_permissionsRules = array(
+        'Auth->GET' => array('level' => PERMISSION_NO_RESTRICTION),// (!) do not change
+        'Auth->DELETE' => array('level' => PERMISSION_NO_RESTRICTION), // (!) do not change  to allow logout even if there is no valid cookie.
+<?php
+$permissionHistory=array();
+/* @var $d ProjectRepresentation */
+/* @var $action ActionRepresentation */
+while ($d->iterateOnActions() ) {
+    $action=$d->getAction();
+    $shouldBeExlcuded=false;
+    foreach ($h->excludePath as $pathToExclude ) {
+        if(strpos($action->class.'.php',$pathToExclude)!==false){
+            $shouldBeExlcuded=true;
+        }
+    }
+    if($shouldBeExlcuded==true){
+        continue;
+    }
+
+    $path=$action->path;
+    $path=ltrim($path,'/');
+    $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
+
+
+    $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_IDENTIFIED_BY_COOKIE)";
+    if(!$d->lastAction()){
+        $string.=',';
+    }
+    if(!in_array($string,$permissionHistory)){
+        $permissionHistory[]=$string;
+        echoIndentCR($string,2);
+    }
+}
+?>      );
+    }
+
 
     protected function _getPagesRouteAliases () {
         $mapping = array(
@@ -90,8 +131,9 @@ class GeneratedConfiguration extends MongoConfiguration {
 $history=array();
 /* @var $d ProjectRepresentation */
 /* @var $action ActionRepresentation */
-foreach ($d->actions as $action ) {
 
+while ($d->iterateOnActions() ) {
+    $action=$d->getAction();
     $shouldBeExlcuded=false;
     foreach ($h->excludePath as $pathToExclude ) {
         if(strpos($action->class.'.php',$pathToExclude)!==false){
@@ -104,7 +146,10 @@ foreach ($d->actions as $action ) {
     $path=$action->path;
     $path=ltrim($path,'/');
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
-    $string= '\''.$action->httpMethod.':/'.lcfirst($path).'\'=>array(\''.$classNameWithoutPrefix.'\',\'call\'),';
+    $string= '\''.$action->httpMethod.':/'.lcfirst($path).'\'=>array(\''.$classNameWithoutPrefix.'\',\'call\')';
+    if(!$d->lastAction()){
+        $string.=',';
+    }
     if(!in_array($string,$history)){
         $history[]=$string;
         echoIndentCR($string,3);

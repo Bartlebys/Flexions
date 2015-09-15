@@ -170,7 +170,10 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
     );
     } elseif ($isGenericGETEndpoint===true){
         echo(
-'       $q = $parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+'      $q = $parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+       if(!isset($q)){
+           return new JsonResponse(NULL,417);
+       }
        $f=$parameters->getValueForKey('.$callDataClassName.'::result_fields);');
     }
 

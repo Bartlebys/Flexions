@@ -90,7 +90,7 @@ class ProjectRepresentation {
         if ($this->_actionIndex < count($this->actions)) {
             return true;
         } else {
-            // Reinitialise
+            // Reinitialize
             $this->_actionIndex = -1;
             return false;
         }
@@ -108,6 +108,23 @@ class ProjectRepresentation {
         }
         return null;
     }
+
+
+    /**
+     *
+     * @return boolean
+     */
+    public function firstAction(){
+        return( $this->_actionIndex==0);
+    }
+    /**
+     *
+     * @return boolean
+     */
+    public function lastAction(){
+        return ( $this->_actionIndex== count($this->actions)-1);
+    }
+
 
 
     // Entities
@@ -145,6 +162,23 @@ class ProjectRepresentation {
         }
         return null;
     }
+
+    /**
+     *
+     * @return boolean
+     */
+    public function firstEntity(){
+        return( $this->_entityIndex==0);
+    }
+    /**
+     *
+     * @return boolean
+     */
+    public function lastEntity(){
+        return ( $this->_entityIndex== count($this->entities)-1);
+    }
+
+
 
 }
 
