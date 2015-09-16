@@ -49,8 +49,8 @@ class GenerativeHelperForSwift extends GenerativeHelper {
         if (isset($d) && isset($d->instanceOf)) {
             return $d->instanceOf;
         } else {
-            // Default base model
-            return $f->prefix . 'BaseModel';
+            // Default base model for bartleby
+            return 'IdentifiableObject';
         }
     }
 

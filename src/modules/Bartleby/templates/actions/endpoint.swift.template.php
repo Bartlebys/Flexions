@@ -28,7 +28,7 @@ import ObjectMapper
 
 // We generate the parameter class if there is a least one parameter.
 if ($d->containsParametersOutOfPath()) {
-    echoIndentCR('class ' . $d->class . 'Parameters : '. $f->prefix.'BaseModel'.' {', 0);
+    echoIndentCR('class ' . $d->class . 'Parameters : IdentifiableObject {', 0);
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
         $name = $parameter->name;
@@ -287,7 +287,7 @@ if !HTTPManager.isAuthenticated {
 }
     echoIndentCR(
 '
-if  let pathURL=Configuration.baseUrl?.URLByAppendingPathComponent("'.$path.'") {
+if  let pathURL=Configuration.baseUrl()?.URLByAppendingPathComponent("'.$path.'") {
     '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
     let urlRequest=HTTPManager.mutableRequestWithHeaders(Method.'.$d->httpMethod.', url: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
