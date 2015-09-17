@@ -229,10 +229,15 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
             if($responsePropertyRepresentation->isGeneratedType) {
                 // We wanna cast the result if there is one specified
                 $successMicroBlock = stringIndent(
-''.(($resultSuccessIsACollection)?'if let instance = Mapper <' . $successP->instanceOf . '>().mapArray(result.value){':'if let instance = Mapper <' . $successTypeString . '>().map(result.value){').'
+''.(($resultSuccessIsACollection)?
+    'if let instance = Mapper <' . $successP->instanceOf . '>().mapArray(result.value){
+    '
+    :'if let instance = Mapper <' . $successTypeString . '>().map(result.value){
+    ')
+.'
     success(' . $successParameterName . ': instance)
   }else{
-    var f=HTTPFailure()
+    let f=HTTPFailure()
     f.relatedURL=request?.URL
     f.httpStatusCode=statusCode
     f.message="Deserialization issue\n\(result.value)"
@@ -253,9 +258,10 @@ if( ! isset($successMicroBlock)){
         $successMicroBlock =stringIndent(
             '
 if let r=result.value as? ' . $successTypeString . '{
+
     success(' . $successParameterName . ':r)
  }else{
-    var f=HTTPFailure()
+    let f=HTTPFailure()
     f.relatedURL=request?.URL
     f.httpStatusCode=statusCode
     f.message="Deserialization issue\n\(result.value)"
@@ -278,7 +284,7 @@ if($authenticationRequired) {
     echoIndentCR(
 '
 if !HTTPManager.isAuthenticated {
-    var f=HTTPFailure()
+    let f=HTTPFailure()
     f.message="Authentication required"
     AuthorizationFacilities.authorizationRequired("for '.$d->class.'")
     failure(result: f)
@@ -294,7 +300,7 @@ if  let pathURL=Configuration.baseUrl()?.URLByAppendingPathComponent("'.$path.'"
     r.'.(($successTypeString=='')?'responseString':'responseJSON').'(completionHandler: { (request, response, result) -> Void in
         HTTPManager.requestHasEnded(request!)
         if result.isFailure {
-            var f=HTTPFailure()
+            let f=HTTPFailure()
             if let r = response{
                 f.relatedURL=request?.URL
                 f.httpStatusCode=r.statusCode
@@ -313,7 +319,7 @@ if  let pathURL=Configuration.baseUrl()?.URLByAppendingPathComponent("'.$path.'"
                     // Bartlby does not currenlty discriminate status codes 100 & 101
                     // and treats any status code >= 300 the same way
                     // because we consider that failures differentiations could be done by the caller.
-                    var f=HTTPFailure()
+                    let f=HTTPFailure()
                     f.relatedURL=request?.URL
                     f.httpStatusCode=statusCode
                     f.message="\(result.value)"
@@ -324,7 +330,7 @@ if  let pathURL=Configuration.baseUrl()?.URLByAppendingPathComponent("'.$path.'"
         }
     })
     } else {
-        var f=HTTPFailure()
+        let f=HTTPFailure()
         f.message="invalid pathURL for path:'.$path.'"
     }
    }

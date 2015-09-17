@@ -53,8 +53,10 @@ class GeneratedConfiguration extends MongoConfiguration {
     private function _configurePermissions(){
 
         $this->_permissionsRules = array(
+        'Reachable->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
         'Auth->GET' => array('level' => PERMISSION_NO_RESTRICTION),// (!) do not change
         'Auth->DELETE' => array('level' => PERMISSION_NO_RESTRICTION), // (!) do not change  to allow logout even if there is no valid cookie.
+        'SSETime->GET'=> array('level'=> PERMISSION_IDENTIFIED_BY_COOKIE),
 <?php
 $permissionHistory=array();
 /* @var $d ProjectRepresentation */

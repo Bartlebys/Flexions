@@ -23,6 +23,11 @@ import ObjectMapper
 
 class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>{
 
+    override func collectionName()->String{
+        return "<?php echo lcfirst(Pluralization::pluralize($d->name)) ?>"
+    }
+
+
 <?php
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
