@@ -28,7 +28,7 @@ import ObjectMapper
 
 // We generate the parameter class if there is a least one parameter.
 if ($d->containsParametersOutOfPath()) {
-    echoIndentCR('class ' . $d->class . 'Parameters : IdentifiableObject {', 0);
+    echoIndentCR('class ' . $d->class . 'Parameters : IMObject {', 0);
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
         $name = $parameter->name;
@@ -61,7 +61,7 @@ if ($d->containsParametersOutOfPath()) {
         }
     }
     echo ('
-    override init(){
+    required init(){
         super.init()
     }
 ');
@@ -93,9 +93,6 @@ if ($d->containsParametersOutOfPath()) {
         mapping(map)
     }
 
-     override static func newInstance(map: Map) -> Mappable?{
-        return '.$d->class.'Parameters(map)
-    }
 
     override func mapping(map: Map) {
         super.mapping(map)'.cr());
@@ -118,8 +115,7 @@ if ($d->containsParametersOutOfPath()) {
 
 
 ?>
-
-class <?php echo $d->class; ?>{
+@objc(<?php echo $d->class ?>) class <?php echo $d->class; ?> : NSObject{
 
     static func execute(<?php
 // We want to inject the path variable into the
@@ -293,12 +289,18 @@ if !HTTPManager.isAuthenticated {
 }
     echoIndentCR(
 '
-if  let pathURL=Configuration.baseUrl()?.URLByAppendingPathComponent("'.$path.'") {
+    let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("'.$path.'")
     '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
     let urlRequest=HTTPManager.mutableRequestWithHeaders(Method.'.$d->httpMethod.', url: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
-    r.'.(($successTypeString=='')?'responseString':'responseJSON').'(completionHandler: { (request, response, result) -> Void in
-        HTTPManager.requestHasEnded(request!)
+    r.'.(($successTypeString=='')?'responseString':'responseJSON').'{ response in
+
+        // ALAMOFIRE 3.0 migration in progress
+
+	    let request=response.request
+        let result=response.result
+        let response=response.response
+
         if result.isFailure {
             let f=HTTPFailure()
             if let r = response{
@@ -328,11 +330,7 @@ if  let pathURL=Configuration.baseUrl()?.URLByAppendingPathComponent("'.$path.'"
                 }
             }
         }
-    })
-    } else {
-        let f=HTTPFailure()
-        f.message="invalid pathURL for path:'.$path.'"
-    }
+      }
    }
 }',4);
 if($authenticationRequired) {

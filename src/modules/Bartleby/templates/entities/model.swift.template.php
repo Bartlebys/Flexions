@@ -21,11 +21,7 @@ import ObjectMapper
 
 // MARK: Model <?php echo ucfirst($d->name)?>
 
-class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>{
-
-    override func collectionName()->String{
-        return "<?php echo lcfirst(Pluralization::pluralize($d->name)) ?>"
-    }
+@objc(<?php echo ucfirst($d->name)?>) class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>{
 
 
 <?php
@@ -86,7 +82,7 @@ if( $modelsShouldConformToNSCoding ) {
 }
 
 ?>
-    override init(){
+    required init(){
         super.init()
     }
 
@@ -98,9 +94,11 @@ if( $modelsShouldConformToNSCoding ) {
         mapping(map)
     }
 
+    /*
     override class func newInstance(map: Map) -> Mappable? {
         return <?php echo ucfirst($d->name)?>(map)
     }
+*/
 
 
     override func mapping(map: Map) {
@@ -113,48 +111,12 @@ while ( $d ->iterateOnProperties() === true ) {
 }
 ?>
     }
-}
 
-<?php /*
+    // MARK : Identifiable
 
-class <?php echo Pluralization::pluralize($d->name).'Collection'?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?> {
-
-
-    var items:[<?php echo ucfirst($d->name)?>]?
-
-
-    <?php if( $modelsShouldConformToNSCoding ) {
-    echo('
-    // MARK: NSCoding
-
-    required init(coder decoder: NSCoder) {
-        super.init(coder:decoder)
-        items=decoder.decodeObjectForKey("items") as? ['.ucfirst($d->name).']
-    }
-
-    override func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(items,forKey:"items")
-    }
-');
-}
-?>
-    // MARK: Mappable
-
-    required init?(_ map: Map) {
-        super.init(map)
-        mapping(map)
-    }
-
-
-    override class func newInstance(map: Map) -> Mappable? {
-        return <?php echo Pluralization::pluralize($d->name).'Collection'?>(map)
-    }
-
-
-    override func mapping(map: Map) {
-        items <- map["items"]
+    override class var collectionName:String{
+        return "<?php echo lcfirst(Pluralization::pluralize($d->name)) ?>"
     }
 
 }
-*/?>
 <?php /*<- END OF TEMPLATE */?>
