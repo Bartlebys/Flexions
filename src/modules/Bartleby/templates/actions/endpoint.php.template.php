@@ -124,7 +124,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
             '$r = $collection->batchInsert( $obj,$options );'
         ).'
              if ($r[\'ok\']==1) {
-                return new JsonResponse(NULL,200);
+                return new JsonResponse(VOID_RESPONSE,200);
             } else {
                 return new JsonResponse($r,412);
             }
@@ -138,7 +138,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
                                             417
                                     );
         }
-        return new JsonResponse(NULL,200);
+        return new JsonResponse(VOID_RESPONSE,200);
      }'
     );
 }elseif ( $d->httpMethod=='GET' || $isGenericGETEndpoint===true ){
@@ -165,7 +165,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
         if(isset ($ids) && count($ids)){
             $q = array( \'_id\'=>array( \'$in\' => $ids ));
         }else{
-            return new JsonResponse(NULL,204);
+            return new JsonResponse(VOID_RESPONSE,204);
         }'
     );
     } elseif ($isGenericGETEndpoint===true){
@@ -231,7 +231,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
                                             417
                                     );
         }
-        return new JsonResponse(NULL,200);
+        return new JsonResponse(VOID_RESPONSE,200);
      }');
 
 
@@ -269,12 +269,12 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
               if(array_key_exists(\'updatedExisting\',$r)){
                     $existed=$r[\'updatedExisting\'];
                     if($existed==true){
-                        return new JsonResponse(NULL,200);
+                        return new JsonResponse(VOID_RESPONSE,200);
                     }else{
                         return new JsonResponse(NULL,404);
                     }
                 }
-                return new JsonResponse(NULL,200);
+                return new JsonResponse(VOID_RESPONSE,200);
             } else {
                 return new JsonResponse($r,412);
             }'
@@ -293,7 +293,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
                     return new JsonResponse($q,412);
                 }
              }
-            return new JsonResponse(NULL,200);'
+            return new JsonResponse(VOID_RESPONSE,200);'
         ).'
 
         } catch ( \Exception $e ) {
@@ -306,7 +306,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
                                             417
                                     );
         }
-        return new JsonResponse(NULL,200);
+        return new JsonResponse(VOID_RESPONSE,200);
      }'
     );
 }elseif ($d->httpMethod=='DELETE'){
@@ -333,7 +333,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
         if(isset ($ids) && count($ids)>0){
             $q = array( \'_id\' =>array( \'$in\' => $ids ));
         }else{
-            return new JsonResponse(NULL,204);
+            return new JsonResponse(VOID_RESPONSE,204);
         }'
 
     )
@@ -342,7 +342,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
             $r = $collection->remove ( $q,$options );
              if ($r[\'ok\']==1) {
                  if($r[\'n\']>=1){
-                     return new JsonResponse(NULL,200);
+                     return new JsonResponse(VOID_RESPONSE,200);
                  }else{
                      return new JsonResponse(NULL,404);
                  }
@@ -359,7 +359,7 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
                                             417
                                     );
         }
-        return new JsonResponse(NULL,200);
+        return new JsonResponse(VOID_RESPONSE,200);
      }'
     );
 }else{
