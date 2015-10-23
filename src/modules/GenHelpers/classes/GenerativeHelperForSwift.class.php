@@ -55,6 +55,12 @@ class GenerativeHelperForSwift extends GenerativeHelper {
     }
 
 
+
+    static function isAGeneratedSubClass($d){
+        /* @var $d EntityRepresentation */
+        return (isset($d) && isset($d->instanceOf));
+    }
+
     //  NSCODING support
 
     static function echoBodyOfInitWithCoder($d, $increment) {
@@ -194,6 +200,11 @@ class GenerativeHelperForSwift extends GenerativeHelper {
             }
         }
     }
+
+
+
+
+
 
 }
 

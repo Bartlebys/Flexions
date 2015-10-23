@@ -86,7 +86,6 @@ if( $modelsShouldConformToNSCoding ) {
         super.init()
     }
 
-
     // MARK: Mappable
 
     required init?(_ map: Map) {
@@ -94,11 +93,6 @@ if( $modelsShouldConformToNSCoding ) {
         mapping(map)
     }
 
-    /*
-    override class func newInstance(map: Map) -> Mappable? {
-        return <?php echo ucfirst($d->name)?>(map)
-    }
-*/
 
 
     override func mapping(map: Map) {
@@ -116,6 +110,76 @@ while ( $d ->iterateOnProperties() === true ) {
 
     override class var collectionName:String{
         return "<?php echo lcfirst(Pluralization::pluralize($d->name)) ?>"
+    }
+
+    override var d_collectionName:String{
+        return <?php echo ucfirst($d->name)?>.collectionName
+    }
+
+}
+
+
+    // MARK: -
+
+@objc(<?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?>) class <?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?> : IMObject,CollectibleCollection{
+
+    typealias Index=DictionaryIndex<String,<?php echo ucfirst($d->name)?>>
+
+    dynamic var items=Dictionary<String,<?php echo ucfirst($d->name)?>>()
+
+    // MARK: CollectionType (SequenceType,Indexable)
+
+    func generate() -> DictionaryGenerator<String,<?php echo ucfirst($d->name)?>> {
+        return items.generate()
+    }
+
+    var startIndex:Index{
+        return items.startIndex
+    }
+
+
+    var endIndex:Index{
+        return items.endIndex
+    }
+
+    subscript (idx: Index) -> (String,<?php echo ucfirst($d->name)?>){
+        return  items[idx]
+    }
+
+    // MARK: Identifiable
+
+
+    override class var collectionName:String{
+        return <?php echo ucfirst($d->name)?>.collectionName
+    }
+
+    override var d_collectionName:String{
+        return <?php echo ucfirst($d->name)?>.collectionName
+    }
+
+
+    // MARK: Mappable
+
+
+    override func mapping(map: Map) {
+        super.mapping(map)
+        items <- map["items"]
+    }
+
+    // MARK: Facilities
+
+    func add(object:<?php echo ucfirst($d->name)?>){
+        items[object.UDID]=object
+    }
+
+    func remove(object:<?php echo ucfirst($d->name)?>){
+        if let idx=items.indexForKey(object.UDID){
+            items.removeAtIndex(idx)
+        }
+    }
+
+    func objectWithUDID(UDID:String)-><?php echo ucfirst($d->name)?>?{
+        return items[UDID]
     }
 
 }

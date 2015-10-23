@@ -24,4 +24,5 @@ class GenerativeHelper{
         preg_match_all('/{(.*?)}/', $path, $matches);
         return $matches[1];
     }
+
 }
