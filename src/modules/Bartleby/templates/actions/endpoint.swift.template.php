@@ -28,7 +28,7 @@ import ObjectMapper
 
 // We generate the parameter class if there is a least one parameter.
 if ($d->containsParametersOutOfPath()) {
-    echoIndentCR('class ' . $d->class . 'Parameters : IMObject {', 0);
+    echoIndentCR('@objc('.$d->class.'Parameters) class ' . $d->class . 'Parameters : '.GenerativeHelperForSwift::getBaseClass($f,$d).' {', 0);
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
         $name = $parameter->name;
@@ -115,7 +115,7 @@ if ($d->containsParametersOutOfPath()) {
 
 
 ?>
-@objc(<?php echo $d->class ?>) class <?php echo $d->class; ?> : NSObject{
+@objc(<?php echo $d->class ?>) class <?php echo $d->class; ?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d) ?>{
 
     static func execute(<?php
 // We want to inject the path variable into the

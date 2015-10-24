@@ -121,7 +121,7 @@ while ( $d ->iterateOnProperties() === true ) {
 
     // MARK: -
 
-@objc(<?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?>) class <?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?> : IMObject,CollectibleCollection{
+@objc(<?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?>) class <?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>,CollectibleCollection{
 
     typealias Index=DictionaryIndex<String,<?php echo ucfirst($d->name)?>>
 

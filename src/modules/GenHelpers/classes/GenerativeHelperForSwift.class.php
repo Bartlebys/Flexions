@@ -50,7 +50,7 @@ class GenerativeHelperForSwift extends GenerativeHelper {
             return $d->instanceOf;
         } else {
             // Default base  for bartleby
-            return 'IMObject';
+            return 'JObject';
         }
     }
 
