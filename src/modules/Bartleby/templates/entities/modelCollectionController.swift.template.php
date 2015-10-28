@@ -19,10 +19,11 @@ if (isset ( $f )) {
 import Foundation
 import ObjectMapper
 
-// MARK: A collection contromller for <?php echo ucfirst($d->name)?>
+// MARK: A  collection controller for <?php echo ucfirst($d->name)?>
 
 // This controller implements data automation features.
-// it uses KVO , KVC , dynamic invocation, oS X cocoa bindings, etc ...
+// it uses KVO , KVC , dynamic invocation, oS X cocoa bindings,...
+// It should be used on documents and not very large collections as it is computationnally intensive
 @objc(<? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?>) class <? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?> : <?php echo GenerativeHelperForSwift::defaultBaseClass(); ?>,CollectibleCollection{
 
     weak var undoManager:NSUndoManager?
@@ -62,11 +63,11 @@ import ObjectMapper
     // MARK: Identifiable
 
     override class var collectionName:String{
-        return Project.collectionName
+        return <?php echo ucfirst($d->name)?>.collectionName
     }
 
     override var d_collectionName:String{
-        return Project.collectionName
+        return <?php echo ucfirst($d->name)?>.collectionName
     }
 
 

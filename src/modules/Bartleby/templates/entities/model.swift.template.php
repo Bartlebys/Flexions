@@ -118,36 +118,4 @@ while ( $d ->iterateOnProperties() === true ) {
 
 }
 
-
-    // MARK: -
-
-@objc(<?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?>) class <?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?> : <?php echo GenerativeHelperForSwift::defaultBaseClass(); ?>,CollectibleCollection{
-
-
-    dynamic var items:[<?php echo ucfirst($d->name)?>]=[<?php echo ucfirst($d->name)?>]()
-
-    // MARK: Identifiable
-
-    override class var collectionName:String{
-        return <?php echo ucfirst($d->name)?>.collectionName
-    }
-
-    override var d_collectionName:String{
-        return <?php echo ucfirst($d->name)?>.collectionName
-    }
-
-
-    // MARK: Mappable
-
-    override func mapping(map: Map) {
-        super.mapping(map)
-        items <- map["items"]
-    }
-
-    // MARK: Facilities ?
-
-    func add(object:<?php echo ucfirst($d->name)?>){
-        self.items.append(object)
-    }
-}
 <?php /*<- END OF TEMPLATE */?>
