@@ -121,33 +121,12 @@ while ( $d ->iterateOnProperties() === true ) {
 
     // MARK: -
 
-@objc(<?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?>) class <?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>,CollectibleCollection{
-
-    typealias Index=DictionaryIndex<String,<?php echo ucfirst($d->name)?>>
-
-    dynamic var items=Dictionary<String,<?php echo ucfirst($d->name)?>>()
-
-    // MARK: CollectionType (SequenceType,Indexable)
-
-    func generate() -> DictionaryGenerator<String,<?php echo ucfirst($d->name)?>> {
-        return items.generate()
-    }
-
-    var startIndex:Index{
-        return items.startIndex
-    }
+@objc(<?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?>) class <?php echo ucfirst(Pluralization::pluralize($d->name)).'Collection'?> : <?php echo GenerativeHelperForSwift::defaultBaseClass(); ?>,CollectibleCollection{
 
 
-    var endIndex:Index{
-        return items.endIndex
-    }
-
-    subscript (idx: Index) -> (String,<?php echo ucfirst($d->name)?>){
-        return  items[idx]
-    }
+    dynamic var items:[<?php echo ucfirst($d->name)?>]=[<?php echo ucfirst($d->name)?>]()
 
     // MARK: Identifiable
-
 
     override class var collectionName:String{
         return <?php echo ucfirst($d->name)?>.collectionName
@@ -160,27 +139,15 @@ while ( $d ->iterateOnProperties() === true ) {
 
     // MARK: Mappable
 
-
     override func mapping(map: Map) {
         super.mapping(map)
         items <- map["items"]
     }
 
-    // MARK: Facilities
+    // MARK: Facilities ?
 
     func add(object:<?php echo ucfirst($d->name)?>){
-        items[object.UDID]=object
+        self.items.append(object)
     }
-
-    func remove(object:<?php echo ucfirst($d->name)?>){
-        if let idx=items.indexForKey(object.UDID){
-            items.removeAtIndex(idx)
-        }
-    }
-
-    func objectWithUDID(UDID:String)-><?php echo ucfirst($d->name)?>?{
-        return items[UDID]
-    }
-
 }
 <?php /*<- END OF TEMPLATE */?>

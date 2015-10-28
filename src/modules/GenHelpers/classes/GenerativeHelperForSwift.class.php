@@ -50,10 +50,13 @@ class GenerativeHelperForSwift extends GenerativeHelper {
             return $d->instanceOf;
         } else {
             // Default base  for bartleby
-            return 'JObject';
+            return GenerativeHelperForSwift::defaultBaseClass();
         }
     }
 
+    static  function defaultBaseClass(){
+         return 'JObject';
+    }
 
 
     static function isAGeneratedSubClass($d){
