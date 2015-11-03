@@ -116,6 +116,15 @@ while ( $d ->iterateOnProperties() === true ) {
         return <?php echo ucfirst($d->name)?>.collectionName
     }
 
+
+    // MARK : Persistent
+
+    override func toPersistentRepresentation()->(UDID:String,collectionName:String,serializedUTF8String:String,A:Double,B:Double,C:Double,D:Double,E:Double,S:String){
+        var r=super.toPersistentRepresentation()
+        r.A=NSDate().timeIntervalSince1970
+        return r
+    }
+
 }
 
 <?php /*<- END OF TEMPLATE */?>

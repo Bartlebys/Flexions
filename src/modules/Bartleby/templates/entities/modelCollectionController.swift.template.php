@@ -24,7 +24,7 @@ import ObjectMapper
 // This controller implements data automation features.
 // it uses KVO , KVC , dynamic invocation, oS X cocoa bindings,...
 // It should be used on documents and not very large collections as it is computationnally intensive
-@objc(<? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?>) class <? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?> : <?php echo GenerativeHelperForSwift::defaultBaseClass(); ?>,CollectibleCollection{
+@objc(<? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?>) class <? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?> : <?php echo GenerativeHelperForSwift::defaultBaseClass(); ?>,CollectibleCollection,PersistencyPolicy{
 
     weak var undoManager:NSUndoManager?
 
@@ -216,6 +216,9 @@ import ObjectMapper
         super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
             return
         }
+        if let o = object as? JObject{
+            o.hasChanged=true
+        }
 
         if let undoManager = self.undoManager{
 
@@ -230,6 +233,15 @@ import ObjectMapper
             }
         }
 
+    }
+
+
+    func allowDistantPersistency()->Bool{
+         return true
+    }
+
+    func inMemory()->Bool{
+        return true // WE NEED TO QUALIFY DURING GENERATION COMMANDS SHOULD NOT BE IN MEMORY
     }
 
 
