@@ -24,17 +24,7 @@ import ObjectMapper
 // This controller implements data automation features.
 // it uses KVO , KVC , dynamic invocation, oS X cocoa bindings,...
 // It should be used on documents and not very large collections as it is computationnally intensive
-@objc(<? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?>) class <? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?> : <?php echo GenerativeHelperForSwift::defaultBaseClass(); ?>,CollectibleCollection,PersistencyPolicy{
-
-    weak var undoManager:NSUndoManager?
-
-#if os(OSX)
-    // When using cocoa bindings with an array controller
-    // You can set the arrayController for a seamless integration
-    weak var arrayController:NSArrayController?
-    // And also a tableview
-    weak var tableView: NSTableView?
-#endif
+@objc(<? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?>) class <? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?> : JAbstractCollectibleCollection{
 
     required init() {
         super.init()
@@ -84,129 +74,100 @@ import ObjectMapper
         items <- map["items"]
     }
 
-    // MARK: Facilities ?
+    // MARK: Add
 
-    func add(object:<?php echo ucfirst($d->name)?>){
-        self.items.append(object)
+    func add(item:<?php echo ucfirst($d->name)?>){
 
-        /*
+        // print("adding \(item) to the items array")
+
         if let undoManager = self.undoManager{
-        // Has an edit occurred already in this event?
-        if undo.groupingLevel > 0 {
-        // Close the last group
-        undo.endUndoGrouping()
-        // Open a new group
-        undo.beginUndoGrouping()
+            // Has an edit occurred already in this event?
+            if undoManager.groupingLevel > 0 {
+                // Close the last group
+                undoManager.endUndoGrouping()
+                // Open a new group
+                undoManager.beginUndoGrouping()
+            }
         }
+
+        if let arrayController = self.arrayController{
+            // Add it to the array controller's content array
+            arrayController.addObject(item)
+
+            // Re-sort (in case the use has sorted a column)
+            arrayController.rearrangeObjects()
+
+            // Get the sorted array
+            let sorted = arrayController.arrangedObjects as! [<?php echo ucfirst($d->name)?>]
+
+            if let tableView = self.tableView{
+                // Find the object just added
+                let row = sorted.indexOf(item)!
+                // Begin the edit in the first column
+                //print("starting edit of \(object) in row \(row)")
+                tableView.editColumn(0, row: row, withEvent: nil, select: true)
+            }
+
+        }else{
+            // Add directly to the collection
+            self.items.append(item)
         }
-        // Create the object
-        let employee = arrayController.newObject() as! Employee
-
-        // Add it to the array controller's content array
-        arrayController.addObject(employee)
-
-        // Re-sort (in case the use has sorted a column)
-        arrayController.rearrangeObjects()
-
-        // Get the sorted array
-        let sortedEmployees = arrayController.arrangedObjects as! [Employee]
-
-        // Find the object just added
-        let row = sortedEmployees.indexOf(employee)!
-
-        // Begin the edit in the first column
-        print("starting edit of \(employee) in row \(row)")
-        tableView.editColumn(0, row: row, withEvent: nil, select: true)
-        */
     }
 
-    /*
-    // MARK: - Actions
+    // MARK: Insert
 
-    @IBAction func addEmployee(sender: NSButton) {
-    let windowController = windowControllers[0]
-    let window = windowController.window!
+    func insertObject(item: <?php echo ucfirst($d->name)?>, inItemsAtIndex index: Int) {
 
-    let endedEditing = window.makeFirstResponder(window)
-    if !endedEditing {
-    print("Unable to end editing")
-    return
+        print("inserting \(item) to the items array")
+
+        // Add the inverse of this operation to the undo stack
+        if let undoManager: NSUndoManager = undoManager {
+            undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(items.count)
+            if !undoManager.undoing {
+                undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
+            }
+        }
+        items.append(item)
     }
 
-    let undo: NSUndoManager = undoManager!
 
-    // Has an edit occurred already in this event?
-    if undo.groupingLevel > 0 {
-    // Close the last group
-    undo.endUndoGrouping()
-    // Open a new group
-    undo.beginUndoGrouping()
+    // MARK: Remove
+
+    func removeObjectFromItemsAtIndex(index: Int) {
+        let item: <?php echo ucfirst($d->name)?> = items[index]
+        print("removing \(item) from the items array")
+
+        // Add the inverse of this operation to the undo stack
+        if let undoManager: NSUndoManager = undoManager {
+            undoManager.prepareWithInvocationTarget(self).insertObject(item, inItemsAtIndex: index)
+            if !undoManager.undoing {
+                undoManager.setActionName("Remove <?php echo ucfirst($d->name)?>")
+            }
+        }
+        // Remove the item from the array
+        items.removeAtIndex(index)
     }
-
-    // Create the object
-    let employee = arrayController.newObject() as! Employee
-
-    // Add it to the array controller's content array
-    arrayController.addObject(employee)
-
-    // Re-sort (in case the use has sorted a column)
-    arrayController.rearrangeObjects()
-
-    // Get the sorted array
-    let sortedEmployees = arrayController.arrangedObjects as! [Employee]
-
-    // Find the object just added
-    let row = sortedEmployees.indexOf(employee)!
-
-    // Begin the edit in the first column
-    print("starting edit of \(employee) in row \(row)")
-    tableView.editColumn(0, row: row, withEvent: nil, select: true)
-    }
-
-    // MARK: - Accessors
-
-    func insertObject(employee: Employee, inEmployeesAtIndex index: Int) {
-    print("adding \(employee) to the employees array")
-
-    // Add the inverse of this operation to the undo stack
-    let undo: NSUndoManager = undoManager!
-    undo.prepareWithInvocationTarget(self).removeObjectFromEmployeesAtIndex(employees.count)
-    if !undo.undoing {
-    undo.setActionName("Add Person")
-    }
-
-    employees.append(employee)
-    }
-
-    func removeObjectFromEmployeesAtIndex(index: Int) {
-    let employee: Employee = employees[index]
-
-    print("removing \(employee) from the employees array")
-
-    // Add the inverse of this operation to the undo stack
-    let undo: NSUndoManager = undoManager!
-    undo.prepareWithInvocationTarget(self).insertObject(employee, inEmployeesAtIndex: index)
-    if !undo.undoing {
-    undo.setActionName("Remove Person")
-    }
-
-    // Remove the employee from the array
-    employees.removeAtIndex(index)
-    }
-    */
 
     // MARK: - Key Value Observing
 
     private var KVOContext: Int = 0
 
     func startObserving(item: <?php echo ucfirst($d->name)?>) {
-        item.addObserver(self, forKeyPath: "name", options: .Old, context: &KVOContext)
-        item.addObserver(self, forKeyPath: "informativeString", options: .Old, context: &KVOContext)
+<?php
+while ( $d ->iterateOnProperties() === true ) {
+    $property = $d->getProperty();
+    $name = $property->name;
+    echoIndentCR('item.addObserver(self, forKeyPath: "'.$name.'", options: .Old, context: &KVOContext)',2);
+} ?>
     }
 
     func stopObserving(item: <?php echo ucfirst($d->name)?>) {
-        item.removeObserver(self, forKeyPath: "name", context: &KVOContext)
-        item.removeObserver(self, forKeyPath: "informativeString", context: &KVOContext)
+<?php
+while ( $d ->iterateOnProperties() === true ) {
+    $property = $d->getProperty();
+    $name = $property->name;
+    echoIndentCR('item.removeObserver(self, forKeyPath: "'.$name.'", context: &KVOContext)',2);
+} ?>
     }
 
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
@@ -233,17 +194,19 @@ import ObjectMapper
             }
         }
 
+        // Sort descriptors support
+        if let keyPath = keyPath {
+            if let arrayController = self.arrayController{
+                for sortDescriptor:NSSortDescriptor in arrayController.sortDescriptors{
+                    if sortDescriptor.key==keyPath {
+                        // Re-sort
+                        arrayController.rearrangeObjects()
+                    }
+                }
+            }
+        }
+
     }
-
-
-    func allowDistantPersistency()->Bool{
-         return true
-    }
-
-    func inMemory()->Bool{
-        return true // WE NEED TO QUALIFY DURING GENERATION COMMANDS SHOULD NOT BE IN MEMORY
-    }
-
 
 
 }

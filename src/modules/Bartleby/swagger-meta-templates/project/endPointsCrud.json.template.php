@@ -26,6 +26,7 @@ foreach ($d->entities as $entity ) {
 
 
     //$pluralized=lcfirst(P
+
     //luralization::pluralize($name));
     $counter++;
     $lastEntity=false;
