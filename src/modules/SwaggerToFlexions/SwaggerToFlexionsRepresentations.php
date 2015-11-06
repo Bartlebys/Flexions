@@ -176,16 +176,24 @@ class SwaggerToFlexionsRepresentations {
                         // Entity is not a simple object
                         if(array_key_exists(SWAGGER_ALL_OF,$descriptor)){
                             $allOF=$descriptor[SWAGGER_ALL_OF];
-
                             $refs=array();
                             foreach ($allOF as $currentItem) {
                                 if (is_array($currentItem)){
                                     if(array_key_exists(SWAGGER_REF, $currentItem)){
-                                        $parentRef=$currentItem[SWAGGER_REF];
-                                        $refs[]=$parentRef;
+                                        // INHERITANCE :
+                                        //$parentRef=$currentItem[SWAGGER_REF];
+                                        //$refs[]=$parentRef;
+                                        // COMPOSITION
+                                        $keyForRef=$currentItem[SWAGGER_REF];
+                                        $keyForRef=str_replace("#/definitions/","",$keyForRef);
+                                        $subDefinition=$definitions[$keyForRef];
+                                        if(array_key_exists(SWAGGER_PROPERTIES, $subDefinition)){
+                                            $properties=$subDefinition[SWAGGER_PROPERTIES];
+                                        }
+
                                     }
                                     if(array_key_exists(SWAGGER_PROPERTIES, $currentItem)){
-                                        $properties=$currentItem[SWAGGER_PROPERTIES];
+                                        $properties=array_merge($properties,$currentItem[SWAGGER_PROPERTIES]);
                                     }
                                 }
                             }
