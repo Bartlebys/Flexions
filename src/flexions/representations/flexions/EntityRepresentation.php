@@ -21,6 +21,8 @@ You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/Licenses/>
 */
 
+
+
 class EntityRepresentation {
 
 	/**
@@ -47,10 +49,17 @@ class EntityRepresentation {
 	
 	/**
 	 * 
-	 * @var boolean
+	 * @var bool
 	 */
-	public $generateCollectionClass=false;
-	
+	public $generateCollectionClass=DEFAULT_GENERATE_COLLECTION_CLASSES;
+
+
+	/**
+	 * @var bool if set to true Actions could be URD ( Upsert Read Delete)
+     * instead of CRUD (Create Read Update Delete)
+	 */
+	public $urdMode=DEFAULT_USE_URD_MODE;
+
 	/**
 	 * Current iteration property
 	 * @var int

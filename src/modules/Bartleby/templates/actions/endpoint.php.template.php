@@ -95,34 +95,98 @@ if($isGenericGETEndpoint==false && $isGETByIdsEndpoint==false){
 }
 
 
-if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
-    echo('
+
+
+if($d->httpMethod=='POST') {
+    if ($d->urdMode==true){
+
+    // URD MODE
+
+        echo('
     function call('.$callDataClassName.' $parameters) {
         $db=$this->getDb();
         /* @var \MongoCollection */
-        $collection = $db->'.$d->collectionName.';
+        $collection = $db->'.$d->collectionName.';@
+        // Default write policy
+        $options = array (
+            "w" => 1,
+            "j" => true,
+            "upsert" => true
+        );
+        '.
+            (
+            ($parameterIsNotAcollection===true)?
+                '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+         if(!isset($obj) || count($parameters->getDictionary())==0){
+          return new JsonResponse(\'Invalid void object\',406);
+        }
+        $q = array (\'_id\' =>$obj[\'_id\']);'
+                :
+                '$arrayOfObject=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
+        if(!isset($arrayOfObject) || (is_array($arrayOfObject) && count($arrayOfObject)<1) ){
+            return new JsonResponse(\'Invalid void array\',406);
+        }'
+            )
+            .'
+        try {
+            '.(($parameterIsNotAcollection===true)?
+                '$r = $collection->update ($q, $obj,$options );
+            if ($r[\'ok\']==1) {
+                return new JsonResponse(VOID_RESPONSE,200);
+            } else {
+                return new JsonResponse($r,412);
+            }'
+                :
+                'foreach ($arrayOfObject as $obj){
+                $q = array (\'_id\' => $obj[\'_id\']);
+                $r = $collection->update( $q, $obj,$options);
+                if ($r[\'ok\']==1) {
+                    if (array_key_exists(\'updatedExisting\', $r)) {
+                        $existed = $r[\'updatedExisting\'];
+                        if ($existed == false) {
+                            return new JsonResponse($q,404);
+                        }
+                    }
+                }else{
+                    return new JsonResponse($q,412);
+                }
+             }
+            return new JsonResponse(VOID_RESPONSE,200);'
+            ).'
+
+        } catch ( \Exception $e ) {
+            return new JsonResponse( array (\'code\'=>$e->getCode(),
+                                            \'message\'=>$e->getMessage(),
+                                            \'file\'=>$e->getFile(),
+                                            \'line\'=>$e->getLine(),
+                                            \'trace\'=>$e->getTraceAsString()
+                                            ),
+                                            417
+                                    );
+        }
+        return new JsonResponse(VOID_RESPONSE,200);
+     }'
+        );
+    }else {
+
+        // CRUD MODE
+
+        echo('
+    function call(' . $callDataClassName . ' $parameters) {
+        $db=$this->getDb();
+        /* @var \MongoCollection */
+        $collection = $db->' . $d->collectionName . ';
         // Default write policy
         $options = array (
             "w" => 1,
             "j" => true
         );
-        '.
-        (
-        ($parameterIsNotAcollection===true)?
-            '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');'
-            :
-            '$obj=$parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');'
-        )
-        .'
+        ' . (($parameterIsNotAcollection === true) ? '$obj=$parameters->getValueForKey(' . $callDataClassName . '::' . $lastParameterName . ');' : '$obj=$parameters->getValueForKey(' . $callDataClassName . '::' . $lastParameterName . ');') . '
         if(!isset($obj) || count($parameters->getDictionary())==0){
           return new JsonResponse(\'Void submission\',406);
         }
         try {
-            '.(($parameterIsNotAcollection===true)?
-            '$r = $collection->insert ( $obj,$options );'
-            :
-            '$r = $collection->batchInsert( $obj,$options );'
-        ).'
+            ' . (($parameterIsNotAcollection === true) ? '$r = $collection->insert ( $obj,$options );' : '$r = $collection->batchInsert( $obj,$options );') . '
              if ($r[\'ok\']==1) {
                 return new JsonResponse(VOID_RESPONSE,200);
             } else {
@@ -139,8 +203,8 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
                                     );
         }
         return new JsonResponse(VOID_RESPONSE,200);
-     }'
-    );
+     }');
+    }
 }elseif ( $d->httpMethod=='GET' || $isGenericGETEndpoint===true ){
 
 
@@ -309,6 +373,8 @@ if($d->httpMethod=='POST' && $isGenericGETEndpoint===false ) {
         return new JsonResponse(VOID_RESPONSE,200);
      }'
     );
+
+
 }elseif ($d->httpMethod=='DELETE'){
     // DELETE
     echo('

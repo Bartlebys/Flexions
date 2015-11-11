@@ -2,12 +2,14 @@
 
 include  FLEXIONS_SOURCE_DIR.'/Shared.php';
 
+// URD == Upsert Read Delete
+// CRUD == Create Read Update Delete
 
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */
 
 if (isset ( $f )) {
-    $f->fileName = 'crudPathsFragment.json';
+    $f->fileName = 'urdPathsFragment.json';
     $f->package = '';
 }
 
@@ -19,9 +21,10 @@ if (isset ( $f )) {
 
 $counter=0;
 foreach ($d->entities as $entity ) {
-    $name=$entity->name;
-    if(isset($prefix)){
-        $name=str_replace($prefix,'',$name);
+    $name = $entity->name;
+
+    if (isset($prefix)) {
+        $name = str_replace($prefix, '', $name);
     }
 
 
@@ -29,76 +32,78 @@ foreach ($d->entities as $entity ) {
 
     //luralization::pluralize($name));
     $counter++;
-    $lastEntity=false;
-    if ($counter==count($d->entities)){
-        $lastEntity=true;
+    $lastEntity = false;
+    if ($counter == count($d->entities)) {
+        $lastEntity = true;
     }
 
     // EXCLUSION FROM CRUD
     // You can exclude entities containing a given string
-    $shouldBeExcluded=false;
-    $exclusion=array();
-    if(isset($excludeEntitiesWith)){
-        $exclusion=$excludeEntitiesWith;
+    $shouldBeExcluded = false;
+    $exclusion = array();
+    if (isset($excludeEntitiesWith)) {
+        $exclusion = $excludeEntitiesWith;
     }
-    foreach ($exclusion as $exclusionString ) {
-        if(strpos($name,$exclusionString)!==false){
-            $shouldBeExcluded=true;
+    foreach ($exclusion as $exclusionString) {
+        if (strpos($name, $exclusionString) !== false) {
+            $shouldBeExcluded = true;
         }
     }
-    if($shouldBeExcluded){
+    if ($shouldBeExcluded) {
         continue;//Let's exclude this entity from the CRUD
     }
 
 
     // UPDATE EXCLUSION
-    $isUnModifiable=false;
-    $unModifiable=array();
-    if(isset($unDeletableEntitiesWith)){
-        $unModifiable=$unModifiableEntitiesWith;
+    $isUnModifiable = false;
+    $unModifiable = array();
+    if (isset($unDeletableEntitiesWith)) {
+        $unModifiable = $unModifiableEntitiesWith;
     }
-    foreach ($unModifiable as $unModifiableString ) {
-        if(strpos($name,$unModifiableString)!==false){
-            $isUnModifiable=true;
+    foreach ($unModifiable as $unModifiableString) {
+        if (strpos($name, $unModifiableString) !== false) {
+            $isUnModifiable = true;
         }
     }
 
     // DELETION EXCLUSION
-    $isUndeletable=false;
-    $undeletable=array();
-    if(isset($unDeletableEntitiesWith)){
-        $undeletable=$unDeletableEntitiesWith;
+    $isUndeletable = false;
+    $undeletable = array();
+    if (isset($unDeletableEntitiesWith)) {
+        $undeletable = $unDeletableEntitiesWith;
     }
-    foreach ($undeletable as $undeletableString ) {
-        if(strpos($name,$undeletableString)!==false){
-            $isUndeletable=true;
+    foreach ($undeletable as $undeletableString) {
+        if (strpos($name, $undeletableString) !== false) {
+            $isUndeletable = true;
         }
     }
 
-    $pluralizedName=lcfirst(Pluralization::pluralize($name));
+    $pluralizedName = lcfirst(Pluralization::pluralize($name));
+
 
     ////////////////////////////
-    // SINGLE INSTANCE CRUD
-    ////////////////////////////
+    // SINGLE INSTANCE
+    ///////////////////////////
+
 
     // The read block is the only one with the id in the path
-    $readBlock= '
-        "/'.lcfirst($name).'/{'.lcfirst($name).'Id}" : {
+    $readBlock = '
+        "/' . lcfirst($name) . '/{' . lcfirst($name) . 'Id}" : {
         "get" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-            "summary" : "Find '.$name.' by ID",
-            "description" : "Returns a single '.$name.'",
-            "operationId" : "read'.ucfirst($name).'ById",
+            "summary" : "Find ' . $name . ' by ID",
+            "description" : "Returns a single ' . $name . '",
+            "operationId" : "read' . ucfirst($name) . 'ById",
             "produces" : [
                     "application/json"
                 ],
             "parameters" : [
               {
-                "name" : "'.lcfirst($name).'Id",
+                "name" : "' . lcfirst($name) . 'Id",
                 "in" : "path",
-                "description" : "The unique identifier the the of '.$name.'",
+                "description" : "The unique identifier the the of ' . $name . '",
                 "required" : true,
                 "type" : "string"
               }
@@ -108,27 +113,27 @@ foreach ($d->entities as $entity ) {
                     "200" : {
                         "description" : "successful operation",
                          "schema" : {
-                            "$ref" : "#/definitions/'.ucfirst($name).'"
+                            "$ref" : "#/definitions/' . ucfirst($name) . '"
                         }
                     },
                     "404" : {
-                         "description" : "'.ucfirst($name).' not found"
+                         "description" : "' . ucfirst($name) . ' not found"
                     }
             }
           }
-        },'
-    ;
+        },';
 
-    $createBlock='
-    "/'.lcfirst($name).'" :
+    if ($entity->urdMode == true) {
+        $upsertBlock = '
+    "/' . lcfirst($name) . '" :
      {
         "post" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-        "summary" : "Creates a new '.$name.' to the system",
+        "summary" : "Creates or insert a new ' . $name . ' to the system",
         "description" : "",
-        "operationId" : "create'.ucfirst($name).'",
+        "operationId" : "upsert' . ucfirst($name) . '",
         "consumes" : [
                 "application/json"
             ],
@@ -138,11 +143,11 @@ foreach ($d->entities as $entity ) {
         "parameters" : [
           {
             "in" : "body",
-            "name" : "'.lcfirst($name).'",
-            "description" : "The instance of'.$name.' that needs to be added",
+            "name" : "' . lcfirst($name) . '",
+            "description" : "The instance of' . $name . ' that needs to be inserted or updated",
             "required" : true,
             "schema" : {
-              "$ref" : "#/definitions/'.ucfirst($name).'"
+              "$ref" : "#/definitions/' . ucfirst($name) . '"
             }
           }
         ],
@@ -150,20 +155,25 @@ foreach ($d->entities as $entity ) {
                 "405" : {
                     "description" : "Invalid input"
           }
-        }
+        },
+         "metadata": {
+              "urdMode": true
+          }
       }
     ';
 
+    } else {
 
-
-    $updateBlock=',
-        "put" : {
+        $createBlock = '
+    "/' . lcfirst($name) . '" :
+     {
+        "post" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-        "summary" : "Update an existing '.$name.'",
+        "summary" : "Creates a new ' . $name . ' to the system",
         "description" : "",
-        "operationId" : "update'.ucfirst($name).'",
+        "operationId" : "create' . ucfirst($name) . '",
         "consumes" : [
                 "application/json"
             ],
@@ -173,11 +183,48 @@ foreach ($d->entities as $entity ) {
         "parameters" : [
           {
             "in" : "body",
-            "name" : "'.lcfirst($name).'",
-            "description" : "The '.ucfirst($name).' instance to update",
+            "name" : "' . lcfirst($name) . '",
+            "description" : "The instance of' . $name . ' that needs to be added",
             "required" : true,
             "schema" : {
-              "$ref" : "#/definitions/'.ucfirst($name).'"
+              "$ref" : "#/definitions/' . ucfirst($name) . '"
+            }
+          }
+        ],
+        "responses" : {
+                "405" : {
+                    "description" : "Invalid input"
+          }
+        },
+         "metadata": {
+              "urdMode": false
+          }
+      }
+    ';
+
+
+        $updateBlock = ',
+        "put" : {
+            "tags" : [
+                "' . $pluralizedName . '"
+            ],
+        "summary" : "Update an existing ' . $name . '",
+        "description" : "",
+        "operationId" : "update' . ucfirst($name) . '",
+        "consumes" : [
+                "application/json"
+            ],
+        "produces" : [
+                "application/json"
+            ],
+        "parameters" : [
+          {
+            "in" : "body",
+            "name" : "' . lcfirst($name) . '",
+            "description" : "The ' . ucfirst($name) . ' instance to update",
+            "required" : true,
+            "schema" : {
+              "$ref" : "#/definitions/' . ucfirst($name) . '"
             }
           }
         ],
@@ -186,7 +233,7 @@ foreach ($d->entities as $entity ) {
              "description" : "Invalid ID supplied"
           },
           "404" : {
-                    "description" : "'.ucfirst($name).' not found"
+                    "description" : "' . ucfirst($name) . ' not found"
           },
           "405" : {
                     "description" : "Validation exception"
@@ -194,67 +241,69 @@ foreach ($d->entities as $entity ) {
         }
       }';
 
-    $deleteBlock=',
+    }
+
+
+    $deleteBlock = ',
         "delete" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-            "summary" : "Deletes a '.$name.'",
+            "summary" : "Deletes a ' . $name . '",
             "description" : "",
-            "operationId" : "delete'.ucfirst($name).'",
+            "operationId" : "delete' . ucfirst($name) . '",
             "produces" : [
                     "application/json"
                 ],
             "parameters" : [
               {
-                "name" : "'.lcfirst($name).'Id",
+                "name" : "' . lcfirst($name) . 'Id",
                 "in" : "path",
-                "description" : "The identifier of the '.ucfirst($name).' to be deleted",
+                "description" : "The identifier of the ' . ucfirst($name) . ' to be deleted",
                 "required" : true,
                 "type" : "string"
               }
             ],
             "responses" : {
                     "400" : {
-                        "description" : "Invalid '.$name.' value"
+                        "description" : "Invalid ' . $name . ' value"
               }
             }
         }
      ';
 
-    $block=$readBlock;
-    $block.=$createBlock;
+    $block = $readBlock;
+    if ($entity->urdMode == true) {
+        $block .= $upsertBlock;
+    } else {
+        $block .= $createBlock;
+        if ($isUnModifiable == false) {
+            $block .= $updateBlock;
+        }
+    }
 
-    if($isUnModifiable==false){
-        $block.=$updateBlock;
+    if ($isUndeletable == false) {
+        $block .= $deleteBlock;
     }
-    if($isUndeletable==false){
-        $block.=$deleteBlock;
-    }
-    if($isUnModifiable==true && $isUndeletable==true){
-        $block.='}';
-        $block.=',';
-    }else{
-        $block.='}';
-        $block.=',';
-    }
+    $block .= '}';
+    $block .= ',';
 
 
     ////////////////////////////
-    // COLLECTIONS  CRUD
+    // COLLECTIONS
     ////////////////////////////
 
+    if ($entity->urdMode == true) {
 
-
-    $createCollectionBlock='
-    "/'.lcfirst($pluralizedName).'" : {
+        $upsertCollectionBlock = '
+    "/' . lcfirst($pluralizedName) . '" : {
         "post" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-            "summary" : "Create '.$pluralizedName.' to the system",
+            "summary" : "Creates or updates ' . $pluralizedName . '",
             "description" : "",
-            "operationId" : "create'.ucfirst($pluralizedName).'",
+            "operationId" : "upsert' . ucfirst($pluralizedName) . '",
             "consumes" : [
                     "application/json"
                 ],
@@ -264,14 +313,14 @@ foreach ($d->entities as $entity ) {
             "parameters" : [
              {
                 "in" : "body",
-                "name" : "'.lcfirst($pluralizedName).'",
-                "description" : "Collection of '.$name.' that needs to be added",
+                "name" : "' . lcfirst($pluralizedName) . '",
+                "description" : "Collection of ' . $name . ' that needs to be upserted",
                 "required" : true,
                 "schema": {
                             "type": "array",
                             "items":
                             {
-                                "$ref": "#/definitions/'.ucfirst($name).'"
+                                "$ref": "#/definitions/' . ucfirst($name) . '"
                              }
                          }
               }
@@ -280,17 +329,63 @@ foreach ($d->entities as $entity ) {
                     "405" : {
                         "description" : "Invalid input"
                      }
-            }
+            },
+         "metadata": {
+              "urdMode": true
+          }
+     },
+    ';
+    } else {
+
+        $createCollectionBlock = '
+    "/' . lcfirst($pluralizedName) . '" : {
+        "post" : {
+            "tags" : [
+                "' . $pluralizedName . '"
+            ],
+            "summary" : "Create ' . $pluralizedName . ' to the system",
+            "description" : "",
+            "operationId" : "create' . ucfirst($pluralizedName) . '",
+            "consumes" : [
+                    "application/json"
+                ],
+            "produces" : [
+                    "application/json"
+                ],
+            "parameters" : [
+             {
+                "in" : "body",
+                "name" : "' . lcfirst($pluralizedName) . '",
+                "description" : "Collection of ' . $name . ' that needs to be added",
+                "required" : true,
+                "schema": {
+                            "type": "array",
+                            "items":
+                            {
+                                "$ref": "#/definitions/' . ucfirst($name) . '"
+                             }
+                         }
+              }
+            ],
+            "responses" : {
+                    "405" : {
+                        "description" : "Invalid input"
+                     }
+            },
+         "metadata": {
+              "urdMode": false
+          }
      },
     ';
 
-    $readCollectionBlock= '    "get" : {
+    }
+    $readCollectionBlock = '    "get" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-            "summary" : "Find '.$pluralizedName.' by ID",
-            "description" : "Returns a collection of '.$name.'",
-            "operationId" : "read'.ucfirst($pluralizedName).'ByIds",
+            "summary" : "Find ' . $pluralizedName . ' by ID",
+            "description" : "Returns a collection of ' . $name . '",
+            "operationId" : "read' . ucfirst($pluralizedName) . 'ByIds",
             "produces" : [
                     "application/json"
                 ],
@@ -298,7 +393,7 @@ foreach ($d->entities as $entity ) {
               {
                 "name" : "ids",
                 "in" : "path",
-                "description" : "The IDS of the '.$pluralizedName.' to return",
+                "description" : "The IDS of the ' . $pluralizedName . ' to return",
                 "required" : true,
                  "type": "array",
                  "items": {
@@ -333,7 +428,7 @@ foreach ($d->entities as $entity ) {
                        "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/'.ucfirst($name).'"
+                                "$ref": "#/definitions/' . ucfirst($name) . '"
                             }
                        }
 
@@ -342,21 +437,21 @@ foreach ($d->entities as $entity ) {
                         "description" : "Invalid IDS supplied"
               },
               "404" : {
-                        "description" : "'.ucfirst($pluralizedName).' not found"
+                        "description" : "' . ucfirst($pluralizedName) . ' not found"
               }
             }
           }
-        '
-    ;
+        ';
 
-    $updateCollectionBlock=',
+    if ($entity->urdMode == false) {
+        $updateCollectionBlock = ',
         "put" : {
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-            "summary" : "Update an existing '.$name.'",
+            "summary" : "Update an existing ' . $name . '",
             "description" : "",
-            "operationId" : "update'.ucfirst($pluralizedName).'",
+            "operationId" : "update' . ucfirst($pluralizedName) . '",
             "consumes" : [
                     "application/json"
                 ],
@@ -366,13 +461,13 @@ foreach ($d->entities as $entity ) {
             "parameters" : [
               {
                 "in" : "body",
-                "name" : "'.lcfirst($pluralizedName).'",
-                "description" : "Collection of '.ucfirst($name).' to update",
+                "name" : "' . lcfirst($pluralizedName) . '",
+                "description" : "Collection of ' . ucfirst($name) . ' to update",
                 "required" : true,
                 "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/'.ucfirst($name).'"
+                                "$ref": "#/definitions/' . ucfirst($name) . '"
                              }
                     }
               }
@@ -382,7 +477,7 @@ foreach ($d->entities as $entity ) {
                  "description" : "Invalid IDS supplied"
               },
               "404" : {
-                        "description" : "'.ucfirst($pluralizedName).' not found"
+                        "description" : "' . ucfirst($pluralizedName) . ' not found"
               },
               "405" : {
                         "description" : "Validation exception"
@@ -390,15 +485,17 @@ foreach ($d->entities as $entity ) {
             }
       }';
 
-    $deleteCollectionBlock=',
+    }
+
+    $deleteCollectionBlock = ',
         "delete" : {
 
             "tags" : [
-                "'.$pluralizedName.'"
+                "' . $pluralizedName . '"
             ],
-            "summary" : "Deletes some '.$pluralizedName.'",
+            "summary" : "Deletes some ' . $pluralizedName . '",
             "description" : "",
-            "operationId" : "delete'.ucfirst($pluralizedName).'",
+            "operationId" : "delete' . ucfirst($pluralizedName) . '",
             "produces" : [
                     "application/json"
                 ],
@@ -406,7 +503,7 @@ foreach ($d->entities as $entity ) {
               {
                 "name" : "ids",
                 "in" : "path",
-                "description" : "The ids of '.$pluralizedName.' to delete",
+                "description" : "The ids of ' . $pluralizedName . ' to delete",
                 "required" : true,
                  "type": "array",
                  "items": {
@@ -416,25 +513,37 @@ foreach ($d->entities as $entity ) {
             ],
             "responses" : {
                     "400" : {
-                        "description" : "Invalid '.$pluralizedName.' value"
+                        "description" : "Invalid ' . $pluralizedName . ' value"
                     }
             }
         }';
 
-    $block.=$createCollectionBlock;
-    $block.=$readCollectionBlock;
-    if($isUnModifiable==false){
-        $block.=$updateCollectionBlock;
-    }
-    if($isUndeletable==false){
-        $block.=$deleteCollectionBlock;
-    }
-    if($isUnModifiable==true && $isUndeletable==true){
-        $block.=cr().'}';
-        $block.=',';
+
+    if ($entity->urdMode == true) {
+
+        $block .= $upsertCollectionBlock;
+        $block .= $readCollectionBlock;
+
+        if ($isUndeletable == false) {
+            $block .= $deleteCollectionBlock;
+        }
+
+        $block .= cr() . '}';
+        $block .= ',';
+
     }else{
-        $block.=cr().'}';
-        $block.=',';
+
+        $block.=$createCollectionBlock;
+        $block.=$readCollectionBlock;
+        if($isUnModifiable==false){
+            $block.=$updateCollectionBlock;
+        }
+        if($isUndeletable==false){
+            $block.=$deleteCollectionBlock;
+        }
+        $block .= cr() . '}';
+        $block .= ',';
+
     }
 
 

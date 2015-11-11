@@ -20,6 +20,12 @@ You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
 along with Flexions  If not, see <http://www.gnu.org/Licenses/>
 */
 
+
+if (!defined('DEFAULT_USE_URD_MODE')) {
+    define("DEFAULT_USE_URD_MODE",false);
+    define("DEFAULT_GENERATE_COLLECTION_CLASSES",false);
+}
+
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/ProjectRepresentation.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/ActionRepresentation.php';
 require_once FLEXIONS_ROOT_DIR . 'flexions/representations/flexions/EntityRepresentation.php';

@@ -34,13 +34,18 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_OAUTH_SCOPES','scopes');
     define('SWAGGER_IN','in');
     define('SWAGGER_SECURITY','security');
+
     //define ('SWAGGER_HEADERS','headers');
+
+    define('EXTENDED_SWAGGER_METADATA','metadata');
+    define('EXTENDED_USE_URD_MODE','urdMode');
+    define('USE_COMPOSITION_MODE',true); // If set to true entities are composed else they use inheritance
 }
 
 
 
 /**
- * We support partially SWAGGER 2.0
+ * We support partially SWAGGER 2.0 And have added optionnal extensions : Bartleby Metadata
  * enough to modelize and generate APIS and Entities with Flexions.
  *
  * IMPORTANT to support login and logout generation you must include the signature in the path
@@ -70,7 +75,7 @@ class SwaggerToFlexionsRepresentations {
      * @return ProjectRepresentation|void
      * @throws Exception
      */
-    function projectRepresentationFromSwaggerJson($descriptorFilePath, $nativePrefix = "", ISwaggerDelegate $delegate=null,array $signInSignature=array(),array $signOutSignature=array()) {
+    function projectRepresentationFromSwaggerJson($descriptorFilePath, $nativePrefix = "", ISwaggerDelegate $delegate=null,array $signInSignature=array(),array $signOutSignature=array(),$useCompositionMode=USE_COMPOSITION_MODE) {
 
         if (!isset($delegate)) {
             fLog("projectRepresentationFromSwaggerJson.projectRepresentationFromSwaggerJson() module requires an ISwaggerDelegate", true);
@@ -180,16 +185,21 @@ class SwaggerToFlexionsRepresentations {
                             foreach ($allOF as $currentItem) {
                                 if (is_array($currentItem)){
                                     if(array_key_exists(SWAGGER_REF, $currentItem)){
-                                        // INHERITANCE :
-                                        //$parentRef=$currentItem[SWAGGER_REF];
-                                        //$refs[]=$parentRef;
-                                        // COMPOSITION
-                                        $keyForRef=$currentItem[SWAGGER_REF];
-                                        $keyForRef=str_replace("#/definitions/","",$keyForRef);
-                                        $subDefinition=$definitions[$keyForRef];
-                                        if(array_key_exists(SWAGGER_PROPERTIES, $subDefinition)){
-                                            $properties=$subDefinition[SWAGGER_PROPERTIES];
+
+                                        if ($useCompositionMode == true) {
+                                            // COMPOSITION
+                                            $keyForRef=$currentItem[SWAGGER_REF];
+                                            $keyForRef=str_replace("#/definitions/","",$keyForRef);
+                                            $subDefinition=$definitions[$keyForRef];
+                                            if(array_key_exists(SWAGGER_PROPERTIES, $subDefinition)){
+                                                $properties=$subDefinition[SWAGGER_PROPERTIES];
+                                            }
+                                        }else{
+                                            // INHERITANCE :
+                                            $parentRef=$currentItem[SWAGGER_REF];
+                                            $refs[]=$parentRef;
                                         }
+
 
                                     }
                                     if(array_key_exists(SWAGGER_PROPERTIES, $currentItem)){
@@ -201,21 +211,30 @@ class SwaggerToFlexionsRepresentations {
                                 // Inheritance support
                                 $e->instanceOf=$this->typeFromRef($parentRef,$nativePrefix);
                             }else if( count($refs)>1){
-                                // @todo composition
-                                // Requires $ref resolution
                             }
 
                             if(array_key_exists(SWAGGER_PROPERTIES,$allOF)){
                                 $properties=$allOF[SWAGGER_PROPERTIES];
                             }
                         }
+
+
                     }
                     // Parse the properties
                     foreach ($properties as $propertyName => $propertyValue) {
                         $e->properties[] = $this->_extractPropertyFrom($propertyName, $propertyValue, $nativePrefix);
                     }
                     $r->entities[] = $e;
+
+                    // Entity metadata
+                    if (array_key_exists(EXTENDED_SWAGGER_METADATA, $descriptor)) {
+                        $extendedMetadata = $descriptor[EXTENDED_SWAGGER_METADATA];
+                        if (array_key_exists(EXTENDED_USE_URD_MODE, $extendedMetadata)) {
+                            $e->urdMode = $extendedMetadata[EXTENDED_USE_URD_MODE];
+                        }
+                    }
                 }
+
             }
 
             //#3 Extract the actions ActionRepresentation
@@ -300,6 +319,15 @@ class SwaggerToFlexionsRepresentations {
                                         $action->security=$this->getContextPermissionByName($securityItemName,RelationToPermission::REQUIRES);
                                     }
                                 }
+                            }
+                        }
+
+                        // Action metadata
+                        if (array_key_exists(EXTENDED_SWAGGER_METADATA, $methodPathDescriptor)) {
+                            $extendedMetadata = $methodPathDescriptor[EXTENDED_SWAGGER_METADATA];
+                            $action->metadata = $extendedMetadata;
+                            if (array_key_exists(EXTENDED_USE_URD_MODE, $extendedMetadata)) {
+                                $action->urdMode = $extendedMetadata[EXTENDED_USE_URD_MODE];
                             }
                         }
 

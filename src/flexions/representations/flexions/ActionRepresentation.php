@@ -52,9 +52,16 @@ class ActionRepresentation {
 
 
     /**
-     * @var array an associative array to pass specific metadata
+     * @var array an associative array to pass specific metadata (including urdMode)
      */
     public $metadata;
+
+
+    /**
+     * @var bool if set to true Actions could be URD ( Upsert Read Delete)
+     * instead of CRUD (Create Read Update Delete)
+     */
+    public $urdMode=DEFAULT_USE_URD_MODE;
 
 
     /**
