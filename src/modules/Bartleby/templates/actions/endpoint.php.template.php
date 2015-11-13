@@ -188,7 +188,7 @@ if($d->httpMethod=='POST') {
         try {
             ' . (($parameterIsNotAcollection === true) ? '$r = $collection->insert ( $obj,$options );' : '$r = $collection->batchInsert( $obj,$options );') . '
              if ($r[\'ok\']==1) {
-                return new JsonResponse(VOID_RESPONSE,200);
+                return new JsonResponse(VOID_RESPONSE,201);
             } else {
                 return new JsonResponse($r,412);
             }

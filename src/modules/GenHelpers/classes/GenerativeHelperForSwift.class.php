@@ -203,12 +203,6 @@ class GenerativeHelperForSwift extends GenerativeHelper {
             }
         }
     }
-
-
-
-
-
-
 }
 
 ?>
