@@ -37,7 +37,6 @@ class GeneratedConfiguration extends MongoConfiguration {
 
         $this->_STAGE=Stages::DEVELOPMENT;
         $this->_VERSION='<?php echo $d->apiVersion; ?>';
-        $this->_SALT='SALT TO BE SET';
 
         // MONGO DB
         $this->_MONGO_DB_NAME='<?php echo ucfirst($f->projectName); ?>';

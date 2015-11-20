@@ -251,7 +251,7 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
 .'
     success(' . $successParameterName . ': instance)
   }else{
-    let f=HTTPFailure()
+    var f=HTTPFailure()
     f.relatedURL=request?.URL
     f.httpStatusCode=statusCode
     f.message="Deserialization issue\n\(result.value)"
@@ -275,7 +275,7 @@ if let r=result.value as? ' . $successTypeString . '{
 
     success(' . $successParameterName . ':r)
  }else{
-    let f=HTTPFailure()
+    var f=HTTPFailure()
     f.relatedURL=request?.URL
     f.httpStatusCode=statusCode
     f.message="Deserialization issue\n\(result.value)"
@@ -298,7 +298,7 @@ if($authenticationRequired) {
     echoIndentCR(
 '
 if !HTTPManager.isAuthenticated {
-    let f=HTTPFailure()
+    var f=HTTPFailure()
     f.message="Authentication required"
     AuthorizationFacilities.authorizationRequired("for '.$d->class.'")
     failure(result: f)
@@ -320,7 +320,7 @@ if !HTTPManager.isAuthenticated {
         let response=response.response
 
         if result.isFailure {
-            let f=HTTPFailure()
+            var f=HTTPFailure()
             if let r = response{
                 f.relatedURL=request?.URL
                 f.httpStatusCode=r.statusCode
@@ -339,7 +339,7 @@ if !HTTPManager.isAuthenticated {
                     // Bartlby does not currenlty discriminate status codes 100 & 101
                     // and treats any status code >= 300 the same way
                     // because we consider that failures differentiations could be done by the caller.
-                    let f=HTTPFailure()
+                    var f=HTTPFailure()
                     f.relatedURL=request?.URL
                     f.httpStatusCode=statusCode
                     f.message="\(result.value)"

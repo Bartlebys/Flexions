@@ -13,14 +13,16 @@ if (isset ( $f )) {
     $f->package = 'iOS/swift/collectionControllers/';
 }
 
-// Exclusion
+// Exclusion -
+
+//Collection controllers are related to actions.
 
 $shouldBeExcluded = false;
 $exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->name);
 
-if (isset($excludeEntitiesWith)) {
-    $exclusion = $excludeEntitiesWith;
+if (isset($excludeActionsWith)) {
+    $exclusion = $excludeActionsWith;
 }
 foreach ($exclusion as $exclusionString) {
     if (strpos($exclusionName, $exclusionString) !== false) {
@@ -142,7 +144,7 @@ import ObjectMapper
                 undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
             }
         }
-        items.append(item)
+        self.items.insert(item, atIndex: index)
     }
 
 
