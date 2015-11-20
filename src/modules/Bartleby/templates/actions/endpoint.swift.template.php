@@ -45,31 +45,34 @@ if ($d->containsParametersOutOfPath()) {
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
         $name = $parameter->name;
-        echoIndentCR('// ' .$parameter->description. cr(), 1);
-        if ($d->firstParameter()) {
-        }
-        if($parameter->type==FlexionsTypes::ENUM) {
-            $enumTypeName = $d->name . ucfirst($name);
-            echoIndentCR('enum ' . $enumTypeName . ' : ' . ucfirst($parameter->instanceOf) . '{', 1);
-            foreach ($parameter->enumerations as $element) {
-                if ($parameter->instanceOf == FlexionsTypes::STRING) {
-                    echoIndentCR('case ' . ucfirst($element) . ' = "' . $element . '"' , 2);
-                } else {
-                    echoIndentCR('case ' . ucfirst($element) . ' = ' . $element . '' , 2);
-                }
+
+        if (!$d->parameterIsInPath($name)){
+            echoIndentCR('// ' .$parameter->description. cr(), 1);
+            if ($d->firstParameter()) {
             }
-            echoIndentCR('}' , 1);
-            echoIndentCR('var ' . $name . ':' . $enumTypeName . '?' , 1);
-        }else if ($parameter->type == FlexionsTypes::COLLECTION) {
-            echoIndentCR('var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']?', 1);
-        } else if ($parameter->type == FlexionsTypes::OBJECT) {
-            echoIndentCR('var ' . $name . ':' . ucfirst($parameter->instanceOf) . '?', 1);
-        } else {
-            $nativeType = FlexionsSwiftLang::nativeTypeFor($parameter->type);
-            if (strpos($nativeType, FlexionsTypes::NOT_SUPPORTED) === false) {
-                echoIndentCR('var ' . $name . ':' . $nativeType . '?', 1);
+            if($parameter->type==FlexionsTypes::ENUM) {
+                $enumTypeName = $d->name . ucfirst($name);
+                echoIndentCR('enum ' . $enumTypeName . ' : ' . ucfirst($parameter->instanceOf) . '{', 1);
+                foreach ($parameter->enumerations as $element) {
+                    if ($parameter->instanceOf == FlexionsTypes::STRING) {
+                        echoIndentCR('case ' . ucfirst($element) . ' = "' . $element . '"' , 2);
+                    } else {
+                        echoIndentCR('case ' . ucfirst($element) . ' = ' . $element . '' , 2);
+                    }
+                }
+                echoIndentCR('}' , 1);
+                echoIndentCR('var ' . $name . ':' . $enumTypeName . '?' , 1);
+            }else if ($parameter->type == FlexionsTypes::COLLECTION) {
+                echoIndentCR('var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']?', 1);
+            } else if ($parameter->type == FlexionsTypes::OBJECT) {
+                echoIndentCR('var ' . $name . ':' . ucfirst($parameter->instanceOf) . '?', 1);
             } else {
-                echoIndentCR('var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($parameter->type), 1);
+                $nativeType = FlexionsSwiftLang::nativeTypeFor($parameter->type);
+                if (strpos($nativeType, FlexionsTypes::NOT_SUPPORTED) === false) {
+                    echoIndentCR('var ' . $name . ':' . $nativeType . '?', 1);
+                } else {
+                    echoIndentCR('var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($parameter->type), 1);
+                }
             }
         }
     }
@@ -113,7 +116,9 @@ if ($d->containsParametersOutOfPath()) {
     while ( $d ->iterateOnParameters() === true ) {
         $property = $d->getParameter();
         $name = $property->name;
-        echoIndentCR($name . ' <- map["' . $name . '"]', 2);
+        if (!$d->parameterIsInPath($name)){
+            echoIndentCR($name . ' <- map["' . $name . '"]', 2);
+        }
     }
     echo ("
     }
