@@ -103,13 +103,6 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
-                "name": "rUDID",
-                "in": "path",
-                "description": "The unique identifier the related context",
-                "required": true,
-                "type": "string"
-              },
-              {
                 "name" : "' . lcfirst($name) . 'Id",
                 "in" : "path",
                 "description" : "The unique identifier the the of ' . $name . '",
@@ -151,13 +144,6 @@ foreach ($d->entities as $entity ) {
                 "application/json"
             ],
         "parameters" : [
-           {
-              "name": "rUDID",
-               "in": "path",
-               "description": "The unique identifier the related context",
-               "required": true,
-               "type": "string"
-          },
           {
             "in" : "body",
             "name" : "' . lcfirst($name) . '",
