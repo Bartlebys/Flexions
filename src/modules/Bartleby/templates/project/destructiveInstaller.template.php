@@ -61,7 +61,7 @@ foreach ($d->entities as $entity ) {
     if(isset($prefix)){
         $name=str_replace($prefix,'',$name);
     }
-    if (isset($excludeEntitiesWith) && in_array($name,$excludeEntitiesWith)){
+    if (isset($excludeActionsWith) && in_array($name,$excludeActionsWith)){
         continue;
     }
     $pluralized=lcfirst(Pluralization::pluralize($name));

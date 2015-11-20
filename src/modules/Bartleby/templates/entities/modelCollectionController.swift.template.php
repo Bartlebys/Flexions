@@ -13,6 +13,21 @@ if (isset ( $f )) {
     $f->package = 'iOS/swift/collectionControllers/';
 }
 
+// Exclusion
+
+$shouldBeExcluded = false;
+$exclusion = array();
+$exclusionName = str_replace($h->classPrefix, '', $d->name);
+
+if (isset($excludeEntitiesWith)) {
+    $exclusion = $excludeEntitiesWith;
+}
+foreach ($exclusion as $exclusionString) {
+    if (strpos($exclusionName, $exclusionString) !== false) {
+        return NULL; // We return null
+    }
+}
+
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 

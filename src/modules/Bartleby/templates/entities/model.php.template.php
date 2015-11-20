@@ -12,20 +12,45 @@ if (isset ( $f )) {
     $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/models/';
 }
 
+
+// Exclusion
+
+$shouldBeExcluded = false;
+$exclusion = array();
+$exclusionName = str_replace($h->classPrefix, '', $d->name);
+
+if (isset($excludeEntitiesWith)) {
+    $exclusion = $excludeEntitiesWith;
+}
+foreach ($exclusion as $exclusionString) {
+    if (strpos($exclusionName, $exclusionString) !== false) {
+        return NULL; // We return null
+    }
+}
+
+
 /* TEMPLATES STARTS HERE -> */?>
+
+
 <?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 namespace Bartleby\Models;
 
 require_once BARTLEBY_ROOT_FOLDER.'core/Model.php';
 use Bartleby\Core\Model;
-<?php while ($d->iterateOnProperties()){
+<?php
+$hasBeenImported=array();
+while ($d->iterateOnProperties()){
     $property=$d->getProperty();
     if($property->isGeneratedType){
         $className=$property->instanceOf;
         $className=$h->ucFirstRemovePrefixFromString($className);
-        echoIndentCR('require_once dirname(__DIR__).\'/models/'.$className.'.php\';',0);
-        echoIndentCR('use Bartleby\Models\\'.$className.';',0);
+        if (! in_array($className,$hasBeenImported)) {
+            echoIndentCR('require_once dirname(__DIR__).\'/models/'.$className.'.php\';',0);
+            echoIndentCR('use Bartleby\Models\\'.$className.';',0);
+            $hasBeenImported[]=$className;
+        }
+
     }
 } ?>
 

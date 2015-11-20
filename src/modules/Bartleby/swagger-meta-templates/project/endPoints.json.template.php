@@ -9,7 +9,7 @@ include  FLEXIONS_SOURCE_DIR.'/Shared.php';
 /* @var $d EntityRepresentation */
 
 if (isset ( $f )) {
-    $f->fileName = 'urdPathsFragment.json';
+    $f->fileName = 'pathsFragment.json';
     $f->package = '';
 }
 
@@ -39,16 +39,18 @@ foreach ($d->entities as $entity ) {
 
     // EXCLUSION FROM CRUD
     // You can exclude entities containing a given string
+
     $shouldBeExcluded = false;
     $exclusion = array();
-    if (isset($excludeEntitiesWith)) {
-        $exclusion = $excludeEntitiesWith;
+    if (isset($excludeActionsWith)) {
+        $exclusion = $excludeActionsWith;
     }
     foreach ($exclusion as $exclusionString) {
         if (strpos($name, $exclusionString) !== false) {
             $shouldBeExcluded = true;
         }
     }
+
     if ($shouldBeExcluded) {
         continue;//Let's exclude this entity from the CRUD
     }
@@ -101,12 +103,20 @@ foreach ($d->entities as $entity ) {
                 ],
             "parameters" : [
               {
+                "name": "rUDID",
+                "in": "path",
+                "description": "The unique identifier the related context",
+                "required": true,
+                "type": "string"
+              },
+              {
                 "name" : "' . lcfirst($name) . 'Id",
                 "in" : "path",
                 "description" : "The unique identifier the the of ' . $name . '",
                 "required" : true,
                 "type" : "string"
               }
+
 
             ],
             "responses" : {
@@ -141,6 +151,13 @@ foreach ($d->entities as $entity ) {
                 "application/json"
             ],
         "parameters" : [
+           {
+              "name": "rUDID",
+               "in": "path",
+               "description": "The unique identifier the related context",
+               "required": true,
+               "type": "string"
+          },
           {
             "in" : "body",
             "name" : "' . lcfirst($name) . '",
@@ -181,6 +198,8 @@ foreach ($d->entities as $entity ) {
                 "application/json"
             ],
         "parameters" : [
+
+
           {
             "in" : "body",
             "name" : "' . lcfirst($name) . '",

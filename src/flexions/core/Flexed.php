@@ -44,7 +44,7 @@ class Flexed {
 	 * Generated source
 	 * @var string
 	 */
-	var $source;
+	var $source='';
 
 	
 	/**

@@ -224,7 +224,7 @@ if (file_exists ( $specificLoops )) {
 			
 		if ($shouldBeUsedInThisLoop) {
 	
-			$result = '';
+			$result = NULL;
 			if (! isset ( $d )) {
 				throw new Exception( 'Descriptor variable $d must be set for the templates. Your preprocessor should have populated an iterable list of data for the descriptor for the loop : '.$loopName );
 			}

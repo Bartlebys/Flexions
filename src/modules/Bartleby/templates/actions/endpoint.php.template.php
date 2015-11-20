@@ -12,6 +12,24 @@ if (isset ( $f )) {
     $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/endpoints/';
 }
 
+
+// Exclusion
+
+$shouldBeExcluded = false;
+$exclusion = array();
+$exclusionName = str_replace($h->classPrefix, '', $d->class);
+
+if (isset($excludeActionsWith)) {
+    $exclusion = $excludeActionsWith;
+}
+foreach ($exclusion as $exclusionString) {
+    if (strpos($exclusionName, $exclusionString) !== false) {
+        return NULL; // We return null
+    }
+}
+
+
+
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>

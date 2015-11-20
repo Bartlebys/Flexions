@@ -154,16 +154,21 @@ function hypotyposeToFiles() {
 }
 
 function file_put_Flexed(Flexed $f){
-	// Create the package folder if necessary
-	if (! file_exists ( $f->packagePath )) {
+	if ( isset($f->source) && strlen($f->source) > 2 ){
+		// Create the package folder if necessary
+		if (! file_exists ( $f->packagePath )) {
+			if (VERBOSE_FLEXIONS)
+				fLog("-> creating package " .  $f->package . cr(),true);
+			mkdir ( $f->packagePath, 0777,true );
+		}
+		// Save the generated file
+		file_put_contents ( $f->packagePath . $f->fileName, $f->source );
 		if (VERBOSE_FLEXIONS)
-			fLog("-> creating package " .  $f->package . cr(),true);
-		mkdir ( $f->packagePath, 0777,true );
+			fLog("Writing : ".$f->packagePath . $f->fileName.cr(),true);
+	}else{
+		// We can return NULL sources to exclude a file from generation
 	}
-	// Save the generated file
-	file_put_contents ( $f->packagePath . $f->fileName, $f->source );
-	if (VERBOSE_FLEXIONS)
-		fLog("Writing : ".$f->packagePath . $f->fileName.cr(),true);
+
 }
 
 /**
