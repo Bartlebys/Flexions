@@ -243,7 +243,11 @@ final class Hypotypose extends stdClass {
      * @param Flexed $flexed
      */
     public function  addFlexed(Flexed $flexed) {
-        $this->flexedList [$this->getLoopName()] [] = $flexed;
+        // Do not copy flexed files that are excluded or not
+        if((strlen($flexed->source) > Flexed::MIN_SOURCE_SIZE )
+            && ($flexed->fileNameIsIn($this->excludePath)===false)) {
+            $this->flexedList [$this->getLoopName()] [] = $flexed;
+        }
     }
 
 
@@ -271,6 +275,7 @@ final class Hypotypose extends stdClass {
     public function ucFirstRemovePrefixFromString($string){
         return ucfirst($this->removePrefixFromString($string));
     }
+
 
 
 }

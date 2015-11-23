@@ -10,19 +10,16 @@ if (isset ($f)) {
 }
 
 // Exclusion
-
-$shouldBeExcluded = false;
-$exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->class);
-
 if (isset($excludeActionsWith)) {
-    $exclusion = $excludeActionsWith;
-}
-foreach ($exclusion as $exclusionString) {
-    if (strpos($exclusionName, $exclusionString) !== false) {
-        return NULL; // We return null
+    foreach ($excludeActionsWith as $exclusionString) {
+        if (strpos($exclusionName, $exclusionString) !== false) {
+            return NULL; // We return null
+        }
     }
 }
+
+
 
 
 /* TEMPLATES STARTS HERE -> */?>

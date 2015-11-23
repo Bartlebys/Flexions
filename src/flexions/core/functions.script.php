@@ -154,7 +154,7 @@ function hypotyposeToFiles() {
 }
 
 function file_put_Flexed(Flexed $f){
-	if ( isset($f->source) && strlen($f->source) > 2 ){
+	if ( isset($f->source) && strlen($f->source) > Flexed::MIN_SOURCE_SIZE ){
 		// Create the package folder if necessary
 		if (! file_exists ( $f->packagePath )) {
 			if (VERBOSE_FLEXIONS)

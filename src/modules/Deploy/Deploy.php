@@ -54,7 +54,6 @@ class Deploy {
                 }else{
                     $destination=$absoluteDestination.$flexed->package.$flexed->fileName;
                 }
-
                 if($packPosition!=false){
                     if($this instanceof IDeploy){
                         $this->copyFilesImplementation($filePath,$destination);

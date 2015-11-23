@@ -15,7 +15,6 @@ if (isset ( $f )) {
 
 // Exclusion
 
-$shouldBeExcluded = false;
 $exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->name);
 
@@ -27,6 +26,7 @@ foreach ($exclusion as $exclusionString) {
         return NULL; // We return null
     }
 }
+
 
 
 /* TEMPLATES STARTS HERE -> */?>

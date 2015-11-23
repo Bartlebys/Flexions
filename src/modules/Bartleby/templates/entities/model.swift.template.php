@@ -17,7 +17,6 @@ if (isset ( $f )) {
 
 // Exclusion
 
-$shouldBeExcluded = false;
 $exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->name);
 

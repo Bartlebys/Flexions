@@ -17,7 +17,6 @@ if (isset ( $f )) {
 
 //Collection controllers are related to actions.
 
-$shouldBeExcluded = false;
 $exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->name);
 

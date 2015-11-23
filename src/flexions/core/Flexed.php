@@ -26,7 +26,11 @@ along with Flexions  If not, see <http://www.gnu.org/Licenses/>
  * @author bpds
  */
 class Flexed {
-	
+
+	// Defines if a file is included or not
+	const MIN_SOURCE_SIZE=2;
+
+
 	/**
 	 * Populated by the template
 	 * @var string
@@ -118,11 +122,27 @@ class Flexed {
      */
 	var $wasPreserved=false;
 
+
+
+
 	/**
 	 * Flexed constructor.
 	 */
 	public function __construct($prefix='') {
 		$this->prefix=$prefix;
+	}
+
+
+	public function fileNameIsIn(array $array){
+        if ($this->fileName=="LoginUser.php"){
+            $a=1;
+        }
+		foreach ($array as $element){
+			if (!(strpos($this->fileName, $element)===false)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 

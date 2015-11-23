@@ -2,42 +2,38 @@
 
 require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
+require_once FLEXIONS_MODULES_DIR . 'Bartleby/templates/project/SwiftDocumentConfigurator.php';
+
+/*
+ * This template is an advanced template that must be configured
+ * to be used multiple time within the same project
+ * You must declare $configurator a SwitfDocumentConfigurator instance its before invocation.
+ */
 
 /* @var $f Flexed */
 /* @var $d ProjectRepresentation */
 /* @var $project ProjectRepresentation */
 /* @var $action ActionRepresentation*/
 /* @var $entity EntityRepresentation */
+/* @var $configurator SwiftDocumentConfigurator */
 
-if (isset ( $f )) {
+if (isset ( $f ) && isset($configurator)) {
     // We determine the file name.
-    $f->fileName = 'BaseDocument.swift';
+    $f->fileName = $configurator->filename;
     // And its package.
     $f->package = 'iOS/swift/';
+}else{
+    return 'THIS TEMPLATES REQUIRES A SwitfDocumentConfigurator IN $configurator';
 }
 
 $project=$d;// It is a project template
 
 //Collection controllers are related to actions.
 
-function _actionsShouldBeSupportedForEntity(ProjectRepresentation $project, EntityRepresentation $entity,$excludeActionsWith){
-    $exclusion = array();
-    $exclusionName = str_replace($project->classPrefix, '', $entity->name);
-    if (isset($excludeActionsWith)) {
-        $exclusion = $excludeActionsWith;
-    }
-    foreach ($exclusion as $exclusionString) {
-        if (strpos($exclusionName, $exclusionString) !== false) {
-            return false; // We return null
-        }
-    }
-    return true;
-}
-
 
 /* TEMPLATES STARTS HERE -> */?>
 //
-//  BaseDocument.swift
+//  <?php echo($configurator->filename.cr()) ?>
 //
 //  The is the central piece of the Document oriented architecture.
 //  We provide a universal implementation with conditionnal compilation
@@ -61,7 +57,7 @@ import AppKit
 import UIKit
 #endif
 
-@objc(BaseDocument) class BaseDocument: JDocument {
+@objc(<?php echo($configurator->getClassName()) ?>) class <?php echo($configurator->getClassName())?> : JDocument {
 
     private var KVOContext: Int = 0
 
@@ -69,7 +65,7 @@ import UIKit
     // The initial instances are proxies
 <?php
 foreach ($project->entities as $entity) {
-    if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+    if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
         $pluralizedEntity=Pluralization::pluralize($entity->name);
         $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
         $collectionControllerVariableName=lcfirst($pluralizedEntity).'CollectionController';
@@ -89,7 +85,7 @@ foreach ($project->entities as $entity) {
 
 <?php
 foreach ($project->entities as $entity) {
-    if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+    if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
         $pluralizedEntity=Pluralization::pluralize($entity->name);
         $arrayControllerClassName=ucfirst($pluralizedEntity).'ArrayController';
         $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
@@ -112,7 +108,7 @@ foreach ($project->entities as $entity) {
                 // Add observer
                 self.'.lcfirst($arrayControllerVariableName).'?.addObserver(self, forKeyPath: "selectionIndexes", options: .New, context: &self.KVOContext)
 
-                if let index=self.registryMetadata.stateDictionary[BaseDocument.kSelected'.ucfirst($entity->name).'IndexKey] as? Int{
+                if let index=self.registryMetadata.stateDictionary['.$configurator->getClassName().'.kSelected'.ucfirst($entity->name).'IndexKey] as? Int{
                    if self.'.lcfirst($pluralizedEntity).'.items.count > index{
                        let selection=self.'.lcfirst($pluralizedEntity).'.items[index]
                        self.'.lcfirst($arrayControllerVariableName).'?.setSelectedObjects([selection])
@@ -133,7 +129,7 @@ foreach ($project->entities as $entity) {
 
 <?php
 foreach ($project->entities as $entity) {
-    if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+    if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
         $pluralizedEntity=Pluralization::pluralize($entity->name);
         $arrayControllerClassName=ucfirst($pluralizedEntity).'ArrayController';
         $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
@@ -145,7 +141,7 @@ foreach ($project->entities as $entity) {
         didSet{
             if let '.lcfirst($entity->name).' = selected'.ucfirst($entity->name).' {
                 if let index='.lcfirst($pluralizedEntity).'.items.indexOf('.lcfirst($entity->name).'){
-                    self.registryMetadata.stateDictionary[BaseDocument.kSelected'.ucfirst($entity->name).'IndexKey]=index
+                    self.registryMetadata.stateDictionary['.$configurator->getClassName().'.kSelected'.ucfirst($entity->name).'IndexKey]=index
                 }
             }
         }
@@ -175,7 +171,7 @@ foreach ($project->entities as $entity) {
 
 <?php
 foreach ($project->entities as $entity) {
-    if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+    if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
         $pluralizedEntity=Pluralization::pluralize($entity->name);
         $arrayControllerClassName=ucfirst($pluralizedEntity).'ArrayController';
         $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
@@ -198,7 +194,7 @@ foreach ($project->entities as $entity) {
 
 <?php
 foreach ($project->entities as $entity) {
-    if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+    if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
         $pluralizedEntity=Pluralization::pluralize($entity->name);
         $arrayControllerClassName=ucfirst($pluralizedEntity).'ArrayController';
         $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
@@ -240,7 +236,7 @@ foreach ($project->entities as $entity) {
 
     <?php
     foreach ($project->entities as $entity) {
-        if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+        if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
             $pluralizedEntity=Pluralization::pluralize($entity->name);
             $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
             $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
@@ -268,7 +264,7 @@ foreach ($project->entities as $entity) {
     <?php
     echoIndentCR('',0);
     foreach ($project->entities as $entity) {
-        if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+        if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
             $pluralizedEntity=Pluralization::pluralize($entity->name);
             $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
             $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
@@ -303,7 +299,7 @@ foreach ($project->entities as $entity) {
     <?php
     echoIndentCR('',0);
     foreach ($project->entities as $entity) {
-        if (_actionsShouldBeSupportedForEntity($project,$entity,$excludeActionsWith)){
+        if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
             $pluralizedEntity=Pluralization::pluralize($entity->name);
             $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
 
@@ -314,7 +310,6 @@ foreach ($project->entities as $entity) {
     let '.lcfirst($entity->name).'='.ucfirst($entity->name).'()
     self.'.lcfirst($pluralizedEntity).'.add('.lcfirst($entity->name).')
   }
-
 
         ',0);
         }
