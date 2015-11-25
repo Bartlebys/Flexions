@@ -52,9 +52,10 @@ class GeneratedConfiguration extends MongoConfiguration {
     private function _configurePermissions(){
 
         $this->_permissionsRules = array(
+        'NotFound->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
         'Reachable->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
-        'Auth->GET' => array('level' => PERMISSION_BY_TOKEN,'LoginUser#rUDID'),// (!) do not change
-        'Auth->DELETE' => array('level'  => PERMISSION_BY_TOKEN,'LogoutUser#rUDID'), // (!) do not change  to allow logout even if there is no valid cookie.
+        'Auth->GET' => array('level' => PERMISSION_BY_TOKEN,'context'=>'LoginUser#rUDID'),// (!) do not change
+        'Auth->DELETE' => array('level'  => PERMISSION_NO_RESTRICTION), // (!)
         'SSETime->GET'=> array('level'=> PERMISSION_IDENTIFIED_BY_COOKIE),
 <?php
 $permissionHistory=array();
@@ -87,7 +88,9 @@ while ($d->iterateOnActions() ) {
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
 
 
-    $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,'$classNameWithoutPrefix#rUDID')";
+    //$string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,'context'=>'$classNameWithoutPrefix#rUDID')";
+    $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_IDENTIFIED_BY_COOKIE)";
+
     if(!$d->lastAction()){
         $string.=',';
     }
@@ -136,8 +139,8 @@ while ($d->iterateOnActions() ) {
 
     protected function _getEndPointsRouteAliases () {
         $mapping = array(
-            '/user/login/{rUDID}' => 'Auth',// Any HTTP method default (GET)
-            '/user/logout/{rUDID}' => array('Auth','DELETE'), // Will call explicitly DELETE (equivalent to explicit call of DELETE login)
+            '/user/login/' => 'Auth',// Any HTTP method default (GET)
+            '/user/logout/' => array('Auth','DELETE'), // Will call explicitly DELETE (equivalent to explicit call of DELETE login)
 <?php
 $history=array();
 /* @var $d ProjectRepresentation */

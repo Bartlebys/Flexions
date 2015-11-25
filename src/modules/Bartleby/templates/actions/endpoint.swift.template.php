@@ -20,8 +20,6 @@ if (isset($excludeActionsWith)) {
 }
 
 
-
-
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
@@ -136,15 +134,26 @@ if ($d->containsParametersOutOfPath()) {
 // We want to inject the path variable into the
 $pathVariables=GenerativeHelper::variablesFromPath($d->path);
 $pathVCounter=0;
+$hasrUDID= in_array('rUDID',$pathVariables);
+if (!$hasrUDID){
+    echoIndentCR('rUDID:String,',$pathVCounter>0);
+}
+
 if(count($pathVariables)>0){
     foreach ($pathVariables as $pathVariable ) {
+        if ($pathVariable=='rUDID'){
+            $hasrUDID=true;
+        }
         // Suspended
-        echoIndentCR($pathVariable.':String,',$pathVCounter==0?0:6);
+        echoIndentCR($pathVariable.':String,',6);
         $pathVCounter++;
     }
 }
+
+
 ?>
 <?php
+
 $successP = $d->getSuccessResponse();
 $successTypeString = '';
 if ($successP->type == FlexionsTypes::COLLECTION) {
@@ -163,8 +172,6 @@ if ($successP->type == FlexionsTypes::COLLECTION) {
 }
 
 $resultSuccessIsACollection=($successP->type == FlexionsTypes::COLLECTION);
-
-
 if($resultSuccessIsACollection){
     $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successP->instanceOf));
 }else{
@@ -177,14 +184,11 @@ if($resultSuccessIsACollection){
 
 
 $resultSuccessTypeString=$successTypeString!=''?$successParameterName.':'.$successTypeString:'';
-
-
-
 if ($d->containsParametersOutOfPath()) {
-    echoIndentCR('parameters:' . $d->class . 'Parameters,' , $pathVCounter>0?6:0);
+    echoIndentCR('parameters:' . $d->class . 'Parameters,' , 6);
     echoIndentCR('sucessHandler success:(' . $resultSuccessTypeString . ')->(),', 6);
 } else {
-    echoIndentCR('sucessHandler success:(' . $resultSuccessTypeString . ')->(),', $pathVCounter>0?6:0);
+    echoIndentCR('sucessHandler success:(' . $resultSuccessTypeString . ')->(),', 6);
 }
 
 // We want to inject the path variable
@@ -306,7 +310,7 @@ if !HTTPManager.isAuthenticated {
 '
     let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("'.$path.'")
     '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
-    let urlRequest=HTTPManager.mutableRequestWithHeaders(Method.'.$d->httpMethod.', url: pathURL)
+    let urlRequest=HTTPManager.mutableRequestWithToken(relatedUDID:rUDID,withActionName:"'.$d->class.'" ,forMethod:Method.'.$d->httpMethod.', and: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
     r.'.(($successTypeString=='')?'responseString':'responseJSON').'{ response in
 
@@ -351,5 +355,4 @@ if !HTTPManager.isAuthenticated {
 if($authenticationRequired) {
     echoIndentCR('}',1);
 }
-
 ?><?php /*<- END OF TEMPLATE */ ?>

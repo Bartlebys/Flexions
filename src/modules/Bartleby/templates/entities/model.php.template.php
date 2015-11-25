@@ -29,10 +29,7 @@ foreach ($exclusion as $exclusionString) {
 
 
 
-/* TEMPLATES STARTS HERE -> */?>
-
-
-<?php echo '<?php'?>
+/* TEMPLATES STARTS HERE -> */?><?php echo '<?php'?>
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 namespace Bartleby\Models;
 

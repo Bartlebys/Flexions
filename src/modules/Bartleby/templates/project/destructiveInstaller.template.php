@@ -26,6 +26,11 @@ require_once __DIR__.'/Configuration.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+if (!Configuration::ALLOW_DESTRUCTIVE_INSTALLER){
+    logMessage("ALLOW_DESTRUCTIVE_INSTALLER is set to FALSE! ");
+    logMessage("Turn it to true once if you are sure you want to totally reset the DB.");
+    return;
+}
 $configuration=new Configuration(__DIR__,BARTLEBY_ROOT_FOLDER);
 
 function logMessage($message=""){
@@ -69,4 +74,9 @@ foreach ($d->entities as $entity ) {
     echoIndentCR('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");',0);
 }
 ?>
+
+logMessage("");
+logMessage("**********************************************************************");
+logMessage("Please set  Configuration::ALLOW_DESTRUCTIVE_INSTALLER const to FALSE!");
+
 <?php /*<- END OF TEMPLATE */?>
