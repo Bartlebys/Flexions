@@ -173,7 +173,7 @@ if ($successP->type == FlexionsTypes::COLLECTION) {
 
 $resultSuccessIsACollection=($successP->type == FlexionsTypes::COLLECTION);
 if($resultSuccessIsACollection){
-    $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successP->instanceOf));
+    $successParameterName= Pluralization::pluralize(lcfirst($h->ucFirstRemovePrefixFromString($successP->instanceOf)));
 }else{
     if($successP->isGeneratedType==true){
         $successParameterName=lcfirst($h->ucFirstRemovePrefixFromString($successTypeString));
