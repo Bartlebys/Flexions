@@ -33,7 +33,7 @@ foreach ($exclusion as $exclusionString) {
 <?php echo GenerativeHelperForPhp::defaultHeader($f,$d); ?>
 namespace Bartleby\Models;
 
-require_once BARTLEBY_ROOT_FOLDER.'core/Model.php';
+require_once BARTLEBY_ROOT_FOLDER.'Core/Model.php';
 use Bartleby\Core\Model;
 <?php
 $hasBeenImported=array();

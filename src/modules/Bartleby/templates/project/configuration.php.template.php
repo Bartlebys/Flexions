@@ -18,8 +18,8 @@ if (isset ( $f )) {
 
 namespace Bartleby;
 
-require_once BARTLEBY_ROOT_FOLDER . 'mongo/MongoConfiguration.php';
-require_once BARTLEBY_ROOT_FOLDER . 'core/RoutesAliases.php';
+require_once BARTLEBY_ROOT_FOLDER . 'Mongo/MongoConfiguration.php';
+require_once BARTLEBY_ROOT_FOLDER . 'Core/RoutesAliases.php';
 
 use Bartleby\Core\RoutesAliases;
 use Bartleby\Core\Stages;

@@ -33,11 +33,11 @@ if (isset($excludeActionsWith)) {
 
 namespace Bartleby\EndPoints;
 
-require_once BARTLEBY_ROOT_FOLDER . 'mongo/MongoEndPoint.php';
-require_once BARTLEBY_ROOT_FOLDER . 'mongo/MongoCallDataRawWrapper.php';
+require_once BARTLEBY_ROOT_FOLDER . 'Mongo/MongoEndPoint.php';
+require_once BARTLEBY_ROOT_FOLDER . 'Mongo/MongoCallDataRawWrapper.php';
 
 use Bartleby\Mongo\MongoEndPoint;
-use bartleby\mongo\MongoCallDataRawWrapper;
+use Bartleby\Mongo\MongoCallDataRawWrapper;
 use Bartleby\Core\JsonResponse;
 use \MongoCollection;
 
