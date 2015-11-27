@@ -9,7 +9,7 @@ require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 if (isset ( $f )) {
     $classNameWithoutPrefix=ucfirst(substr($d->name,strlen($h->classPrefix)));
     $f->fileName = $classNameWithoutPrefix.'.php';
-    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/models/';
+    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/Models/';
 }
 
 

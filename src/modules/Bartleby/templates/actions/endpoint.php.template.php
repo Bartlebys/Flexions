@@ -9,7 +9,7 @@ if (isset ( $f )) {
     $classNameWithoutPrefix=$h->ucFirstRemovePrefixFromString($d->class);
     $callDataClassName=$classNameWithoutPrefix.'CallData';
     $f->fileName = $classNameWithoutPrefix.'.php';
-    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/endpoints/';
+    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/Endpoints/';
 }
 
 // Exclusion
