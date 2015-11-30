@@ -54,7 +54,7 @@ class GeneratedConfiguration extends MongoConfiguration {
         $this->_permissionsRules = array(
         'NotFound->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
         'Reachable->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
-        'Auth->GET' => array('level' => PERMISSION_BY_TOKEN,'context'=>'LoginUser#rUDID'),// (!) do not change
+        'Auth->GET' => array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'LoginUser#rUDID'),// (!) do not change
         'Auth->DELETE' => array('level'  => PERMISSION_NO_RESTRICTION), // (!)
         'SSETime->GET'=> array('level'=> PERMISSION_IDENTIFIED_BY_COOKIE),
 <?php
@@ -88,7 +88,7 @@ while ($d->iterateOnActions() ) {
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
 
 
-    //$string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,'context'=>'$classNameWithoutPrefix#rUDID')";
+    //$string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'$classNameWithoutPrefix#rUDID')";
     $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_IDENTIFIED_BY_COOKIE)";
 
     if(!$d->lastAction()){

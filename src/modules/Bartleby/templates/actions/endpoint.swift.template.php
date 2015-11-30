@@ -19,7 +19,6 @@ if (isset($excludeActionsWith)) {
     }
 }
 
-
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
@@ -126,7 +125,6 @@ if ($d->containsParametersOutOfPath()) {
 /// START OF END POINT EXEC CLASS
 //////////////////////////////////
 
-
 ?>
 @objc(<?php echo $d->class ?>) class <?php echo $d->class; ?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d) ?>{
 
@@ -202,12 +200,6 @@ if(count($pathVariables)>0){
 
 echoIndentCR('failureHandler failure:(result:HTTPFailure)->()){', 6);
 echoIndentCR('');
-$authenticationRequired=false;
-
-if( isset($d->security) && $d->security->getRelation()==RelationToPermission::REQUIRES){
-    $authenticationRequired=true;
-}
-
     $parametersString='';
     if ($d->containsParametersOutOfPath()) {
         $parametersString='[';
@@ -292,20 +284,6 @@ $parameterEncodingString='JSON';
 if($d->httpMethod=='GET'){
     $parameterEncodingString='URL';
 }
-
-if($authenticationRequired) {
-    // We could distinguish the permission context.
-
-    echoIndentCR(
-'
-if !HTTPManager.isAuthenticated {
-    var f=HTTPFailure()
-    f.message="Authentication required"
-    AuthorizationFacilities.authorizationRequired("for '.$d->class.'")
-    failure(result: f)
-}else{'
-        ,3);
-}
     echoIndentCR(
 '
     let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("'.$path.'")
@@ -336,23 +314,22 @@ if !HTTPManager.isAuthenticated {
             if let statusCode=response?.statusCode {
                 if 200...299 ~= statusCode {
 '.$successMicroBlock.'
-                }else{
-                    // Bartlby does not currenlty discriminate status codes 100 & 101
-                    // and treats any status code >= 300 the same way
-                    // because we consider that failures differentiations could be done by the caller.
-                    var f=HTTPFailure()
-                    f.relatedURL=request?.URL
-                    f.httpStatusCode=statusCode
-                    f.message="\(result.value)"
-                    f.infos=response
-                    failure(result: f)
-                }
+            }else{
+                // Bartlby does not currenlty discriminate status codes 100 & 101
+                // and treats any status code >= 300 the same way
+                // because we consider that failures differentiations could be done by the caller.
+                var f=HTTPFailure()
+                f.relatedURL=request?.URL
+                f.httpStatusCode=statusCode
+                f.message="\(result.value)"
+                f.infos=response
+                failure(result: f)
             }
         }
-      }
-   }
-}',4);
-if($authenticationRequired) {
-    echoIndentCR('}',1);
+     }
+  }
 }
+',4);
+
+echoIndentCR('}',0)
 ?><?php /*<- END OF TEMPLATE */ ?>
