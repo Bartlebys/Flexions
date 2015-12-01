@@ -167,6 +167,11 @@ class SwaggerToFlexionsRepresentations {
                 $definitions = $json[SWAGGER_DEFINITIONS];
                 foreach ($definitions as $entityName => $descriptor) {
                     $e = new EntityRepresentation();
+
+                    if(array_key_exists(SWAGGER_DESCRIPTION,$descriptor)){
+                        $e->description=$descriptor[SWAGGER_DESCRIPTION];
+                    }
+
                     $e->name = $nativePrefix . ucfirst($entityName);
 
                     $properties=array();
@@ -178,7 +183,7 @@ class SwaggerToFlexionsRepresentations {
                             }
                         }
                     } else {
-                        // Entity is not a simple object
+                        // Entity is not a base object but
                         if(array_key_exists(SWAGGER_ALL_OF,$descriptor)){
                             $allOF=$descriptor[SWAGGER_ALL_OF];
                             $refs=array();
@@ -200,10 +205,10 @@ class SwaggerToFlexionsRepresentations {
                                             $refs[]=$parentRef;
                                         }
 
-
                                     }
                                     if(array_key_exists(SWAGGER_PROPERTIES, $currentItem)){
-                                        $properties=array_merge($properties,$currentItem[SWAGGER_PROPERTIES]);
+                                        $currentItemProperties=$currentItem[SWAGGER_PROPERTIES];
+                                        $properties=array_merge($properties,$currentItemProperties);
                                     }
                                 }
                             }
@@ -217,8 +222,6 @@ class SwaggerToFlexionsRepresentations {
                                 $properties=$allOF[SWAGGER_PROPERTIES];
                             }
                         }
-
-
                     }
                     // Parse the properties
                     foreach ($properties as $propertyName => $propertyValue) {

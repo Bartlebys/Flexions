@@ -10,7 +10,7 @@ if (isset ( $f )) {
     // We determine the file name.
     $f->fileName = GenerativeHelperForSwift::getCurrentClassNameWithPrefix($d).'.swift';
     // And its package.
-    $f->package = 'iOS/swift/models/';
+    $f->package = 'xOS/models/';
 }
 
 

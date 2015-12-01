@@ -21,7 +21,7 @@ if (isset ( $f ) && isset($configurator)) {
     // We determine the file name.
     $f->fileName = $configurator->filename;
     // And its package.
-    $f->package = 'iOS/swift/';
+    $f->package = 'xOS/';
 }else{
     return 'THIS TEMPLATES REQUIRES A SwitfDocumentConfigurator IN $configurator';
 }

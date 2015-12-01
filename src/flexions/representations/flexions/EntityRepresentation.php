@@ -25,6 +25,12 @@ along with Flexions  If not, see <http://www.gnu.org/Licenses/>
 
 class EntityRepresentation {
 
+
+	/**
+	 * @var string  Documentation  of the Entity
+	 */
+	public $description;
+
 	/**
 	 * @var string Name of the object
 	 */

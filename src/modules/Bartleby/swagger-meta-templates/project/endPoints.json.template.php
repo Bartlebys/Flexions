@@ -20,6 +20,7 @@ if (isset ( $f )) {
 /* @var $entity EntityRepresentation */
 
 $counter=0;
+$blocks=array();
 foreach ($d->entities as $entity ) {
     $name = $entity->name;
 
@@ -32,10 +33,6 @@ foreach ($d->entities as $entity ) {
 
     //luralization::pluralize($name));
     $counter++;
-    $lastEntity = false;
-    if ($counter == count($d->entities)) {
-        $lastEntity = true;
-    }
 
     // EXCLUSION FROM CRUD
     // You can exclude entities containing a given string
@@ -536,21 +533,20 @@ foreach ($d->entities as $entity ) {
         $block .= cr() . '}';
         $block .= ',';
 
-    }else{
+    } else {
 
-        $block.=$createCollectionBlock;
-        $block.=$readCollectionBlock;
-        if($isUnModifiable==false){
-            $block.=$updateCollectionBlock;
+        $block .= $createCollectionBlock;
+        $block .= $readCollectionBlock;
+        if ($isUnModifiable == false) {
+            $block .= $updateCollectionBlock;
         }
-        if($isUndeletable==false){
-            $block.=$deleteCollectionBlock;
+        if ($isUndeletable == false) {
+            $block .= $deleteCollectionBlock;
         }
         $block .= cr() . '}';
         $block .= ',';
 
     }
-
 
 
     ////////////////////////////
@@ -561,15 +557,15 @@ foreach ($d->entities as $entity ) {
     // We use POST to pass a query
     // Other Reading endpoint are cachable not those one ()
 
-    $genericQueryGetPathBlock= '
-        "/'.lcfirst($pluralizedName).'ByQuery" : {
+    $genericQueryGetPathBlock = '
+        "/' . lcfirst($pluralizedName) . 'ByQuery" : {
             "post" : {
                 "tags" : [
-                    "'.$pluralizedName.'"
+                    "' . $pluralizedName . '"
                 ],
-                "summary" : "Find '.$pluralizedName.' by query (check $q, $s, $f in Bartleby\'s MongoCallDataRawWrapper)",
-                "description" : "Returns a collection of '.$name.'",
-                "operationId" : "read'.ucfirst($pluralizedName).'ByQuery",
+                "summary" : "Find ' . $pluralizedName . ' by query (check $q, $s, $f in Bartleby\'s MongoCallDataRawWrapper)",
+                "description" : "Returns a collection of ' . $name . '",
+                "operationId" : "read' . ucfirst($pluralizedName) . 'ByQuery",
                 "produces" : [
                         "application/json"
                     ],
@@ -609,7 +605,7 @@ foreach ($d->entities as $entity ) {
                               "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/definitions/'.ucfirst($name).'"
+                                        "$ref": "#/definitions/' . ucfirst($name) . '"
                                     }
                               }
                    },
@@ -617,20 +613,23 @@ foreach ($d->entities as $entity ) {
                             "description" : "Invalid IDS supplied"
                   },
                   "404" : {
-                            "description" : "'.ucfirst($pluralizedName).' not found"
+                            "description" : "' . ucfirst($pluralizedName) . ' not found"
                   }
                 }
             }
-        }
-        '
-    ;
-    $block.=$genericQueryGetPathBlock;
-    if(!$lastEntity){
-        $block.=',';
-    }else{
+        },';
+    $block .= $genericQueryGetPathBlock;
+    $blocks[] = $block;
+}
+// Let's echo the blocks
+$nbOfBlocks=count($blocks);
+for ($i=0;$i<$nbOfBlocks;$i++){
+    $currentBlock=$blocks[$i];
+    if($i==$nbOfBlocks-1){
+        // Delete the last comma.
+        $currentBlock=substr($currentBlock,0,strlen($currentBlock)-1);
     }
-
-    echo $block;
+    echo($currentBlock);
 }
 ?>
     }

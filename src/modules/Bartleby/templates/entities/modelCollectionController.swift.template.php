@@ -10,7 +10,7 @@ if (isset ( $f )) {
     // We determine the file name.
     $f->fileName = ucfirst(Pluralization::pluralize($d->name)).'CollectionController.swift';
     // And its package.
-    $f->package = 'iOS/swift/collectionControllers/';
+    $f->package = 'xOS/collectionControllers/';
 }
 
 // Exclusion -
