@@ -20,13 +20,25 @@ if (isset ( $f )) {
 $exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->name);
 
-if (isset($excludeActionsWith)) {
-    $exclusion = $excludeActionsWith;
-}
-foreach ($exclusion as $exclusionString) {
-    if (strpos($exclusionName, $exclusionString) !== false) {
-        return NULL; // We return null
+$includeCollectionController=false;
+if (isset($xOSIncludeCollectionControllerForEntityNamed)){
+    foreach ($xOSIncludeCollectionControllerForEntityNamed as $inclusion) {
+    if (strpos($exclusionName, $inclusion) !== false) {
+        $includeCollectionController=true;
     }
+
+}
+if(!$includeCollectionController){
+    if (isset($excludeActionsWith)) {
+        $exclusion = $excludeActionsWith;
+    }
+    foreach ($exclusion as $exclusionString) {
+        if (strpos($exclusionName, $exclusionString) !== false) {
+            return NULL; // We return null
+        }
+    }
+}
+
 }
 
 /* TEMPLATES STARTS HERE -> */?>
