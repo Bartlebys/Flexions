@@ -23,8 +23,7 @@ import ObjectMapper
     required init(){
         super.init()
     }
-    
-    
+
     // MARK: Mappable
     
     required init?(_ map: Map) {

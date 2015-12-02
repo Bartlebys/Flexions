@@ -198,7 +198,7 @@ if(count($pathVariables)>0){
     }
 }
 
-echoIndentCR('failureHandler failure:(result:HTTPFailure)->()){', 6);
+echoIndentCR('failureHandler failure:(context:HTTPContext)->()){', 6);
 echoIndentCR('');
     $parametersString='';
     if ($d->containsParametersOutOfPath()) {
@@ -244,19 +244,23 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
 .'
     success(' . $successParameterName . ': instance)
   }else{
-    var f=HTTPFailure()
-    f.relatedURL=request?.URL
-    f.httpStatusCode=statusCode
-    f.message="Deserialization issue\n\(result.value)"
-    f.infos=response
-    failure(result: f)
+   let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
+        context: context,
+        title: NSLocalizedString("Deserialization issue",
+            comment: "Deserialization issue"),
+        body:"(result.value)",
+        trigger:{ (selectedIndex) -> () in
+            print("Post presentation message selectedIndex:\(selectedIndex)")
+    })
+   reactions.append(failureReaction)
+   failure(context:context)
 }',5);
             }
         }
     }
 }
 
-if( ! isset($successMicroBlock)){
+if( !isset($successMicroBlock)){
 
     if($successTypeString==''){
         // there is no return type
@@ -268,12 +272,16 @@ if let r=result.value as? ' . $successTypeString . '{
 
     success(' . $successParameterName . ':r)
  }else{
-    var f=HTTPFailure()
-    f.relatedURL=request?.URL
-    f.httpStatusCode=statusCode
-    f.message="Deserialization issue\n\(result.value)"
-    f.infos=response
-    failure(result: f)
+    let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
+        context: context,
+        title: NSLocalizedString("Deserialization issue",
+            comment: "Deserialization issue"),
+        body:"(result.value)",
+        trigger:{ (selectedIndex) -> () in
+            print("Post presentation message selectedIndex:\(selectedIndex)")
+    })
+   reactions.append(failureReaction)
+   failure(context:context)
 }',2);
     }
 
@@ -292,24 +300,34 @@ if($d->httpMethod=='GET'){
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
     r.'.(($successTypeString=='')?'responseString':'responseJSON').'{ response in
 
-        // ALAMOFIRE 3.0 migration in progress
-
 	    let request=response.request
         let result=response.result
         let response=response.response
 
+
+        // Bartleby consignation
+
+        let context = HTTPContext( code: '.crc32($d->class).',
+            caller: "'.$d->class.'.execute",
+            relatedURL:request?.URL,
+            httpStatusCode: response?.statusCode ?? 0,
+            response: response )
+
+        // React according to the situation
+        var reactions = Array<Bartleby.Reaction> ()
+        reactions.append(Bartleby.Reaction.Track(result: nil, context: context)) // Tracking
+
         if result.isFailure {
-            var f=HTTPFailure()
-            if let r = response{
-                f.relatedURL=request?.URL
-                f.httpStatusCode=r.statusCode
-                f.message="\(result.value)"
-                f.infos=r
-            }else{
-                f.relatedURL=request?.URL
-                f.message="Response is void"
-            }
-            failure(result: f)
+           let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
+                context: context,
+                title: NSLocalizedString("Unsuccessfull attempt",comment: "Unsuccessfull attempt"),
+                body:NSLocalizedString("Explicit Failure",comment: "Explicit Failure"),
+                trigger:{ (selectedIndex) -> () in
+                    print("Post presentation message selectedIndex:\(selectedIndex)")
+            })
+            reactions.append(failureReaction)
+            failure(context:context)
+
         }else{
             if let statusCode=response?.statusCode {
                 if 200...299 ~= statusCode {
@@ -318,15 +336,22 @@ if($d->httpMethod=='GET'){
                 // Bartlby does not currenlty discriminate status codes 100 & 101
                 // and treats any status code >= 300 the same way
                 // because we consider that failures differentiations could be done by the caller.
-                var f=HTTPFailure()
-                f.relatedURL=request?.URL
-                f.httpStatusCode=statusCode
-                f.message="\(result.value)"
-                f.infos=response
-                failure(result: f)
+                let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
+                    context: context,
+                    title: NSLocalizedString("Unsuccessfull attempt",comment: "Unsuccessfull attempt"),
+                    body:NSLocalizedString("Implicit Failure",comment: "Implicit Failure"),
+                    trigger:{ (selectedIndex) -> () in
+                        print("Post presentation message selectedIndex:\(selectedIndex)")
+                })
+               reactions.append(failureReaction)
+               failure(context:context)
             }
         }
      }
+
+     //Let s react according to the context.
+     Bartleby.sharedInstance.perform(reactions, forContext: context)
+
   }
 }
 ',4);
