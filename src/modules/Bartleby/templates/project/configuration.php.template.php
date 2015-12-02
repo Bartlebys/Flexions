@@ -139,7 +139,7 @@ while ($d->iterateOnActions() ) {
 
     protected function _getEndPointsRouteAliases () {
         $mapping = array(
-            '/user/login/' => 'Auth',// Any HTTP method default (GET)
+            '/user/login/' => array('Auth','POST'),
             '/user/logout/' => array('Auth','DELETE'), // Will call explicitly DELETE (equivalent to explicit call of DELETE login)
 <?php
 $history=array();
