@@ -165,7 +165,7 @@ import ObjectMapper
 
     private var _observableViaUDID:String?
 
-    private var _invocation:Invocation=Invocation()
+    private var _operation:Operation=Operation()
 
     required convenience init(){
         self.init(within:"",parameters:<?php echo$baseClassName ?>Parameters(),rUDID:"",observableViaUDID:nil)
@@ -182,8 +182,8 @@ import ObjectMapper
         self._documentUDID <- map["_documentUDID"]
         self._rUDID <- map["_rUDID"]
         self._observableViaUDID <- map["observableViaUDID"]
-        // (!) Do not serialize the invocation
-        // In this case the invocation will hold this instance in its dictionary.
+        // (!) Do not serialize the operation
+        // In this case the operation will hold this instance in its dictionary.
     }
 
     /**
@@ -216,23 +216,23 @@ import ObjectMapper
                 } else {
                     echo("if registry.$localAction($firstParameterName, fromCollectionWithName:\"$actionRepresentation->collectionName\"){"); }
                 ?>
-                    // Prepare the invocation
-                    self._invocation.counter=0
-                    self._invocation.status=Invocation.Status.Pending
+                    // Prepare the operation
+                    self._operation.counter=0
+                    self._operation.status=Operation.Status.Pending
 
-                    // Provision the invocation.
+                    // Provision the operation.
                     do{
-                        let ic:InvocationsCollectionController = try registry.getCollection()
-                        ic.add(self._invocation)
+                        let ic:OperationsCollectionController = try registry.getCollection()
+                        ic.add(self._operation)
                     }catch{
                         Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
                         title: "Structural Error",
-                        body: "Invocation collection is missing",
+                        body: "Operation collection is missing",
                         onSelectedIndex: { (selectedIndex) -> () in
                         })
                     }
-                    // The status will mark Invocation.hasChanged as true
-                    self._invocation.data=self.dictionaryRepresentation()
+                    // The status will mark Operation.hasChanged as true
+                    self._operation.data=self.dictionaryRepresentation()
                 }else{
                     // Its is a Local Failure.
                     Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
@@ -256,13 +256,13 @@ import ObjectMapper
     }
 
     func push(){
-        if let <?php if($httpMethod!="DELETE"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._documentUDID) {
+        if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._documentUDID) {
             // The unitary operation are not always idempotent
             // so we do not want to push multiple times unintensionnaly.
-            if  self._invocation.status==Invocation.Status.Pending ||
-                self._invocation.status==Invocation.Status.Unsucessful {
+            if  self._operation.status==Operation.Status.Pending ||
+                self._operation.status==Operation.Status.Unsucessful {
                 // We try to execute
-                self._invocation.status=Invocation.Status.InProgress
+                self._operation.status=Operation.Status.InProgress
                 <?php echo$baseClassName ?>.execute(self._documentUDID,
                     parameters: self._parameters,
                     sucessHandler: { () -> () in
@@ -272,13 +272,13 @@ import ObjectMapper
                             echo(cr());
                         }
                         ?>
-                        self._invocation.counter=self._invocation.counter!+1
-                        self._invocation.status=Invocation.Status.Successful
+                        self._operation.counter=self._operation.counter!+1
+                        self._operation.status=Operation.Status.Successful
                     },
                     failureHandler: {(result: HTTPContext) -> () in
-                        self._invocation.counter=self._invocation.counter!+1
-                        self._invocation.status=Invocation.Status.Unsucessful
-                        self._invocation.failureMessage="\(result)"
+                        self._operation.counter=self._operation.counter!+1
+                        self._operation.status=Operation.Status.Unsucessful
+                        self._operation.failureMessage="\(result)"
                     }
                 )
             }else{
@@ -286,7 +286,7 @@ import ObjectMapper
                 let context=Context(code:0, caller: "<?php echo$baseClassName ?>.push")
                 Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
                     title: NSLocalizedString("Push error", comment: "Push error"),
-                    body: "\(NSLocalizedString("Attempt to push an invocation with status ==",comment:"Attempt to push an invocation with status =="))\(self._invocation.status))",
+                    body: "\(NSLocalizedString("Attempt to push an operation with status ==",comment:"Attempt to push an operation with status =="))\(self._operation.status))",
                     onSelectedIndex: { (selectedIndex) -> () in
                 })
             }
