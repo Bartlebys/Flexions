@@ -6,9 +6,9 @@ require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
 /* @var $f Flexed */
 /* @var $d EntityRepresentation */
 
-if (isset ( $f )) {
+if (isset ($f)) {
     // We determine the file name.
-    $f->fileName = ucfirst(Pluralization::pluralize($d->name)).'CollectionController.swift';
+    $f->fileName = ucfirst(Pluralization::pluralize($d->name)) . 'CollectionController.swift';
     // And its package.
     $f->package = 'xOS/collectionControllers/';
 }
@@ -20,26 +20,27 @@ if (isset ( $f )) {
 $exclusion = array();
 $exclusionName = str_replace($h->classPrefix, '', $d->name);
 
-$includeCollectionController=false;
-if (isset($xOSIncludeCollectionControllerForEntityNamed)){
+$includeCollectionController = false;
+if (isset($xOSIncludeCollectionControllerForEntityNamed)) {
     foreach ($xOSIncludeCollectionControllerForEntityNamed as $inclusion) {
-    if (strpos($exclusionName, $inclusion) !== false) {
-        $includeCollectionController=true;
-    }
+        if (strpos($exclusionName, $inclusion) !== false) {
+            $includeCollectionController = true;
+        }
 
-}
-if(!$includeCollectionController){
-    if (isset($excludeActionsWith)) {
-        $exclusion = $excludeActionsWith;
     }
-    foreach ($exclusion as $exclusionString) {
-        if (strpos($exclusionName, $exclusionString) !== false) {
-            return NULL; // We return null
+    if (!$includeCollectionController) {
+        if (isset($excludeActionsWith)) {
+            $exclusion = $excludeActionsWith;
+        }
+        foreach ($exclusion as $exclusionString) {
+            if (strpos($exclusionName, $exclusionString) !== false) {
+                return NULL; // We return null
+            }
         }
     }
 }
 
-}
+$collectionControllerClass=ucfirst(Pluralization::pluralize($d->name)).'CollectionController';
 
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
@@ -52,7 +53,7 @@ import ObjectMapper
 // This controller implements data automation features.
 // it uses KVO , KVC , dynamic invocation, oS X cocoa bindings,...
 // It should be used on documents and not very large collections as it is computationnally intensive
-@objc(<? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?>) class <? echo ucfirst(Pluralization::pluralize($d->name)).'CollectionController'?> : JAbstractCollectibleCollection{
+@objc(<? echo$collectionControllerClass ?>) class <? echo$collectionControllerClass ?> : JAbstractCollectibleCollection{
 
     required init() {
         super.init()
@@ -104,76 +105,83 @@ import ObjectMapper
 
     // MARK: Add
 
-    func add(item:<?php echo ucfirst($d->name)?>){
+    override func add(item:Collectible){
+        if let item=item as? <?php echo ucfirst($d->name)?>{
+            // print("adding \(item) to the items array")
 
-        // print("adding \(item) to the items array")
-
-        if let undoManager = self.undoManager{
-            // Has an edit occurred already in this event?
-            if undoManager.groupingLevel > 0 {
-                // Close the last group
-                undoManager.endUndoGrouping()
-                // Open a new group
-                undoManager.beginUndoGrouping()
-            }
-        }
-
-        if let arrayController = self.arrayController{
-            // Add it to the array controller's content array
-            arrayController.addObject(item)
-
-            // Re-sort (in case the use has sorted a column)
-            arrayController.rearrangeObjects()
-
-            // Get the sorted array
-            let sorted = arrayController.arrangedObjects as! [<?php echo ucfirst($d->name)?>]
-
-            if let tableView = self.tableView{
-                // Find the object just added
-                let row = sorted.indexOf(item)!
-                // Begin the edit in the first column
-                //print("starting edit of \(object) in row \(row)")
-                tableView.editColumn(0, row: row, withEvent: nil, select: true)
+            if let undoManager = self.undoManager{
+                // Has an edit occurred already in this event?
+                if undoManager.groupingLevel > 0 {
+                    // Close the last group
+                    undoManager.endUndoGrouping()
+                    // Open a new group
+                    undoManager.beginUndoGrouping()
+                }
             }
 
+            if let arrayController = self.arrayController{
+                // Add it to the array controller's content array
+                arrayController.addObject(item)
+
+                // Re-sort (in case the use has sorted a column)
+                arrayController.rearrangeObjects()
+
+                // Get the sorted array
+                let sorted = arrayController.arrangedObjects as! [<?php echo ucfirst($d->name)?>]
+
+                if let tableView = self.tableView{
+                    // Find the object just added
+                    let row = sorted.indexOf(item)!
+                    // Begin the edit in the first column
+                    //print("starting edit of \(object) in row \(row)")
+                    tableView.editColumn(0, row: row, withEvent: nil, select: true)
+                }
+
+            }else{
+                // Add directly to the collection
+                 self.items.append(item)
+            }
         }else{
-            // Add directly to the collection
-            self.items.append(item)
+            print("casting error")
         }
     }
 
     // MARK: Insert
 
-    func insertObject(item: <?php echo ucfirst($d->name)?>, inItemsAtIndex index: Int) {
+    override func insertObject(item: Collectible, inItemsAtIndex index: Int) {
+        if let item=item as? <?php echo ucfirst($d->name)?>{
+            print("inserting \(item) to the items array")
 
-        print("inserting \(item) to the items array")
-
-        // Add the inverse of this operation to the undo stack
-        if let undoManager: NSUndoManager = undoManager {
-            undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(items.count)
-            if !undoManager.undoing {
-                undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
+            // Add the inverse of this operation to the undo stack
+            if let undoManager: NSUndoManager = undoManager {
+                (undoManager.prepareWithInvocationTarget(self) as! <?php echo$collectionControllerClass ?>).removeObjectFromItemsAtIndex(items.count)
+                if !undoManager.undoing {
+                    undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
+                }
             }
+            self.items.insert(item, atIndex: index)
+        }else{
+            print("casting error")
         }
-        self.items.insert(item, atIndex: index)
     }
 
 
     // MARK: Remove
 
-    func removeObjectFromItemsAtIndex(index: Int) {
-        let item: <?php echo ucfirst($d->name)?> = items[index]
-        print("removing \(item) from the items array")
+    override func removeObjectFromItemsAtIndex(index: Int) {
+        if let item: <?php echo ucfirst($d->name)?> = items[index] {
+            print("removing \(item) from the items array")
 
-        // Add the inverse of this operation to the undo stack
-        if let undoManager: NSUndoManager = undoManager {
-            undoManager.prepareWithInvocationTarget(self).insertObject(item, inItemsAtIndex: index)
-            if !undoManager.undoing {
-                undoManager.setActionName("Remove <?php echo ucfirst($d->name)?>")
+            // Add the inverse of this operation to the undo stack
+            if let undoManager: NSUndoManager = undoManager {
+                (undoManager.prepareWithInvocationTarget(self) as! <?php echo$collectionControllerClass ?>).insertObject(item, inItemsAtIndex: index)
+                if !undoManager.undoing {
+                    undoManager.setActionName("Remove <?php echo ucfirst($d->name)?>")
+                }
             }
+            // Remove the item from the array
+            items.removeAtIndex(index)
         }
-        // Remove the item from the array
-        items.removeAtIndex(index)
     }
 
     // MARK: - Key Value Observing

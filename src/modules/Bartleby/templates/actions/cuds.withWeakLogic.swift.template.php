@@ -219,6 +219,7 @@ import ObjectMapper
                     // Prepare the operation
                     self._operation.counter=0
                     self._operation.status=Operation.Status.Pending
+                    self._operation.baseUrl=Configuration.baseUrl
 
                     // Provision the operation.
                     do{

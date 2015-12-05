@@ -183,7 +183,6 @@ foreach ($project->entities as $entity) {
         '.$entityDefinition.'.storage=StorageLayer.MonolithicFileStorage
         '.$entityDefinition.'.allowDistantPersistency=true
         '.$entityDefinition.'.inMemory=false
-        '.$entityDefinition.'.useEncryption=Registry.encryptedMetadata
         ',0);
     }
 }
