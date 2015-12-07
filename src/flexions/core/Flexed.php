@@ -134,9 +134,6 @@ class Flexed {
 
 
 	public function fileNameIsIn(array $array){
-        if ($this->fileName=="LoginUser.php"){
-            $a=1;
-        }
 		foreach ($array as $element){
 			if (!(strpos($this->fileName, $element)===false)){
 				return true;

@@ -132,15 +132,15 @@ if ($d->containsParametersOutOfPath()) {
 // We want to inject the path variable into the
 $pathVariables=GenerativeHelper::variablesFromPath($d->path);
 $pathVCounter=0;
-$hasrUDID= in_array('rUDID',$pathVariables);
-if (!$hasrUDID){
-    echoIndentCR('rUDID:String,',$pathVCounter>0);
+$hasdID= in_array('dID',$pathVariables);
+if (!$hasdID){
+    echoIndentCR('dID:String,',$pathVCounter>0);
 }
 
 if(count($pathVariables)>0){
     foreach ($pathVariables as $pathVariable ) {
-        if ($pathVariable=='rUDID'){
-            $hasrUDID=true;
+        if ($pathVariable=='dID'){
+            $hasdID=true;
         }
         // Suspended
         echoIndentCR($pathVariable.':String,',6);
@@ -296,7 +296,7 @@ if($d->httpMethod=='GET'){
 '
     let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("'.$path.'")
     '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
-    let urlRequest=HTTPManager.mutableRequestWithToken(relatedUDID:rUDID,withActionName:"'.$d->class.'" ,forMethod:Method.'.$d->httpMethod.', and: pathURL)
+    let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"'.$d->class.'" ,forMethod:Method.'.$d->httpMethod.', and: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
     r.'.(($successTypeString=='')?'responseString':'responseJSON').'{ response in
 

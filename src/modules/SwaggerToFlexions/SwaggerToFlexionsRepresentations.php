@@ -333,17 +333,13 @@ class SwaggerToFlexionsRepresentations {
                                 $action->urdMode = $extendedMetadata[EXTENDED_USE_URD_MODE];
                             }
                         }
-
-
                         $r->actions[] = $action;
                     }
                 }
             }
-
         } else {
             throw new Exception('Unsupported swagger version' . $json[SWAGGER_VERSION],0);
         }
-
         return $r;
     }
 
@@ -471,7 +467,7 @@ class SwaggerToFlexionsRepresentations {
 
 
     private  function typeFromRef($ref,$nativePrefix){
-        // @todo resolve really refs ?
+        // @todo resolve refs really  ?
         $components = explode('/', $ref);
         $instanceOf = end($components);
         $type=$nativePrefix . ucfirst($instanceOf); // We add the prefix

@@ -275,9 +275,5 @@ final class Hypotypose extends stdClass {
     public function ucFirstRemovePrefixFromString($string){
         return ucfirst($this->removePrefixFromString($string));
     }
-
-
-
 }
-
 ?>

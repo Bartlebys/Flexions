@@ -188,5 +188,4 @@ function injectVersionInPath($path){
 	$h=Hypotypose::Instance();
 	$newPath= str_ireplace('{version.major}',$h->majorVersionPathSegmentString(),$path);
 	return $newPath;
-
 }

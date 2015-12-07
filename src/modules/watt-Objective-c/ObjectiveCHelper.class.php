@@ -334,8 +334,7 @@ class ObjectiveCHelper {
 	public function indent($source, $style) {
 		return $source;
 	}
-		
-		
+
 }
 
 ?>

@@ -54,7 +54,7 @@ class GeneratedConfiguration extends MongoConfiguration {
         $this->_permissionsRules = array(
         'NotFound->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
         'Reachable->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
-        'Auth->POST' => array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'LoginUser#rUDID'),// (!) do not change
+        'Auth->POST' => array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'LoginUser#dID'),// (!) do not change
         'Auth->DELETE' => array('level'  => PERMISSION_NO_RESTRICTION), // (!)
         'SSETime->GET'=> array('level'=> PERMISSION_IDENTIFIED_BY_COOKIE),
 <?php
