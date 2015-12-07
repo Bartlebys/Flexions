@@ -258,7 +258,8 @@ import ObjectMapper
         }
     }
 
-    func push(){
+    func push(sucessHandler success:()->(),
+        failureHandler failure:(context:HTTPContext)->()){
         if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
             // The unitary operation are not always idempotent
             // so we do not want to push multiple times unintensionnaly.
@@ -277,11 +278,13 @@ import ObjectMapper
                         ?>
                         self._operation.counter=self._operation.counter!+1
                         self._operation.status=Operation.Status.Successful
+                        success()
                     },
                     failureHandler: {(result: HTTPContext) -> () in
                         self._operation.counter=self._operation.counter!+1
                         self._operation.status=Operation.Status.Unsucessful
                         self._operation.failureMessage="\(result)"
+                        failure(context:result)
                     }
                 )
             }else{
