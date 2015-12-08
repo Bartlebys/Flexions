@@ -25,7 +25,7 @@ if (isset( $f,$d,$h)) {
     $hypotypose=$h;
 
     $flexed->fileName = $actionRepresentation->class . '.swift';
-    $flexed->package = 'xOS/endpoints/';
+    $flexed->package = 'xOS/operations/';
 
 }else{
     return NULL;
@@ -225,6 +225,7 @@ import ObjectMapper
                 self._operation.counter=0
                 self._operation.status=Operation.Status.Pending
                 self._operation.baseUrl=Configuration.baseUrl
+                self._operation.creationDate=NSDate()
 
                 // Provision the operation.
                 do{
@@ -258,7 +259,7 @@ import ObjectMapper
         }
     }
 
-    func push(sucessHandler success:()->(),
+    func push(sucessHandler success:(context:JHTTPResponse)->(),
         failureHandler failure:(context:JHTTPResponse)->()){
         if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
             // The unitary operation are not always idempotent
@@ -269,7 +270,7 @@ import ObjectMapper
                 self._operation.status=Operation.Status.InProgress
                 <?php echo$baseClassName ?>.execute(<?php echo"self._$firstParameterName,
                     withinDomain:self._dID,".cr() ?>
-                    sucessHandler: { () -> () in
+                    sucessHandler: { (context: JHTTPResponse) -> () in
                         <?php if ($httpMethod=="POST") {
                             echo("registry.markAsDistributed(self._$firstParameterName)".cr());
                         } else {
@@ -278,13 +279,16 @@ import ObjectMapper
                         ?>
                         self._operation.counter=self._operation.counter!+1
                         self._operation.status=Operation.Status.Successful
-                        success()
+                        self._operation.responseData=Mapper<JHTTPResponse>().toJSON(context)
+                        self._operation.lastInvocationDate=NSDate()
+                        success(context:context)
                     },
-                    failureHandler: {(result: JHTTPResponse) -> () in
+                    failureHandler: {(context: JHTTPResponse) -> () in
                         self._operation.counter=self._operation.counter!+1
                         self._operation.status=Operation.Status.Unsucessful
-                        self._operation.failureMessage="\(result)"
-                        failure(context:result)
+                        self._operation.responseData=Mapper<JHTTPResponse>().toJSON(context)
+                        self._operation.lastInvocationDate=NSDate()
+                        failure(context:context)
                     }
                 )
             }else{
@@ -301,7 +305,7 @@ import ObjectMapper
 
     static func execute(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>,
             withinDomain dID:String,
-            sucessHandler success:()->(),
+            sucessHandler success:(context:JHTTPResponse)->(),
             failureHandler failure:(context:JHTTPResponse)->()){
                 let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("/<?php echo$varName ?>")<?php echo $executeArgumentSerializationBlock?>
                 let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"<?php echo$baseClassName ?>" ,forMethod:Method.<?php echo$httpMethod?>, and: pathURL)
@@ -339,7 +343,7 @@ import ObjectMapper
                     }else{
                         if let statusCode=response?.statusCode {
                             if 200...299 ~= statusCode {
-                                success()
+                                success(context:context)
                             }else{
                                 // Bartlby does not currenlty discriminate status codes 100 & 101
                                 // and treats any status code >= 300 the same way
