@@ -13,8 +13,6 @@ if (isset ( $f )) {
     $f->package = 'xOS/models/';
 }
 
-
-
 // Exclusion
 
 $exclusion = array();
@@ -28,6 +26,23 @@ foreach ($exclusion as $exclusionString) {
         return NULL; // We return null
     }
 }
+
+
+if (!defined('_propertyValueString_DEFINED')){
+    define("_propertyValueString_DEFINED",true);
+    function _propertyValueString(PropertyRepresentation $property){
+        if(isset($property->default)){
+            if($property->type==FlexionsTypes::STRING){
+                return " = \"$property->default\"";
+            }else{
+                return " = $property->default";
+            }
+
+        }
+        return "?";
+    }
+}
+
 
 
 /* TEMPLATES STARTS HERE -> */?>
@@ -59,22 +74,20 @@ while ( $d ->iterateOnProperties() === true ) {
             }
         }
         echoIndentCR('}', 1);
-        echoIndentCR('var ' . $name .':'.$enumTypeName.'?', 1);
+        echoIndentCR('var ' . $name .':'.$enumTypeName._propertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::COLLECTION){
         echoIndentCR('var ' . $name .':['.ucfirst($property->instanceOf). ']?', 1);
     }else if($property->type==FlexionsTypes::OBJECT){
-        echoIndentCR('var ' . $name .':'.ucfirst($property->instanceOf). '?', 1);
+        echoIndentCR('var ' . $name .':'.ucfirst($property->instanceOf)._propertyValueString($property), 1);
     }else{
         $nativeType=FlexionsSwiftLang::nativeTypeFor($property->type);
         if(strpos($nativeType,FlexionsTypes::NOT_SUPPORTED)===false){
-            echoIndentCR('var ' . $name .':'.$nativeType. '?', 1);
+            echoIndentCR('var ' . $name .':'.$nativeType._propertyValueString($property), 1);
         }else{
             echoIndentCR('var ' . $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type), 1);
         }
     }
-
     echoIndentCR('',0);
-
 }?>
 
 <?php

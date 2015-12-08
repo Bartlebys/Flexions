@@ -23,6 +23,7 @@ if (!defined('SWAGGER_VERSION')) {
     define('SWAGGER_FORMAT', 'format');
     define('SWAGGER_ITEMS', 'items');
     define('SWAGGER_REF', '$ref');
+    define('SWAGGER_DEFAULT','default');
     define ('SWAGGER_ALL_OF','allOf');// Inheritance and composition
     define('SWAGGER_OPERATION_ID', 'operationId');
     define('SWAGGER_PARAMETERS', 'parameters');
@@ -461,7 +462,9 @@ class SwaggerToFlexionsRepresentations {
         if (array_key_exists(SWAGGER_REQUIRED, $subDictionary)) {
             $propertyR->required = $subDictionary[SWAGGER_REQUIRED];
         }
-
+        if (array_key_exists(SWAGGER_DEFAULT, $subDictionary)) {
+            $propertyR->default = $subDictionary[SWAGGER_DEFAULT];
+        }
     }
 
 

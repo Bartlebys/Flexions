@@ -25,23 +25,22 @@ class  PropertyRepresentation {
     /**
      * @var string unique Name of the property
      */
-    public $name;
+    public $name=NULL;
 
     /**
      * @var string  Documentation  of the property
      */
-    public $description;
+    public $description=NULL;
 
     /**
      * @var string Type  const enumerated in FlexTypes
      */
-    public $type;
+    public $type=NULL;
 
     /**
      * @var  string When the type is an _OBJECT or a _COLLECTION or an _ENUM, you can specify its class
      */
-    public $instanceOf;
-
+    public $instanceOf=NULL;
 
     /**
      * When $type is _ENUM you can enumerate the values in an array or an associative array
@@ -63,17 +62,17 @@ class  PropertyRepresentation {
     /**
      * @var  bool Whether or not the property is required
      */
-    public $required;
+    public $required=false;
 
     /**
      * @var  mixed Default value to use if no value is supplied
      */
-    public $default;
+    public $default=NULL;
 
     /**
      * @var   When the type is a string, you can specify the regex pattern that a value must match
      */
-    public $pattern;
+    public $pattern=NULL;
 
 
     /**
