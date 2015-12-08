@@ -16,7 +16,7 @@ import ObjectMapper
 
     static func execute(dID:String,
 						sucessHandler success:()->(),
-						failureHandler failure:(context:HTTPContext)->()){
+						failureHandler failure:(context:JHTTPResponse)->()){
 
 				    let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("/user/logout")
 				    let dictionary:Dictionary<String, AnyObject>=[:]
@@ -29,7 +29,7 @@ import ObjectMapper
 
                         // Bartleby consignation
 
-                        let context = HTTPContext( code: 100,
+                        let context = JHTTPResponse( code: 100,
                             caller: "LogoutUser.execute",
                             relatedURL:request?.URL,
                             httpStatusCode: response?.statusCode ?? 0,

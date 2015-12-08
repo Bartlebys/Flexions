@@ -198,7 +198,7 @@ if(count($pathVariables)>0){
     }
 }
 
-echoIndentCR('failureHandler failure:(context:HTTPContext)->()){', 6);
+echoIndentCR('failureHandler failure:(context:JHTTPResponse)->()){', 6);
 echoIndentCR('');
     $parametersString='';
     if ($d->containsParametersOutOfPath()) {
@@ -307,7 +307,7 @@ if($d->httpMethod=='GET'){
 
         // Bartleby consignation
 
-        let context = HTTPContext( code: '.crc32($d->class).',
+        let context = JHTTPResponse( code: '.crc32($d->class).',
             caller: "'.$d->class.'.execute",
             relatedURL:request?.URL,
             httpStatusCode: response?.statusCode ?? 0,

@@ -259,7 +259,7 @@ import ObjectMapper
     }
 
     func push(sucessHandler success:()->(),
-        failureHandler failure:(context:HTTPContext)->()){
+        failureHandler failure:(context:JHTTPResponse)->()){
         if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
             // The unitary operation are not always idempotent
             // so we do not want to push multiple times unintensionnaly.
@@ -280,7 +280,7 @@ import ObjectMapper
                         self._operation.status=Operation.Status.Successful
                         success()
                     },
-                    failureHandler: {(result: HTTPContext) -> () in
+                    failureHandler: {(result: JHTTPResponse) -> () in
                         self._operation.counter=self._operation.counter!+1
                         self._operation.status=Operation.Status.Unsucessful
                         self._operation.failureMessage="\(result)"
@@ -302,19 +302,19 @@ import ObjectMapper
     static func execute(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>,
             withinDomain dID:String,
             sucessHandler success:()->(),
-            failureHandler failure:(context:HTTPContext)->()){
+            failureHandler failure:(context:JHTTPResponse)->()){
                 let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("/<?php echo$varName ?>")<?php echo $executeArgumentSerializationBlock?>
                 let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"<?php echo$baseClassName ?>" ,forMethod:Method.<?php echo$httpMethod?>, and: pathURL)
                 let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: parameters).0)
                 r.responseString{ response in
-
+                    // Store the response
                     let request=response.request
                     let result=response.result
                     let response=response.response
 
                     // Bartleby consignation
 
-                    let context = HTTPContext( code: <?php echo crc32($baseClassName.'.execute') ?>,
+                    let context = JHTTPResponse( code: <?php echo crc32($baseClassName.'.execute') ?>,
                         caller: "<?php echo$baseClassName ?>.execute",
                         relatedURL:request?.URL,
                         httpStatusCode: response?.statusCode ?? 0,
