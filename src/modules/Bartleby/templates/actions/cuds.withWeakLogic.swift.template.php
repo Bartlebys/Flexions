@@ -211,9 +211,7 @@ import ObjectMapper
     }
 
     func commit(){
-
         let context=Context(code:<?php echo crc32($baseClassName.'.commit') ?>, caller: "<?php echo$baseClassName ?>.commit")
-
         if let registry = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
             // <?php echo$localAction ?> locally
             <?php if ($httpMethod!="DELETE") {
@@ -224,7 +222,7 @@ import ObjectMapper
                 // Prepare the operation
                 self._operation.counter=0
                 self._operation.status=Operation.Status.Pending
-                self._operation.baseUrl=Configuration.baseUrl
+                self._operation.baseUrl=Configuration.BASE_URL
                 self._operation.creationDate=NSDate()
 
                 // Provision the operation.
@@ -307,7 +305,7 @@ import ObjectMapper
             withinDomain dID:String,
             sucessHandler success:(context:JHTTPResponse)->(),
             failureHandler failure:(context:JHTTPResponse)->()){
-                let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("/<?php echo$varName ?>")<?php echo $executeArgumentSerializationBlock?>
+                let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/<?php echo$varName ?>")<?php echo $executeArgumentSerializationBlock?>
                 let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"<?php echo$baseClassName ?>" ,forMethod:Method.<?php echo$httpMethod?>, and: pathURL)
                 let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: parameters).0)
                 r.responseString{ response in

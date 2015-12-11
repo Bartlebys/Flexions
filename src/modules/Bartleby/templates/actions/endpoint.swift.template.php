@@ -294,7 +294,7 @@ if($d->httpMethod=='GET'){
 }
     echoIndentCR(
 '
-    let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("'.$path.'")
+    let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("'.$path.'")
     '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
     let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"'.$d->class.'" ,forMethod:Method.'.$d->httpMethod.', and: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)

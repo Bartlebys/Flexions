@@ -303,11 +303,12 @@ foreach ($project->entities as $entity) {
             $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
 
             echoIndentCR('
-  func new'.ucfirst($entity->name).'()->(){
+  func new'.ucfirst($entity->name).'()->'.ucfirst($entity->name).'{
     // You should override and provide your own default values
     // And add it to the relevent dynamic collectionController
     let '.lcfirst($entity->name).'='.ucfirst($entity->name).'()
     self.'.lcfirst($pluralizedEntity).'.add('.lcfirst($entity->name).')
+    return '.lcfirst($entity->name).'
   }
 
         ',0);

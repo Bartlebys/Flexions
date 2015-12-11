@@ -46,7 +46,7 @@ import ObjectMapper
         sucessHandler success:()->(),
         failureHandler failure:(context:JHTTPResponse)->()){
 
-            let pathURL=Configuration.baseUrl.URLByAppendingPathComponent("/user/login")
+            let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/user/login")
             let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)
             let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"LoginUser" ,forMethod:Method.POST, and: pathURL)
             let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: dictionary).0)

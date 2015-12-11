@@ -53,7 +53,7 @@ import ObjectMapper
 // This controller implements data automation features.
 // it uses KVO , KVC , dynamic invocation, oS X cocoa bindings,...
 // It should be used on documents and not very large collections as it is computationnally intensive
-@objc(<? echo$collectionControllerClass ?>) class <? echo$collectionControllerClass ?> : JAbstractCollectibleCollection{
+@objc(<?php echo $collectionControllerClass ?>) class <?php echo $collectionControllerClass ?> : JAbstractCollectibleCollection{
 
     required init() {
         super.init()
@@ -119,6 +119,14 @@ import ObjectMapper
                 }
             }
 
+            // Add the inverse of this operation to the undo stack
+            if let undoManager: NSUndoManager = undoManager {
+                   // undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(items.count)
+                if !undoManager.undoing {
+                    undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
+                }
+            }
+
             if let arrayController = self.arrayController{
                 // Add it to the array controller's content array
                 arrayController.addObject(item)
@@ -154,7 +162,7 @@ import ObjectMapper
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
-                (undoManager.prepareWithInvocationTarget(self) as! <?php echo$collectionControllerClass ?>).removeObjectFromItemsAtIndex(items.count)
+                //undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(items.count)
                 if !undoManager.undoing {
                     undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
                 }
@@ -174,7 +182,7 @@ import ObjectMapper
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
-                (undoManager.prepareWithInvocationTarget(self) as! <?php echo$collectionControllerClass ?>).insertObject(item, inItemsAtIndex: index)
+               // undoManager.prepareWithInvocationTarget(self).insertObject(item, inItemsAtIndex: index)
                 if !undoManager.undoing {
                     undoManager.setActionName("Remove <?php echo ucfirst($d->name)?>")
                 }
@@ -241,8 +249,5 @@ while ( $d ->iterateOnProperties() === true ) {
                 }
             }
         }
-
     }
-
-
 }
