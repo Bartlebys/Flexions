@@ -251,7 +251,7 @@ if($d->httpMethod=='POST') {
         echo(
 '      $q = $parameters->getValueForKey('.$callDataClassName.'::'.$lastParameterName.');
        if(!isset($q)){
-           return new JsonResponse(NULL,417);
+           return new JsonResponse(VOID_RESPONSE,417);
        }
        $f=$parameters->getValueForKey('.$callDataClassName.'::result_fields);');
     }
@@ -270,7 +270,7 @@ if($d->httpMethod=='POST') {
             if (isset($r)) {
                 return new JsonResponse($r,200);
             } else {
-                return new JsonResponse(NULL,404);
+                return new JsonResponse(VOID_RESPONSE,404);
             }'
 
             :
@@ -297,7 +297,7 @@ if($d->httpMethod=='POST') {
             if (count($r)>0 ) {
                 return new JsonResponse($r,200);
             } else {
-                return new JsonResponse(NULL,404);
+                return new JsonResponse(VOID_RESPONSE,404);
             }'
     ) .'
        } catch ( \Exception $e ) {
@@ -350,7 +350,7 @@ if($d->httpMethod=='POST') {
                     if($existed==true){
                         return new JsonResponse(VOID_RESPONSE,200);
                     }else{
-                        return new JsonResponse(NULL,404);
+                        return new JsonResponse(VOID_RESPONSE,404);
                     }
                 }
                 return new JsonResponse(VOID_RESPONSE,200);
@@ -425,7 +425,7 @@ if($d->httpMethod=='POST') {
                  if($r[\'n\']>=1){
                      return new JsonResponse(VOID_RESPONSE,200);
                  }else{
-                     return new JsonResponse(NULL,404);
+                     return new JsonResponse(VOID_RESPONSE,404);
                  }
             } else {
                 return new JsonResponse($r,412);

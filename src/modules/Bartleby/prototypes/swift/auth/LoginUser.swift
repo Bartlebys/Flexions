@@ -15,8 +15,8 @@ import Alamofire
 import ObjectMapper
 
 @objc(LoginUserParameters) class LoginUserParameters : JObject {
-    // The user name for login
-    var username:String?
+    // The email is used as a primary key to identify the user
+    var email:String?
     // The password for login should be salted with the shared key
     var password:String?
 
@@ -34,7 +34,7 @@ import ObjectMapper
 
     override func mapping(map: Map) {
         super.mapping(map)
-        username <- map["username"]
+        email <- map["email"]
         password <- map["password"]
 
     }
@@ -45,7 +45,10 @@ import ObjectMapper
         parameters:LoginUserParameters,
         sucessHandler success:()->(),
         failureHandler failure:(context:JHTTPResponse)->()){
-
+            if let password = parameters.password{
+                // We should always salt the passwords to make better soup
+                parameters.password=HTTPManager.salt(password)
+            }
             let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/user/login")
             let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)
             let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"LoginUser" ,forMethod:Method.POST, and: pathURL)
