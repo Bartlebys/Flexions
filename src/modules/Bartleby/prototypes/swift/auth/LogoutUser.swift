@@ -20,7 +20,7 @@ import ObjectMapper
 
 				    let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/user/logout")
 				    let dictionary:Dictionary<String, AnyObject>=[:]
-				    let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"LogoutUser" ,forMethod:Method.POST, and: pathURL)
+				    let urlRequest=HTTPManager.mutableRequestWithToken(documentID:dID,withActionName:"LogoutUser" ,forMethod:Method.POST, and: pathURL)
 				    let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: dictionary).0)
 				    r.responseString{ response in
                         let request=response.request

@@ -296,7 +296,7 @@ if($d->httpMethod=='GET'){
 '
     let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("'.$path.'")
     '.(($d->containsParametersOutOfPath()?'let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)':'let dictionary:Dictionary<String, AnyObject>=[:]')).'
-    let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"'.$d->class.'" ,forMethod:Method.'.$d->httpMethod.', and: pathURL)
+    let urlRequest=HTTPManager.mutableRequestWithToken(documentID:dID,withActionName:"'.$d->class.'" ,forMethod:Method.'.$d->httpMethod.', and: pathURL)
     let r:Request=request(ParameterEncoding.'.$parameterEncodingString.'.encode(urlRequest, parameters: dictionary).0)
     r.'.(($successTypeString=='')?'responseString':'responseJSON').'{ response in
 

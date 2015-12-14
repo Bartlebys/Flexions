@@ -166,7 +166,7 @@ import ObjectMapper
     private var _operation:Operation=Operation()
 
     required convenience init(){
-        self.init(<?php echo$firstParameterTypeString ?>(), withinDomain:Default.NO_UDID,observableVia:Default.NOT_OBSERVABLE)
+        self.init(<?php echo$firstParameterTypeString ?>(), withinDocument:Default.NO_UDID,observableVia:Default.NOT_OBSERVABLE)
     }
 
     required convenience init?(_ map: Map) {
@@ -187,11 +187,11 @@ import ObjectMapper
     This is the designated constructor.
 
     - parameter <?php echo$firstParameterName ?>: the <?php echo$firstParameterName ?> concerned the operation
-    - parameter dID:The domain UDID
+    - parameter dID:The document UDID
     - parameter oID: If you want to support distributed execution this action will be propagated to subscribers by this UDID
 
     */
-    init (_ <?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>=<?php echo$firstParameterTypeString."()" ?>, withinDomain dID:String,observableVia oID:String=Default.NOT_OBSERVABLE) {
+    init (_ <?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>=<?php echo$firstParameterTypeString."()" ?>, withinDocument dID:String,observableVia oID:String=Default.NOT_OBSERVABLE) {
         self._<?php echo$firstParameterName ?>=<?php echo$firstParameterName.cr() ?>
         self._dID=dID
         self._oID=oID
@@ -202,11 +202,11 @@ import ObjectMapper
     Creates the operation and proceeds to commit
 
     - parameter <?php echo$firstParameterName ?>: the instance
-    - parameter dID:     the domain UDID
+    - parameter dID:     the document UDID
     - parameter oID:     the observavle UDID
     */
-    static func commit(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>, withinDomain dID:String,observableVia oID:String){
-        let operationInstance=<?php echo$baseClassName ?>(<?php echo$firstParameterName ?>,withinDomain:dID,observableVia:oID)
+    static func commit(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>, withinDocument dID:String,observableVia oID:String){
+        let operationInstance=<?php echo$baseClassName ?>(<?php echo$firstParameterName ?>,withinDocument:dID,observableVia:oID)
         operationInstance.commit()
     }
 
@@ -267,7 +267,7 @@ import ObjectMapper
                 // We try to execute
                 self._operation.status=Operation.Status.InProgress
                 <?php echo$baseClassName ?>.execute(<?php echo"self._$firstParameterName,
-                    withinDomain:self._dID,".cr() ?>
+                    withinDocument:self._dID,".cr() ?>
                     sucessHandler: { (context: JHTTPResponse) -> () in
                         <?php if ($httpMethod=="POST") {
                             echo("registry.markAsDistributed(self._$firstParameterName)".cr());
@@ -302,11 +302,11 @@ import ObjectMapper
     }
 
     static func execute(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>,
-            withinDomain dID:String,
+            withinDocument dID:String,
             sucessHandler success:(context:JHTTPResponse)->(),
             failureHandler failure:(context:JHTTPResponse)->()){
                 let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/<?php echo$varName ?>")<?php echo $executeArgumentSerializationBlock?>
-                let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"<?php echo$baseClassName ?>" ,forMethod:Method.<?php echo$httpMethod?>, and: pathURL)
+                let urlRequest=HTTPManager.mutableRequestWithToken(documentID:dID,withActionName:"<?php echo$baseClassName ?>" ,forMethod:Method.<?php echo$httpMethod?>, and: pathURL)
                 let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: parameters).0)
                 r.responseString{ response in
                     // Store the response
