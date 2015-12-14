@@ -45,10 +45,6 @@ import ObjectMapper
         parameters:LoginUserParameters,
         sucessHandler success:()->(),
         failureHandler failure:(context:JHTTPResponse)->()){
-            if let password = parameters.password{
-                // We should always salt the passwords to make better soup
-                parameters.password=HTTPManager.salt(password)
-            }
             let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/user/login")
             let dictionary:Dictionary<String, AnyObject>?=Mapper().toJSON(parameters)
             let urlRequest=HTTPManager.mutableRequestWithToken(domainID:dID,withActionName:"LoginUser" ,forMethod:Method.POST, and: pathURL)
