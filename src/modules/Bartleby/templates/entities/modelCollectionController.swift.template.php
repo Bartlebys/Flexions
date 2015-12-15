@@ -192,6 +192,31 @@ import ObjectMapper
         }
     }
 
+    override func removeObject(item: Collectible)->Bool{
+        var index=0
+        for storedItem in items{
+            if item.UDID==storedItem.UDID{
+                self.removeObjectFromItemsAtIndex(index)
+                return true
+            }
+            index++
+        }
+        return false
+    }
+
+    override func removeObjectWithID(id:String)->Bool{
+        var index=0
+        for storedItem in items{
+            if id==storedItem.UDID{
+                self.removeObjectFromItemsAtIndex(index)
+                return true
+            }
+            index++
+        }
+        return false
+    }
+
+
     // MARK: - Key Value Observing
 
     private var KVOContext: Int = 0

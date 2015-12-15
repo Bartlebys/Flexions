@@ -290,10 +290,9 @@ foreach ($project->entities as $entity) {
 
     // MARK: - Actions
 
-    func synchronize() {
-        // YOU SHOULD IMPLEMENT MAY BE SYNCHRONISATION
+    override func pushOperations() {
+        self.pushOperations(self.operations.items)
     }
-
 
     <?php
     echoIndentCR('',0);

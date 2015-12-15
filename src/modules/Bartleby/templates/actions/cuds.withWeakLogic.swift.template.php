@@ -155,7 +155,7 @@ import Foundation
 import Alamofire
 import ObjectMapper
 
-@objc(<?php echo$baseClassName ?>) class <?php echo$baseClassName ?> : JObject{
+@objc(<?php echo$baseClassName ?>) class <?php echo$baseClassName ?> : JObject,JHTTPCommand{
 
     private var _<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString.cr() ?>
 
@@ -174,13 +174,18 @@ import ObjectMapper
         self.mapping(map)
     }
 
+
     override func mapping(map: Map) {
         super.mapping(map)
         self._dID <- map["_dID"]
         self._<?php echo$firstParameterName ?> <- map["_<?php echo$firstParameterName ?>"]
         self._oID <- map["_oID"]
-        // (!) Do not serialize the operation
-        // The operation will serialize this instance in its data dictionary.
+        self._operation.status <- map ["operation_status"]
+        self._operation.counter <- map ["operation_counter"]
+        self._operation.creationDate <- map ["operation_creationDate"]
+        self._operation.baseUrl <- map ["operation_baseUrl"]
+        // (!) Do not serialize globally the operation
+        // as the operation will serialize this instance in its data dictionary.
     }
 
     /**
@@ -210,6 +215,7 @@ import ObjectMapper
         operationInstance.commit()
     }
 
+
     func commit(){
         let context=Context(code:<?php echo crc32($baseClassName.'.commit') ?>, caller: "<?php echo$baseClassName ?>.commit")
         if let registry = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
@@ -222,7 +228,7 @@ import ObjectMapper
                 // Prepare the operation
                 self._operation.counter=0
                 self._operation.status=Operation.Status.Pending
-                self._operation.baseUrl=Configuration.BASE_URL
+                self._operation.baseUrl=registry.registryMetadata.collaborationServerURL
                 self._operation.creationDate=NSDate()
 
                 // Provision the operation.
@@ -257,8 +263,8 @@ import ObjectMapper
         }
     }
 
-    func push(sucessHandler success:(context:JHTTPResponse)->(),
-        failureHandler failure:(context:JHTTPResponse)->()){
+    func push(sucessHandler success:(context:HTTPResponse)->(),
+        failureHandler failure:(context:HTTPResponse)->()){
         if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
             // The unitary operation are not always idempotent
             // so we do not want to push multiple times unintensionnaly.
@@ -327,12 +333,13 @@ import ObjectMapper
                     reactions.append(Bartleby.Reaction.Track(result: nil, context: context)) // Tracking
 
                     if result.isFailure {
+                        let m = NSLocalizedString("<?php echo$actionString ?>  of <?php echo$varName ?>",
+                            comment: "<?php echo$actionString ?> of <?php echo$varName ?> failure description")
                         let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
                             context: context,
-                            title: NSLocalizedString("Unsuccessfull attempt",
+                            title: NSLocalizedString("Unsuccessfull attempt result.isFailure is true",
                             comment: "Unsuccessfull attempt"),
-                            body: NSLocalizedString("<?php echo$actionString ?>  of <?php echo$varName ?>",
-                            comment: "<?php echo$actionString ?> of <?php echo$varName ?> failure description"),
+                            body:"\(m) \n \(response)" ,
                             trigger:{ (selectedIndex) -> () in
                             print("Post presentation message selectedIndex:\(selectedIndex)")
                         })
@@ -346,12 +353,14 @@ import ObjectMapper
                                 // Bartlby does not currenlty discriminate status codes 100 & 101
                                 // and treats any status code >= 300 the same way
                                 // because we consider that failures differentiations could be done by the caller.
+
+                                let m=NSLocalizedString("<?php echo$actionString ?> of <?php echo$varName ?>",
+                                        comment: "<?php echo$actionString ?> of <?php echo$varName ?> failure description")
                                 let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
                                     context: context,
                                     title: NSLocalizedString("Unsuccessfull attempt",
                                     comment: "Unsuccessfull attempt"),
-                                    body: NSLocalizedString("<?php echo$actionString ?> of <?php echo$varName ?>",
-                                    comment: "<?php echo$actionString ?> of <?php echo$varName ?> failure description"),
+                                    body: "\(m) \n \(response)",
                                     trigger:{ (selectedIndex) -> () in
                                     print("Post presentation message selectedIndex:\(selectedIndex)")
                                 })
