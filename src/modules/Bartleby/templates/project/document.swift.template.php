@@ -100,14 +100,12 @@ foreach ($project->entities as $entity) {
         didSet{
             // Setup the Array Controller in the CollectionController
             self.'.lcfirst($pluralizedEntity).'.arrayController='.lcfirst($arrayControllerVariableName).'
-
             // We dispatch Async to ignore the initial selectionIndex
             // that can be triggered by the GUI bindings
             // and would always propagate 0 to the state dictionary index
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 // Add observer
                 self.'.lcfirst($arrayControllerVariableName).'?.addObserver(self, forKeyPath: "selectionIndexes", options: .New, context: &self.KVOContext)
-
                 if let index=self.registryMetadata.stateDictionary['.$configurator->getClassName().'.kSelected'.ucfirst($entity->name).'IndexKey] as? Int{
                    if self.'.lcfirst($pluralizedEntity).'.items.count > index{
                        let selection=self.'.lcfirst($pluralizedEntity).'.items[index]
@@ -243,7 +241,7 @@ foreach ($project->entities as $entity) {
 
          if keyPath=="selectionIndexes" && self.'.$arrayControllerVariableName.' == object as? NSArrayController {
             if let '.lcfirst($entity->name).'=self.'.$arrayControllerVariableName.'?.selectedObjects.first as? '.ucfirst($entity->name).'{
-                print("KVO Selected \('.lcfirst($entity->name).')")
+                //print("KVO Selected \('.lcfirst($entity->name).')")
                 self.selected'.ucfirst($entity->name).'='.lcfirst($entity->name).'
                 return
             }
@@ -290,8 +288,24 @@ foreach ($project->entities as $entity) {
 
     // MARK: - Actions
 
-    override func pushOperations() {
+
+    func pushOperations() {
         self.pushOperations(self.operations.items)
+    }
+
+
+    func synchronize(){
+        if let email=self.registryMetadata.email, password=self.registryMetadata.storedPassword{
+            let p=LoginUserParameters(email: email, password: password)
+            LoginUser.execute(self.registryMetadata.UDID, parameters: p, sucessHandler: { () -> () in
+                    self.reduceOperations()
+                    self.pushOperations()
+                }) { (context) -> () in
+            }
+        }
+    }
+
+    func reduceOperations() {
     }
 
     <?php

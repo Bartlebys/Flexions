@@ -149,7 +149,14 @@ import ObjectMapper
                 // Add directly to the collection
                  self.items.append(item)
             }
-        }else{
+        <?php if (lcfirst($d->name)!="operation") {
+         echo("
+            if item.committed==false{
+               Create$d->name.commit(item, withinDocument:self.documentUDID, observableVia: self.observableViaUDID)
+            }".cr());
+        }
+        ?>
+            }else{
             print("casting error")
         }
     }
@@ -158,7 +165,7 @@ import ObjectMapper
 
     override func insertObject(item: Collectible, inItemsAtIndex index: Int) {
         if let item=item as? <?php echo ucfirst($d->name)?>{
-            print("inserting \(item) to the items array")
+            //print("inserting \(item) to the items array")
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
@@ -168,6 +175,13 @@ import ObjectMapper
                 }
             }
             self.items.insert(item, atIndex: index)
+        <?php if (lcfirst($d->name)!="operation") {
+                echo("
+            if item.committed==false{
+               Create$d->name.commit(item, withinDocument:self.documentUDID, observableVia: self.observableViaUDID)
+            }".cr());
+        }
+        ?>
         }else{
             print("casting error")
         }
@@ -178,7 +192,7 @@ import ObjectMapper
 
     override func removeObjectFromItemsAtIndex(index: Int) {
         if let item: <?php echo ucfirst($d->name)?> = items[index] {
-            print("removing \(item) from the items array")
+            //print("removing \(item) from the items array")
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
@@ -189,6 +203,12 @@ import ObjectMapper
             }
             // Remove the item from the array
             items.removeAtIndex(index)
+        <?php if (lcfirst($d->name)!="operation") {
+            echo('
+            Delete'.$d->name.'.commit(item.UDID, withinDocument:self.documentUDID, observableVia: self.observableViaUDID)  ');
+        }?>
+
+
         }
     }
 
@@ -246,9 +266,12 @@ while ( $d ->iterateOnProperties() === true ) {
         super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
             return
         }
-        if let o = object as? JObject{
-            o.hasChanged=true
-        }
+        <?php if (lcfirst($d->name)!="operation") {
+            echo('
+        if let '.lcfirst($d->name).' = object as? '.ucfirst($d->name).'{
+            Update'.$d->name.'.commit('.lcfirst($d->name).', withinDocument:self.documentUDID, observableVia: self.observableViaUDID)
+        }');
+        }?>
 
         if let undoManager = self.undoManager{
 
@@ -257,8 +280,6 @@ while ( $d ->iterateOnProperties() === true ) {
                  if oldValue is NSNull {
                     oldValue = nil
                 }
-
-                print("oldValue=\(oldValue)")
                 undoManager.prepareWithInvocationTarget(object).setValue(oldValue, forKeyPath: keyPath)
             }
         }

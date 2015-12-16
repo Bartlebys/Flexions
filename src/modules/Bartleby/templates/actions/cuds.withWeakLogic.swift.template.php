@@ -208,7 +208,7 @@ import ObjectMapper
 
     - parameter <?php echo$firstParameterName ?>: the instance
     - parameter dID:     the document UDID
-    - parameter oID:     the observavle UDID
+    - parameter oID:     the observable UDID
     */
     static func commit(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>, withinDocument dID:String,observableVia oID:String){
         let operationInstance=<?php echo$baseClassName ?>(<?php echo$firstParameterName ?>,withinDocument:dID,observableVia:oID)
@@ -221,9 +221,9 @@ import ObjectMapper
         if let registry = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
             // <?php echo$localAction ?> locally
             <?php if ($httpMethod!="DELETE") {
-                echo("if registry.$localAction(self._$firstParameterName){");
+                echo("//if registry.$localAction(self._$firstParameterName){");
             } else {
-                echo("if registry.$localAction(self._$firstParameterName, fromCollectionWithName:\"$actionRepresentation->collectionName\"){"); }
+                echo("//if registry.$localAction(self._$firstParameterName, fromCollectionWithName:\"$actionRepresentation->collectionName\"){"); }
             ?>
                 // Prepare the operation
                 self._operation.counter=0
@@ -244,6 +244,21 @@ import ObjectMapper
                 }
                 // The status will mark Operation.hasChanged as true
                 self._operation.data=self.dictionaryRepresentation()
+        <?php
+            if ($httpMethod!="DELETE"){
+                if ($parameter->type == FlexionsTypes::COLLECTION){
+                    echo("
+                for item in self._$firstParameterName{
+                     item.committed=true
+                 }");
+                }else{
+                    echo("
+                    self._$firstParameterName.committed=true
+                    ");
+                }
+            }
+        ?>
+/*
             }else{
                 // Its is a Local Failure.
                 Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
@@ -252,14 +267,16 @@ import ObjectMapper
                     onSelectedIndex: { (selectedIndex) -> () in
                 })
             }
-
+*/
         }else{
             // This registry is not available there is nothing to todo.
+            let m=NSLocalizedString("Registry is missing", comment: "Registry is missing")
             Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
-                title: NSLocalizedString("Structural error", comment: "Structural error"),
-                body: NSLocalizedString("Registry is missing", comment: "Registry is missing"),
-                onSelectedIndex: { (selectedIndex) -> () in
-            })
+                    title: NSLocalizedString("Structural error", comment: "Structural error"),
+                    body: "\(m) dID=\(self._dID)",
+                    onSelectedIndex: { (selectedIndex) -> () in
+                    }
+            )
         }
     }
 
