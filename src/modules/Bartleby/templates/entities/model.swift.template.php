@@ -131,7 +131,14 @@ if( $modelsShouldConformToNSCoding ) {
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name = $property->name;
-    echoIndentCR($name . ' <- map["' . $name . '"]', 2);
+    if ($property->type== FlexionsTypes::DATETIME){
+        echoIndentCR($name . ' <- (map["' . $name . '"],ISO8601DateTransform())', 2);
+    }else if($property->type==FlexionsTypes::URL){
+        echoIndentCR($name . ' <- (map["' . $name . '"],URLTransform())', 2);
+    }else{
+        echoIndentCR($name . ' <- map["' . $name . '"]', 2);
+    }
+
 }
 ?>
     }
