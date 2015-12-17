@@ -152,7 +152,7 @@ import ObjectMapper
         <?php if (lcfirst($d->name)!="operation") {
          echo("
             if item.committed==false{
-               Create$d->name.commit(item, withinDocument:self.documentUDID, observableVia: self.observableViaUDID)
+               Create$d->name.commit(item, withinDocument:self.documentUID, observableVia: self.observableViaUID)
             }".cr());
         }
         ?>
@@ -178,7 +178,7 @@ import ObjectMapper
         <?php if (lcfirst($d->name)!="operation") {
                 echo("
             if item.committed==false{
-               Create$d->name.commit(item, withinDocument:self.documentUDID, observableVia: self.observableViaUDID)
+               Create$d->name.commit(item, withinDocument:self.documentUID, observableVia: self.observableViaUID)
             }".cr());
         }
         ?>
@@ -205,7 +205,7 @@ import ObjectMapper
             items.removeAtIndex(index)
         <?php if (lcfirst($d->name)!="operation") {
             echo('
-            Delete'.$d->name.'.commit(item.UDID, withinDocument:self.documentUDID, observableVia: self.observableViaUDID)  ');
+            Delete'.$d->name.'.commit(item.UID, withinDocument:self.documentUID, observableVia: self.observableViaUID)  ');
         }?>
 
 
@@ -215,7 +215,7 @@ import ObjectMapper
     override func removeObject(item: Collectible)->Bool{
         var index=0
         for storedItem in items{
-            if item.UDID==storedItem.UDID{
+            if item.UID==storedItem.UID{
                 self.removeObjectFromItemsAtIndex(index)
                 return true
             }
@@ -227,7 +227,7 @@ import ObjectMapper
     override func removeObjectWithID(id:String)->Bool{
         var index=0
         for storedItem in items{
-            if id==storedItem.UDID{
+            if id==storedItem.UID{
                 self.removeObjectFromItemsAtIndex(index)
                 return true
             }
@@ -269,7 +269,7 @@ while ( $d ->iterateOnProperties() === true ) {
         <?php if (lcfirst($d->name)!="operation") {
             echo('
         if let '.lcfirst($d->name).' = object as? '.ucfirst($d->name).'{
-            Update'.$d->name.'.commit('.lcfirst($d->name).', withinDocument:self.documentUDID, observableVia: self.observableViaUDID)
+            Update'.$d->name.'.commit('.lcfirst($d->name).', withinDocument:self.documentUID, observableVia: self.observableViaUID)
         }');
         }?>
 

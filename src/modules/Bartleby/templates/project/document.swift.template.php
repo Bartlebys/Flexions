@@ -297,7 +297,7 @@ foreach ($project->entities as $entity) {
     func synchronize(){
         if let email=self.registryMetadata.email, password=self.registryMetadata.storedPassword{
             let p=LoginUserParameters(email: email, password: password)
-            LoginUser.execute(self.registryMetadata.UDID, parameters: p, sucessHandler: { () -> () in
+            LoginUser.execute(self.registryMetadata.UID, parameters: p, sucessHandler: { () -> () in
                     self.reduceOperations()
                     self.pushOperations()
                 }) { (context) -> () in

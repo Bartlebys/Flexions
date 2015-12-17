@@ -166,7 +166,7 @@ import ObjectMapper
     private var _operation:Operation=Operation()
 
     required convenience init(){
-        self.init(<?php echo$firstParameterTypeString ?>(), withinDocument:Default.NO_UDID,observableVia:Default.NOT_OBSERVABLE)
+        self.init(<?php echo$firstParameterTypeString ?>(), withinDocument:Default.NO_UID,observableVia:Default.NOT_OBSERVABLE)
     }
 
     required convenience init?(_ map: Map) {
@@ -192,8 +192,8 @@ import ObjectMapper
     This is the designated constructor.
 
     - parameter <?php echo$firstParameterName ?>: the <?php echo$firstParameterName ?> concerned the operation
-    - parameter dID:The document UDID
-    - parameter oID: If you want to support distributed execution this action will be propagated to subscribers by this UDID
+    - parameter dID:The document UID
+    - parameter oID: If you want to support distributed execution this action will be propagated to subscribers by this UID
 
     */
     init (_ <?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>=<?php echo$firstParameterTypeString."()" ?>, withinDocument dID:String,observableVia oID:String=Default.NOT_OBSERVABLE) {
@@ -207,8 +207,8 @@ import ObjectMapper
     Creates the operation and proceeds to commit
 
     - parameter <?php echo$firstParameterName ?>: the instance
-    - parameter dID:     the document UDID
-    - parameter oID:     the observable UDID
+    - parameter dID:     the document UID
+    - parameter oID:     the observable UID
     */
     static func commit(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>, withinDocument dID:String,observableVia oID:String){
         let operationInstance=<?php echo$baseClassName ?>(<?php echo$firstParameterName ?>,withinDocument:dID,observableVia:oID)
@@ -218,7 +218,7 @@ import ObjectMapper
 
     func commit(){
         let context=Context(code:<?php echo crc32($baseClassName.'.commit') ?>, caller: "<?php echo$baseClassName ?>.commit")
-        if let registry = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
+        if let registry = Bartleby.sharedInstance.getRegistryByUID(self._dID) {
             // <?php echo$localAction ?> locally
             <?php if ($httpMethod!="DELETE") {
                 echo("//if registry.$localAction(self._$firstParameterName){");
@@ -282,7 +282,7 @@ import ObjectMapper
 
     func push(sucessHandler success:(context:HTTPResponse)->(),
         failureHandler failure:(context:HTTPResponse)->()){
-        if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUDID(self._dID) {
+        if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUID(self._dID) {
             // The unitary operation are not always idempotent
             // so we do not want to push multiple times unintensionnaly.
             if  self._operation.status==Operation.Status.Pending ||

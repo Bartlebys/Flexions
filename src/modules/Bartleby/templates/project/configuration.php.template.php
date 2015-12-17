@@ -88,7 +88,7 @@ while ($d->iterateOnActions() ) {
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
 
 
-    //$string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'$classNameWithoutPrefix#rUDID')";
+    //$string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'$classNameWithoutPrefix#rUID')";
     $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_IDENTIFIED_BY_COOKIE)";
 
     if(!$d->lastAction()){
