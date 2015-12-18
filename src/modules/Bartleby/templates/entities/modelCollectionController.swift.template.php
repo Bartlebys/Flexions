@@ -40,6 +40,8 @@ if (isset($xOSIncludeCollectionControllerForEntityNamed)) {
     }
 }
 
+$isAboutOperations=(lcfirst($d->name)=="operation");
+
 $collectionControllerClass=ucfirst(Pluralization::pluralize($d->name)).'CollectionController';
 
 /* TEMPLATES STARTS HERE -> */?>
@@ -107,7 +109,7 @@ import ObjectMapper
 
     override func add(item:Collectible){
         if let item=item as? <?php echo ucfirst($d->name)?>{
-            // print("adding \(item) to the items array")
+            // bprint("adding \(item) to the items array")
 
             if let undoManager = self.undoManager{
                 // Has an edit occurred already in this event?
@@ -141,7 +143,7 @@ import ObjectMapper
                     // Find the object just added
                     let row = sorted.indexOf(item)!
                     // Begin the edit in the first column
-                    //print("starting edit of \(object) in row \(row)")
+                    //bprint("starting edit of \(object) in row \(row)")
                     tableView.editColumn(0, row: row, withEvent: nil, select: true)
                 }
 
@@ -149,15 +151,16 @@ import ObjectMapper
                 // Add directly to the collection
                  self.items.append(item)
             }
-        <?php if (lcfirst($d->name)!="operation") {
+        <?php if (!$isAboutOperations) {
          echo("
             if item.committed==false{
                Create$d->name.commit(item, withinDocument:self.documentUID, observableVia: self.observableViaUID)
             }".cr());
         }
         ?>
-            }else{
-            print("casting error")
+
+        }else{
+            bprint("casting error")
         }
     }
 
@@ -165,7 +168,7 @@ import ObjectMapper
 
     override func insertObject(item: Collectible, inItemsAtIndex index: Int) {
         if let item=item as? <?php echo ucfirst($d->name)?>{
-            //print("inserting \(item) to the items array")
+            //bprint("inserting \(item) to the items array")
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
@@ -183,7 +186,7 @@ import ObjectMapper
         }
         ?>
         }else{
-            print("casting error")
+            bprint("casting error")
         }
     }
 
@@ -191,8 +194,8 @@ import ObjectMapper
     // MARK: Remove
 
     override func removeObjectFromItemsAtIndex(index: Int) {
-        if let item: <?php echo ucfirst($d->name)?> = items[index] {
-            //print("removing \(item) from the items array")
+        if let <?php echo($isAboutOperations?"_":"item")?> : <?php echo ucfirst($d->name)?> = items[index] {
+            //bprint("removing \(item) from the items array")
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
@@ -203,7 +206,7 @@ import ObjectMapper
             }
             // Remove the item from the array
             items.removeAtIndex(index)
-        <?php if (lcfirst($d->name)!="operation") {
+        <?php if (!$isAboutOperations) {
             echo('
             Delete'.$d->name.'.commit(item.UID, withinDocument:self.documentUID, observableVia: self.observableViaUID)  ');
         }?>

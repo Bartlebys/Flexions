@@ -47,7 +47,7 @@ import ObjectMapper
                                 body: NSLocalizedString("authentication logout",
                                     comment: "authentication logout failure description"),
                                 trigger:{ (selectedIndex) -> () in
-                                    print("Post presentation message selectedIndex:\(selectedIndex)")
+                                    bprint("Post presentation message selectedIndex:\(selectedIndex)")
                             })
                             reactions.append(failureReaction)
                             failure(context:context)
@@ -66,7 +66,7 @@ import ObjectMapper
                                         body: NSLocalizedString("termination of session",
                                             comment: "termination of session failure description"),
                                         trigger:{ (selectedIndex) -> () in
-                                            print("Post presentation message selectedIndex:\(selectedIndex)")
+                                            bprint("Post presentation message selectedIndex:\(selectedIndex)")
                                     })
                                     reactions.append(failureReaction)
                                     failure(context:context)

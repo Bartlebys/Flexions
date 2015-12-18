@@ -219,7 +219,6 @@ import ObjectMapper
     func commit(){
         let context=Context(code:<?php echo crc32($baseClassName.'.commit') ?>, caller: "<?php echo$baseClassName ?>.commit")
         if let registry = Bartleby.sharedInstance.getRegistryByUID(self._dID) {
-            // <?php echo$localAction ?> locally
             <?php if ($httpMethod!="DELETE") {
                 echo("//if registry.$localAction(self._$firstParameterName){");
             } else {
@@ -235,6 +234,7 @@ import ObjectMapper
                 do{
                     let ic:OperationsCollectionController = try registry.getCollection()
                     ic.add(self._operation)
+                    bprint("\(ic.UID)->OPCOUNT=\(ic.items.count)")
                 }catch{
                     Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
                     title: "Structural Error",
@@ -258,18 +258,8 @@ import ObjectMapper
                 }
             }
         ?>
-/*
-            }else{
-                // Its is a Local Failure.
-                Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
-                    title:NSLocalizedString("Dynamic Error", comment: "Dynamic Error"),
-                    body: NSLocalizedString("Local operation has failed", comment: "Local operation has failed"),
-                    onSelectedIndex: { (selectedIndex) -> () in
-                })
-            }
-*/
         }else{
-            // This registry is not available there is nothing to todo.
+            // This registry is not available there is nothing to do.
             let m=NSLocalizedString("Registry is missing", comment: "Registry is missing")
             Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
                     title: NSLocalizedString("Structural error", comment: "Structural error"),
@@ -313,7 +303,7 @@ import ObjectMapper
                     }
                 )
             }else{
-                // This registry is not available there is nothing to todo.
+                // This registry is not available there is nothing to do.
                 let context=Context(code:<?php echo crc32($baseClassName.'.push') ?>, caller: "<?php echo$baseClassName ?>.push")
                 Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
                     title: NSLocalizedString("Push error", comment: "Push error"),
@@ -358,7 +348,7 @@ import ObjectMapper
                             comment: "Unsuccessfull attempt"),
                             body:"\(m) \n \(response)" ,
                             trigger:{ (selectedIndex) -> () in
-                            print("Post presentation message selectedIndex:\(selectedIndex)")
+                            bprint("Post presentation message selectedIndex:\(selectedIndex)")
                         })
                         reactions.append(failureReaction)
                         failure(context:context)
@@ -379,7 +369,7 @@ import ObjectMapper
                                     comment: "Unsuccessfull attempt"),
                                     body: "\(m) \n \(response)",
                                     trigger:{ (selectedIndex) -> () in
-                                    print("Post presentation message selectedIndex:\(selectedIndex)")
+                                    bprint("Post presentation message selectedIndex:\(selectedIndex)")
                                 })
                                 reactions.append(failureReaction)
                                 failure(context:context)

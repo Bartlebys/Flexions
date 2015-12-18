@@ -202,9 +202,9 @@ foreach ($project->entities as $entity) {
 ?>
 
         }catch RegistryError.DuplicatedCollectionName(let collectionName){
-             print("Multiple Attempt to add the Collection named \(collectionName)")
+             bprint("Multiple Attempt to add the Collection named \(collectionName)")
         }catch {
-            print("\(error)")
+            bprint("\(error)")
         }
 
         // #2 Registers the collections
@@ -241,7 +241,7 @@ foreach ($project->entities as $entity) {
 
          if keyPath=="selectionIndexes" && self.'.$arrayControllerVariableName.' == object as? NSArrayController {
             if let '.lcfirst($entity->name).'=self.'.$arrayControllerVariableName.'?.selectedObjects.first as? '.ucfirst($entity->name).'{
-                //print("KVO Selected \('.lcfirst($entity->name).')")
+                //bprint("KVO Selected \('.lcfirst($entity->name).')")
                 self.selected'.ucfirst($entity->name).'='.lcfirst($entity->name).'
                 return
             }
@@ -266,15 +266,16 @@ foreach ($project->entities as $entity) {
             $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
             $arrayControllerVariableName=lcfirst($pluralizedEntity).'ArrayController';
             echoIndentCR('
-    func deleteSelected'.ucfirst($entity->name).'() {
+    func deleteSelected'.ucfirst($entity->name).'(sender:View?) {
         // We use the collectionController to gain direct support of Undomanager
         if self.'.$arrayControllerVariableName.'?.arrangedObjects.count>0 {
-            if let index=self.'.$arrayControllerVariableName.'?.selectionIndexes.firstIndex {
-                self.'.lcfirst($pluralizedEntity).'.removeObjectFromItemsAtIndex(index)
+            if let indexes=self.'.$arrayControllerVariableName.'?.selectionIndexes {
+                for index in indexes{
+                    self.'.lcfirst($pluralizedEntity).'.removeObjectFromItemsAtIndex(index)
+                }
             }
         }
     }
-
         ',0);
         }
     }
@@ -306,6 +307,7 @@ foreach ($project->entities as $entity) {
     }
 
     func reduceOperations() {
+        self.reduceOperations(self.operations.items)
     }
 
     <?php
