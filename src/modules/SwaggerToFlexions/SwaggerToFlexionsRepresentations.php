@@ -463,6 +463,10 @@ class SwaggerToFlexionsRepresentations {
             $propertyR->required = $subDictionary[SWAGGER_REQUIRED];
         }
         if (array_key_exists(SWAGGER_DEFAULT, $subDictionary)) {
+
+            if  ($subDictionary[SWAGGER_DEFAULT]=="Bartleby.arrayOfAliases()"){
+                $a=2;
+            }
             $propertyR->default = $subDictionary[SWAGGER_DEFAULT];
         }
     }

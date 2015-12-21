@@ -76,7 +76,7 @@ while ( $d ->iterateOnProperties() === true ) {
         echoIndentCR('}', 1);
         echoIndentCR('var ' . $name .':'.$enumTypeName._propertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::COLLECTION){
-        echoIndentCR('var ' . $name .':['.ucfirst($property->instanceOf). ']?', 1);
+        echoIndentCR('var ' . $name .':['.ucfirst($property->instanceOf). ']'._propertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::OBJECT){
         echoIndentCR('var ' . $name .':'.ucfirst($property->instanceOf)._propertyValueString($property), 1);
     }else{

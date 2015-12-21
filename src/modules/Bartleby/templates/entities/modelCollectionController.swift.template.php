@@ -57,6 +57,21 @@ import ObjectMapper
 // It should be used on documents and not very large collections as it is computationnally intensive
 @objc(<?php echo $collectionControllerClass ?>) class <?php echo $collectionControllerClass ?> : JAbstractCollectibleCollection{
 
+
+
+
+
+    func generate() -> AnyGenerator<<?php echo ucfirst($d->name)?>> {
+        var nextIndex = 0
+        let limit=self.items.count-1
+        return anyGenerator {
+            if (nextIndex > limit) {
+                return nil
+            }
+            return self.items[nextIndex++]
+        }
+    }
+
     required init() {
         super.init()
     }

@@ -253,8 +253,7 @@ import ObjectMapper
                  }");
                 }else{
                     echo("
-                    self._$firstParameterName.committed=true
-                    ");
+                self._$firstParameterName.committed=true".cr());
                 }
             }
         ?>
