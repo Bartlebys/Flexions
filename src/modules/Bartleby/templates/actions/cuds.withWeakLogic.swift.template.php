@@ -174,7 +174,6 @@ import ObjectMapper
         self.mapping(map)
     }
 
-
     override func mapping(map: Map) {
         super.mapping(map)
         self._dID <- map["_dID"]
