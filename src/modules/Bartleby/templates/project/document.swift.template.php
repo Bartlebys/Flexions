@@ -59,7 +59,7 @@ import UIKit
 
 @objc(<?php echo($configurator->getClassName()) ?>) class <?php echo($configurator->getClassName())?> : JDocument {
 
-    private var KVOContext: Int = 0
+    internal var KVOContext: Int = 0
 
     // Collection Controllers
     // The initial instances are proxies
@@ -100,19 +100,14 @@ foreach ($project->entities as $entity) {
         didSet{
             // Setup the Array Controller in the CollectionController
             self.'.lcfirst($pluralizedEntity).'.arrayController='.lcfirst($arrayControllerVariableName).'
-            // We dispatch Async to ignore the initial selectionIndex
-            // that can be triggered by the GUI bindings
-            // and would always propagate 0 to the state dictionary index
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                // Add observer
-                self.'.lcfirst($arrayControllerVariableName).'?.addObserver(self, forKeyPath: "selectionIndexes", options: .New, context: &self.KVOContext)
-                if let index=self.registryMetadata.stateDictionary['.$configurator->getClassName().'.kSelected'.ucfirst($entity->name).'IndexKey] as? Int{
-                   if self.'.lcfirst($pluralizedEntity).'.items.count > index{
-                       let selection=self.'.lcfirst($pluralizedEntity).'.items[index]
-                       self.'.lcfirst($arrayControllerVariableName).'?.setSelectedObjects([selection])
-                    }
-                 }
-            })
+            // Add observer
+            self.'.lcfirst($arrayControllerVariableName).'?.addObserver(self, forKeyPath: "selectionIndexes", options: .New, context: &self.KVOContext)
+            if let index=self.registryMetadata.stateDictionary['.$configurator->getClassName().'.kSelected'.ucfirst($entity->name).'IndexKey] as? Int{
+               if self.'.lcfirst($pluralizedEntity).'.items.count > index{
+                   let selection=self.'.lcfirst($pluralizedEntity).'.items[index]
+                   self.'.lcfirst($arrayControllerVariableName).'?.setSelectedObjects([selection])
+                }
+             }
         }
     }
         ',0);
@@ -299,35 +294,15 @@ foreach ($project->entities as $entity) {
         if let email=self.registryMetadata.email, password=self.registryMetadata.storedPassword{
             let p=LoginUserParameters(email: email, password: password)
             LoginUser.execute(self.registryMetadata.UID, parameters: p, sucessHandler: { () -> () in
-                    self.reduceOperations()
+                    self.optimizeOperations()
                     self.pushOperations()
                 }) { (context) -> () in
             }
         }
     }
 
-    func reduceOperations() {
-        self.reduceOperations(self.operations.items)
+    func optimizeOperations() {
+        self.optimizeOperations(self.operations.items)
     }
 
-    <?php
-    echoIndentCR('',0);
-    foreach ($project->entities as $entity) {
-        if ($configurator->actionsShouldBeSupportedForEntity($project,$entity)){
-            $pluralizedEntity=Pluralization::pluralize($entity->name);
-            $collectionControllerClassName=ucfirst($pluralizedEntity).'CollectionController';
-
-            echoIndentCR('
-  func new'.ucfirst($entity->name).'()->'.ucfirst($entity->name).'{
-    // You should override and provide your own default values
-    // And add it to the relevent dynamic collectionController
-    let '.lcfirst($entity->name).'='.ucfirst($entity->name).'()
-    self.'.lcfirst($pluralizedEntity).'.add('.lcfirst($entity->name).')
-    return '.lcfirst($entity->name).'
-  }
-
-        ',0);
-        }
-    }
-    ?>
 }
