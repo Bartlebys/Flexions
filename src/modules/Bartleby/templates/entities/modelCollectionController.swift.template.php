@@ -55,6 +55,13 @@ import ObjectMapper
 // This controller implements data automation features.
 // it uses KVO , KVC , dynamic invocation, oS X cocoa bindings,...
 // It should be used on documents and not very large collections as it is computationnally intensive
+<?php if ($isAboutOperations) {
+    echo(
+'// (!) Operations are neither committed nor cancellable using undoManager
+// but the operations will be reduced/optimized before push
+// excessive cycles will be efficiently compressed'.cr());
+}
+?>
 @objc(<?php echo $collectionControllerClass ?>) class <?php echo $collectionControllerClass ?> : JAbstractCollectibleCollection{
 
     func generate() -> AnyGenerator<<?php echo ucfirst($d->name)?>> {
@@ -119,9 +126,20 @@ import ObjectMapper
     // MARK: Add
 
     override func add(item:Collectible){
-        if let item=item as? <?php echo ucfirst($d->name)?>{
-            // bprint("adding \(item) to the items array")
+        if let arrayController = self.arrayController{
+            self.insertObject(item, inItemsAtIndex: arrayController.arrangedObjects.count)
+        }else{
+            self.insertObject(item, inItemsAtIndex: items.count)
+        }
+    }
 
+    // MARK: Insert
+
+    override func insertObject(item: Collectible, inItemsAtIndex index: Int) {
+        if let item=item as? <?php echo ucfirst($d->name)?>{
+
+<?php if (lcfirst($d->name)!="operation") {
+    echo('
             if let undoManager = self.undoManager{
                 // Has an edit occurred already in this event?
                 if undoManager.groupingLevel > 0 {
@@ -134,15 +152,18 @@ import ObjectMapper
 
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
-                   // undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(items.count)
+                undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(index)
                 if !undoManager.undoing {
-                    undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
+                    undoManager.setActionName(NSLocalizedString("Add' . ucfirst($d->name) . '", comment: "Add' . ucfirst($d->name) . ' undo action"))
                 }
             }
+            ');
+}
+?>
 
             if let arrayController = self.arrayController{
                 // Add it to the array controller's content array
-                arrayController.addObject(item)
+                arrayController.insertObject(item, atArrangedObjectIndex:index)
 
                 // Re-sort (in case the use has sorted a column)
                 arrayController.rearrangeObjects()
@@ -156,71 +177,67 @@ import ObjectMapper
                     // Begin the edit in the first column
                     //bprint("starting edit of \(object) in row \(row)")
                     tableView.editColumn(0, row: row, withEvent: nil, select: true)
-                }
+                 }
 
             }else{
                 // Add directly to the collection
-                 self.items.append(item)
+                self.items.insert(item, atIndex: index)
             }
-        <?php if (!$isAboutOperations) {
-         echo("
+
+<?php if (lcfirst($d->name)!="operation") {
+    echo("
             if item.committed==false{
                Create$d->name.commit(item, withinDocument:self.documentUID, observableVia: self.observableViaUID)
             }".cr());
-        }
-        ?>
+}
+?>
 
         }else{
             bprint("casting error")
         }
     }
 
-    // MARK: Insert
 
-    override func insertObject(item: Collectible, inItemsAtIndex index: Int) {
-        if let item=item as? <?php echo ucfirst($d->name)?>{
-            //bprint("inserting \(item) to the items array")
-
-            // Add the inverse of this operation to the undo stack
-            if let undoManager: NSUndoManager = undoManager {
-                //undoManager.prepareWithInvocationTarget(self).removeObjectFromItemsAtIndex(items.count)
-                if !undoManager.undoing {
-                    undoManager.setActionName("Add <?php echo ucfirst($d->name)?>")
-                }
-            }
-            self.items.insert(item, atIndex: index)
-        <?php if (lcfirst($d->name)!="operation") {
-                echo("
-            if item.committed==false{
-               Create$d->name.commit(item, withinDocument:self.documentUID, observableVia: self.observableViaUID)
-            }".cr());
-        }
-        ?>
-        }else{
-            bprint("casting error")
-        }
-    }
 
 
     // MARK: Remove
 
     override func removeObjectFromItemsAtIndex(index: Int) {
-        if let <?php echo($isAboutOperations?"_":"item")?> : <?php echo ucfirst($d->name)?> = items[index] {
-            //bprint("removing \(item) from the items array")
-
+        if let <?php echo($isAboutOperations?"item":"item")?> : <?php echo ucfirst($d->name)?> = items[index] {
+<?php if (lcfirst($d->name)!="operation") {
+    echo(
+'
             // Add the inverse of this operation to the undo stack
             if let undoManager: NSUndoManager = undoManager {
-               // undoManager.prepareWithInvocationTarget(self).insertObject(item, inItemsAtIndex: index)
+                // We don\'t want to introduce a retain cycle
+                // But with the objc magic casting undoManager.prepareWithInvocationTarget(self) as? UsersCollectionController fails
+                // That\'s why we have added an registerUndo extension on NSUndoManager
+                weak var weakSelf=self
+                undoManager.registerUndo({ () -> Void in
+                   weakSelf?.insertObject(item, inItemsAtIndex: index)
+                })
                 if !undoManager.undoing {
-                    undoManager.setActionName("Remove <?php echo ucfirst($d->name)?>")
+                    undoManager.setActionName(NSLocalizedString("Remove' . ucfirst($d->name) . '", comment: "Remove ' . ucfirst($d->name) . ' undo action"))
                 }
             }
+            ');
+}
+?>
+
+            //Update the commit flag
+            item.committed=false
+
             // Remove the item from the array
-            items.removeAtIndex(index)
+            if let arrayController = self.arrayController{
+                arrayController.removeObjectAtArrangedObjectIndex(index)
+            }else{
+                items.removeAtIndex(index)
+            }
         <?php if (!$isAboutOperations) {
             echo('
-            Delete'.$d->name.'.commit(item.UID, withinDocument:self.documentUID, observableVia: self.observableViaUID)  ');
-        }?>
+            Delete'.$d->name.'.commit(item.UID, withinDocument:self.documentUID, observableVia: self.observableViaUID)  '.cr());
+        }
+        ?>
 
 
         }
