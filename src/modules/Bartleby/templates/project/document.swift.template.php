@@ -101,7 +101,7 @@ foreach ($project->entities as $entity) {
             // Setup the Array Controller in the CollectionController
             self.'.lcfirst($pluralizedEntity).'.arrayController='.lcfirst($arrayControllerVariableName).'
             // Add observer
-            self.'.lcfirst($arrayControllerVariableName).'?.addObserver(self, forKeyPath: "selectionIndexes", options: .New, context: &self.KVOContext)
+            '.lcfirst($arrayControllerVariableName).'?.addObserver(self, forKeyPath: "selectionIndexes", options: .New, context: &self.KVOContext)
             if let index=self.registryMetadata.stateDictionary['.$configurator->getClassName().'.kSelected'.ucfirst($entity->name).'IndexKey] as? Int{
                if self.'.lcfirst($pluralizedEntity).'.items.count > index{
                    let selection=self.'.lcfirst($pluralizedEntity).'.items[index]
@@ -197,9 +197,9 @@ foreach ($project->entities as $entity) {
 ?>
 
         }catch RegistryError.DuplicatedCollectionName(let collectionName){
-             bprint("Multiple Attempt to add the Collection named \(collectionName)")
+             Bartleby.bprint("Multiple Attempt to add the Collection named \(collectionName)")
         }catch {
-            bprint("\(error)")
+            Bartleby.bprint("\(error)")
         }
 
         // #2 Registers the collections
@@ -236,7 +236,7 @@ foreach ($project->entities as $entity) {
 
          if keyPath=="selectionIndexes" && self.'.$arrayControllerVariableName.' == object as? NSArrayController {
             if let '.lcfirst($entity->name).'=self.'.$arrayControllerVariableName.'?.selectedObjects.first as? '.ucfirst($entity->name).'{
-                //bprint("KVO Selected \('.lcfirst($entity->name).')")
+                //Bartleby.bprint("KVO Selected \('.lcfirst($entity->name).')")
                 self.selected'.ucfirst($entity->name).'='.lcfirst($entity->name).'
                 return
             }

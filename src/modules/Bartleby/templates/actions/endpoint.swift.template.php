@@ -250,7 +250,7 @@ foreach ($d->responses as $rank=>$responsePropertyRepresentation ) {
             comment: "Deserialization issue"),
         body:"(result.value)",
         trigger:{ (selectedIndex) -> () in
-            bprint("Post presentation message selectedIndex:\(selectedIndex)")
+            Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
     })
    reactions.append(failureReaction)
    failure(context:context)
@@ -278,7 +278,7 @@ if let r=result.value as? ' . $successTypeString . '{
             comment: "Deserialization issue"),
         body:"(result.value)",
         trigger:{ (selectedIndex) -> () in
-            bprint("Post presentation message selectedIndex:\(selectedIndex)")
+            Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
     })
    reactions.append(failureReaction)
    failure(context:context)
@@ -323,7 +323,7 @@ if($d->httpMethod=='GET'){
                 title: NSLocalizedString("Unsuccessfull attempt",comment: "Unsuccessfull attempt"),
                 body:NSLocalizedString("Explicit Failure",comment: "Explicit Failure"),
                 trigger:{ (selectedIndex) -> () in
-                    bprint("Post presentation message selectedIndex:\(selectedIndex)")
+                    Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
             })
             reactions.append(failureReaction)
             failure(context:context)
@@ -341,7 +341,7 @@ if($d->httpMethod=='GET'){
                     title: NSLocalizedString("Unsuccessfull attempt",comment: "Unsuccessfull attempt"),
                     body:NSLocalizedString("Implicit Failure",comment: "Implicit Failure"),
                     trigger:{ (selectedIndex) -> () in
-                        bprint("Post presentation message selectedIndex:\(selectedIndex)")
+                        Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
                 })
                reactions.append(failureReaction)
                failure(context:context)

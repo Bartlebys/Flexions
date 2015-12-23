@@ -175,7 +175,7 @@ import ObjectMapper
                     // Find the object just added
                     let row = sorted.indexOf(item)!
                     // Begin the edit in the first column
-                    //bprint("starting edit of \(object) in row \(row)")
+                    //Bartleby.bprint("starting edit of \(object) in row \(row)")
                     tableView.editColumn(0, row: row, withEvent: nil, select: true)
                  }
 
@@ -193,7 +193,7 @@ import ObjectMapper
 ?>
 
         }else{
-            bprint("casting error")
+            Bartleby.bprint("casting error")
         }
     }
 
@@ -212,9 +212,8 @@ import ObjectMapper
                 // We don\'t want to introduce a retain cycle
                 // But with the objc magic casting undoManager.prepareWithInvocationTarget(self) as? UsersCollectionController fails
                 // That\'s why we have added an registerUndo extension on NSUndoManager
-                weak var weakSelf=self
                 undoManager.registerUndo({ () -> Void in
-                   weakSelf?.insertObject(item, inItemsAtIndex: index)
+                   self.insertObject(item, inItemsAtIndex: index)
                 })
                 if !undoManager.undoing {
                     undoManager.setActionName(NSLocalizedString("Remove' . ucfirst($d->name) . '", comment: "Remove ' . ucfirst($d->name) . ' undo action"))

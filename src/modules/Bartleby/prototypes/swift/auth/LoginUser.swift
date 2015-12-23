@@ -77,7 +77,7 @@ import ObjectMapper
                             comment: "Unsuccessfull attempt"),
                         body:m ,
                         trigger:{ (selectedIndex) -> () in
-                            bprint("Post presentation message selectedIndex:\(selectedIndex)")
+                            Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
                     })
                     reactions.append(failureReaction)
                     Bartleby.sharedInstance.perform(reactions, forContext: context)
@@ -116,7 +116,7 @@ import ObjectMapper
                             comment: "Unsuccessfull attempt"),
                         body:"\(m) httpStatus code = \(response?.statusCode ?? 0 )" ,
                         trigger:{ (selectedIndex) -> () in
-                            bprint("Post presentation message selectedIndex:\(selectedIndex)")
+                            Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
                     })
                     reactions.append(failureReaction)
                     failure(context:context)
@@ -136,7 +136,7 @@ import ObjectMapper
                                     comment: "Unsuccessfull attempt"),
                                 body:"\(m) httpStatus code = \(statusCode)" ,
                                 trigger:{ (selectedIndex) -> () in
-                                    bprint("Post presentation message selectedIndex:\(selectedIndex)")
+                                    Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
                             })
                             reactions.append(failureReaction)
                             failure(context:context)
