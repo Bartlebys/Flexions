@@ -1,5 +1,5 @@
 <?php
-
+include  FLEXIONS_MODULES_DIR . '/Bartleby/templates/localVariablesBindings.php';
 require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 
@@ -9,7 +9,7 @@ require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 if (isset ( $f )) {
     $classNameWithoutPrefix=ucfirst(substr($d->name,strlen($h->classPrefix)));
     $f->fileName = $classNameWithoutPrefix.'.php';
-    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'generated/Models/';
+    $f->package = 'php/api/'.$h->majorVersionPathSegmentString().'_generated/Models/';
 }
 
 
@@ -34,6 +34,8 @@ foreach ($exclusion as $exclusionString) {
 namespace Bartleby\Models;
 
 require_once BARTLEBY_ROOT_FOLDER.'Core/Model.php';
+require_once BARTLEBY_PUBLIC_FOLDER . 'Configuration.php';
+
 use Bartleby\Core\Model;
 <?php
 $hasBeenImported=array();
@@ -42,9 +44,26 @@ while ($d->iterateOnProperties()){
     if($property->isGeneratedType){
         $className=$property->instanceOf;
         $className=$h->ucFirstRemovePrefixFromString($className);
+
+        /*
+            Bartleby swift uses Alias<T> to resolve typed external reference
+         */
+
+        $genericMarker='\<';
+        $genericRes=preg_replace('/<(.*)>/','$0',$className);
+        if (preg_match('/^(.*)'.$genericMarker.'/', $className, $matches)) {
+            $className = $matches[1];
+        }
+        $notGenerated=array('Alias');
         if (! in_array($className,$hasBeenImported)) {
-            echoIndentCR('require_once dirname(__DIR__).\'/models/'.$className.'.php\';',0);
-            echoIndentCR('use Bartleby\Models\\'.$className.';',0);
+            if (in_array($className,$notGenerated)){
+                echoIndent('require_once BARTLEBY_ROOT_FOLDER.\'/Commons/Models/'.$className.'.php\';',0);
+            }else{
+                if ($className!=='Dictionary'){
+                    echoIndent('require_once __DIR__.\'/'.$className.'.php\';',0);
+                }
+            }
+            echoIndent('use Bartleby\Models\\'.$className.';//'.$genericRes,0);
             $hasBeenImported[]=$className;
         }
 
@@ -69,38 +88,35 @@ while ( $d ->iterateOnProperties() === true ) {
             $typeOfProp=' array of '.$typeOfProp;
         }
     }
-
-
     if($property->type==FlexionsTypes::ENUM){
         $enumTypeName=ucfirst($name);
         $typeOfProp=$property->instanceOf.' '.$typeOfProp;
-        echoIndentCR('// Enumeration of possibles values of '.$name, 1);
+        echoIndent('// Enumeration of possibles values of '.$name, 1);
+        $enumCounter=0;
         foreach ($property->enumerations as $element) {
             if($property->instanceOf==FlexionsTypes::STRING){
-                echoIndentCR('const ' .$enumTypeName.'_'.ucfirst($element).' = "'.$element.'";' ,1);
+                echoIndent('const ' .$enumTypeName.'_'.ucfirst($element).' = "'.$element.'";' ,1);
+            }else if($property->instanceOf==FlexionsTypes::INTEGER){
+                echoIndent('const ' .$enumTypeName.'_'.ucfirst($element).' = '.$enumCounter.';', 1);
+                $enumCounter++;
             }else{
-                echoIndentCR('const ' .$enumTypeName.'_'.ucfirst($element).' = '.$element.';', 1);
+                echoIndent('const ' .$enumTypeName.'_'.ucfirst($element).' = '.$element.';', 1);
             }
         }
     }
-    echoIndentCR('/* @var '.$typeOfProp.' '.$property->description.' */',1);
+    echoIndent('/* @var '.$typeOfProp.' '.$property->description.' */',1);
     if($d->firstProperty()){
-        echoIndentCR('public $'.$name.';',1);
+        echoIndent('public $'.$name.';',1);
     }else if ($d->lastProperty()){
         echoIndent('public $'.$name.';',1);
     }else{
-        echoIndentCR('public $'.$name.';',1);
+        echoIndent('public $'.$name.';',1);
     };
-    echoIndentCR('',0);
-
-
+    echoIndent('',0);
 
     if($d->lastProperty()){
         echoIndent(cr(),0);
     }
-
-
-
 }
 ?>
 
@@ -117,9 +133,9 @@ while ( $d ->iterateOnProperties() === true ) {
             $type = $h->ucFirstRemovePrefixFromString($type);
         }
         if ($property->type == FlexionsTypes::COLLECTION) {
-            echoIndentCR('$mapping[\'' . $property->name . '\']=array(\'' . $type . '\');', 2);
+            echoIndent('$mapping[\'' . $property->name . '\']=array(\'' . $type . '\');', 2);
         } else {
-            echoIndentCR('$mapping[\'' . $property->name . '\']=\'' . $type . '\';', 2);
+            echoIndent('$mapping[\'' . $property->name . '\']=\'' . $type . '\';', 2);
         }
     }
 

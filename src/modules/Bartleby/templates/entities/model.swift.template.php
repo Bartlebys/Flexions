@@ -1,167 +1,103 @@
-<?php
-
-require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
-require_once FLEXIONS_MODULES_DIR . 'Languages/FlexionsSwiftLang.php';
-
-/* @var $f Flexed */
-/* @var $d EntityRepresentation */
-
-if (isset ( $f )) {
-    // We determine the file name.
-    $f->fileName = GenerativeHelperForSwift::getCurrentClassNameWithPrefix($d).'.swift';
-    // And its package.
-    $f->package = 'xOS/models/';
-}
-
-// Exclusion
-
-$exclusion = array();
-$exclusionName = str_replace($h->classPrefix, '', $d->name);
-
-if (isset($excludeEntitiesWith)) {
-    $exclusion = $excludeEntitiesWith;
-}
-foreach ($exclusion as $exclusionString) {
-    if (strpos($exclusionName, $exclusionString) !== false) {
-        return NULL; // We return null
-    }
-}
-
-
-if (!defined('_propertyValueString_DEFINED')){
-    define("_propertyValueString_DEFINED",true);
-    function _propertyValueString(PropertyRepresentation $property){
-        if(isset($property->default)){
-            if($property->type==FlexionsTypes::STRING){
-                return " = \"$property->default\"";
-            }else{
-                return " = $property->default";
-            }
-
-        }
-        return "?";
-    }
-}
-
-
-
-/* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
 
 import Foundation
-import ObjectMapper
+#if !USE_EMBEDDED_MODULES
+<?php if (!$hideImportDirectives) { echoIndent($includeBlock,1); } ?>
+#endif
 
-// MARK: Model <?php echo ucfirst($d->name)?>
+// MARK: <?php echo $d->description?>
 
-@objc(<?php echo ucfirst($d->name)?>) class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($f,$d); ?>{
+@objc open class <?php echo ucfirst($d->name)?> : <?php echo GenerativeHelperForSwift::getBaseClass($d); ?>{
 
-
+    // Universal type support
+    <?php echo $inheritancePrefix ?>open class func typeName() -> String {
+        return "<?php echo ucfirst($d->name)?>"
+    }
 <?php
+
 while ( $d ->iterateOnProperties() === true ) {
     $property = $d->getProperty();
     $name = $property->name;
+
+    echo(cr());
+
     if($property->description!=''){
-        echoIndentCR('//' .$property->description. cr(), 1);
+        echoIndent('//' .$property->description. cr(), 1);
     }
+    // Infer consistant semantics.
+    if($property->method==Method::IS_CLASS){
+        // we can't currently serialize Static members.
+        $property->isSerializable=false;
+    }
+
+    // Dynamism, method, scope, and mutability support
+
+    $dynanic=($property->isDynamic ? '@objc dynamic ':'');
+    $method=($property->method==Method::IS_CLASS ? 'static ' : '' );
+    $scope='';
+    if($property->scope==Scope::IS_PRIVATE){
+        $scope='private ';
+    }else if ($property->scope==Scope::IS_PROTECTED){
+        $scope='internal ';
+    }else{
+       $scope='open '; // We could may be switch to public?
+    }
+   $mutable=($property->mutability==Mutability::IS_VARIABLE ? 'var ':'let ');
+    $prefix=$dynanic.$method.$scope.$mutable;
+
+
+    //Generate the property line
+
     if($property->type==FlexionsTypes::ENUM){
         $enumTypeName=ucfirst($name);
-        echoIndentCR('enum ' .$enumTypeName.':'.ucfirst($property->instanceOf). '{', 1);
+        echoIndent('public enum ' .$enumTypeName.':'.ucfirst(FlexionsSwiftLang::nativeTypeFor($property->instanceOf)). '{', 1);
         foreach ($property->enumerations as $element) {
             if($property->instanceOf==FlexionsTypes::STRING){
-                echoIndentCR('case ' .ucfirst($element).' = "'.$element.'"', 2);
-            }else{
-                echoIndentCR('case ' .ucfirst($element).' = '.$element.'', 2);
+                echoIndent('case ' .lcfirst($element).' = "'.$element.'"', 2);
+            }elseif ($property->instanceOf==FlexionsTypes::INTEGER){
+                echoIndent('case ' .lcfirst($element), 2);
+            } else{
+                echoIndent('case ' .lcfirst($element).' = '.$element, 2);
             }
         }
-        echoIndentCR('}', 1);
-        echoIndentCR('var ' . $name .':'.$enumTypeName._propertyValueString($property), 1);
+        echoIndent('}', 1);
+        echoIndent($prefix. $name .':'.$enumTypeName._propertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::COLLECTION){
-        echoIndentCR('var ' . $name .':['.ucfirst($property->instanceOf). ']'._propertyValueString($property), 1);
+        $instanceOf=FlexionsSwiftLang::nativeTypeFor($property->instanceOf);
+        if ($instanceOf==FlexionsTypes::NOT_SUPPORTED){
+            $instanceOf=$property->instanceOf;
+        }
+        echoIndent($prefix. $name .':['.ucfirst($instanceOf). ']'._propertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::OBJECT){
-        echoIndentCR('var ' . $name .':'.ucfirst($property->instanceOf)._propertyValueString($property), 1);
+        echoIndent($prefix. $name .':'.ucfirst($property->instanceOf)._propertyValueString($property), 1);
     }else{
         $nativeType=FlexionsSwiftLang::nativeTypeFor($property->type);
         if(strpos($nativeType,FlexionsTypes::NOT_SUPPORTED)===false){
-            echoIndentCR('var ' . $name .':'.$nativeType._propertyValueString($property), 1);
+            echoIndent($prefix. $name .':'.$nativeType._propertyValueString($property), 1);
         }else{
-            echoIndentCR('var ' . $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type), 1);
+            echoIndent($prefix. $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type), 1);
         }
     }
-    echoIndentCR('',0);
-}?>
-
-<?php
-
-if( $modelsShouldConformToNSCoding ) {
-
-    echo('
-    // MARK: NSCoding
-
-    required init(coder decoder: NSCoder) {
-        super.init(coder: decoder)'.cr());
-    GenerativeHelperForSwift::echoBodyOfInitWithCoder($d, 2);
-    echo( '
-    }
-
-    override func encodeWithCoder(aCoder: NSCoder) {
-        super.encodeWithCoder(aCoder)'.cr());
-    GenerativeHelperForSwift::echoBodyOfEncodeWithCoder($d, 2);
-    echo('
-    }
-   ');
-}
-
-?>
-    required init(){
-        super.init()
-    }
-
-    // MARK: Mappable
-
-    required init?(_ map: Map) {
-        super.init(map)
-        mapping(map)
-    }
-
-
-
-    override func mapping(map: Map) {
-        super.mapping(map)
-<?php
-while ( $d ->iterateOnProperties() === true ) {
-    $property = $d->getProperty();
-    $name = $property->name;
-    if ($property->type== FlexionsTypes::DATETIME){
-        echoIndentCR($name . ' <- (map["' . $name . '"],ISO8601DateTransform())', 2);
-    }else if($property->type==FlexionsTypes::URL){
-        echoIndentCR($name . ' <- (map["' . $name . '"],URLTransform())', 2);
-    }else{
-        echoIndentCR($name . ' <- map["' . $name . '"]', 2);
-    }
-
 }
 ?>
+
+<?php echo $baseObjectBlock ?>
+<?php echo $mappableBlock ?>
+<?php echo $secureCodingBlock ?>
+<?php echo $codableBlock ?>
+<?php echo $exposedBlock ?>
+
+    // MARK: - Initializable
+   <?php echo $inversedInheritancePrefix?> required public init() {
+        <?php echo $superInit ?>
     }
 
-    // MARK : Identifiable
-
-    override class var collectionName:String{
+    // MARK: - UniversalType
+    <?php echo $inheritancePrefix?> open class var collectionName:String{
         return "<?php echo lcfirst(Pluralization::pluralize($d->name)) ?>"
     }
 
-    override var d_collectionName:String{
+    <?php echo $inheritancePrefix?> open var d_collectionName:String{
         return <?php echo ucfirst($d->name)?>.collectionName
     }
-
-
-    // MARK : Persistent
-
-    override func toPersistentRepresentation()->(UID:String,collectionName:String,serializedUTF8String:String,A:Double,B:Double,C:Double,D:Double,E:Double,S:String){
-        var r=super.toPersistentRepresentation()
-        r.A=NSDate().timeIntervalSince1970
-        return r
-    }
-
 }
-
-<?php /*<- END OF TEMPLATE */?>

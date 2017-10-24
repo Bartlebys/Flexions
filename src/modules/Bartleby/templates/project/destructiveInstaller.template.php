@@ -1,13 +1,13 @@
 <?php
-
+include  FLEXIONS_MODULES_DIR . '/Bartleby/templates/localVariablesBindings.php';
 require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 /* @var $f Flexed */
 
 
 if (isset ( $f )) {
-    $f->fileName = 'destructiveInstaller.php';
-    $f->package = "php/";
+    $f->fileName = 'generated_destructiveInstaller.php';
+    $f->package = "php/Protected/";
 }
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
@@ -18,20 +18,29 @@ if (isset ( $f )) {
 * A destructive installer script for YouDub
 *
 **/
+require_once dirname(__DIR__).'/Configuration.php';
 
-namespace Bartleby;
-use \MongoClient;
-require_once __DIR__.'/Configuration.php';
+use Bartleby\Core\Stages;
+use Bartleby\Configuration;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
-$configuration=new Configuration(__DIR__,BARTLEBY_ROOT_FOLDER);
+$configuration=new Configuration(dirname(__DIR__),BARTLEBY_ROOT_FOLDER);
 
 function logMessage($message=""){
     echo ($message."<br>\n");
 }
+
+function createCollection($collectionName,$db){
+    logMessage('Creating the \''.$collectionName.'\' collection');
+    $collection=$db->createCollection($collectionName);
+    logMessage('Creating the indexes for \''.$collectionName.'\' (ephemeral, OBSERVATION_UID_KEY,SPACE_UID_KEY) ');
+    $collection->createIndex(array("ephemeral" => 1));
+    $collection->createIndex(array(SPACE_UID_KEY => 1));
+    $collection->createIndex(array(OBSERVATION_UID_KEY => 1));
+}
+
 
 $today = date("Ymd-H:m:s");
 logMessage ("Running installer on ".$today);
@@ -41,12 +50,17 @@ try {
 } catch (Exception $e) {
     logMessage("Mongo client must be installed ". $e->getMessage());
 }
-logMessage("Selecting the database  ".$configuration->get_MONGO_DB_NAME());
-$db = $m->selectDB($configuration->get_MONGO_DB_NAME());// Selecting  base
+logMessage("Selecting the database  ".$configuration->MONGO_DB_NAME());
+$db = $m->selectDB($configuration->MONGO_DB_NAME());// Selecting  base
 
 $collectionList=$db->listCollections();
 
-if (!Configuration::ALLOW_DESTRUCTIVE_INSTALLER && count($collectionList)>0 ){
+if ($configuration->STAGE()==Stages::PRODUCTION){
+    logMessage("Destructive installer is blocked on Production stage");
+    return;
+}
+
+if ( $configuration->ALLOW_DESTRUCTIVE_INSTALLER()===false && count($collectionList)>0 ){
     logMessage("ALLOW_DESTRUCTIVE_INSTALLER is set to FALSE! ");
     logMessage("Turn it to true once if you are sure you want to totally reset the DB.");
     return;
@@ -61,7 +75,21 @@ logMessage("Droping ".$collection->getName());
 $collection->drop();
 }
 logMessage("Recreating the collections");
+
 // Collection creation
+
+// Bartleby's commons
+
+createCollection("users",$db);
+createCollection("locker",$db);
+createCollection("triggers",$db);
+createCollection("boxes",$db);
+createCollection("blocks",$db);
+createCollection("nodes",$db);
+createCollection("localizedData",$db);
+
+// App
+
 <?php
 /* @var $d ProjectRepresentation */
 /* @var $entity EntityRepresentation */
@@ -70,17 +98,41 @@ foreach ($d->entities as $entity ) {
     if(isset($prefix)){
         $name=str_replace($prefix,'',$name);
     }
-    if (isset($excludeActionsWith) && in_array($name,$excludeActionsWith)){
+    $shouldBeExcluded=false;
+    if ($entity->isUnManagedModel()){
+        $shouldBeExcluded=true;
+    }
+    if (isset($excludeActionsWith)) {
+        foreach ($excludeActionsWith as $actionTobeExcluded ) {
+            if (strpos(strtolower($name), strtolower($actionTobeExcluded)) !== false) {
+                $shouldBeExcluded = true;
+            }
+        }
+    }
+    if ($shouldBeExcluded==true){
         continue;
     }
     $pluralized=lcfirst(Pluralization::pluralize($name));
-    echoIndentCR('logMessage("Creating the '.$pluralized.' collection");',0);
-    echoIndentCR('$'.$pluralized.'=$db->createCollection("'.$pluralized.'");',0);
+    echoIndent('createCollection("'.$pluralized.'",$db);',0);
 }
 ?>
 
 logMessage("");
+logMessage('deleting cookies ('.count($_COOKIE).')');
+    foreach ($_COOKIE as $k=>$v) {
+    setcookie($k,'',time()-60,'/', null, false, false);
+}
+
+
+logMessage("");
 logMessage("**********************************************************************");
 logMessage("Please set  Configuration::ALLOW_DESTRUCTIVE_INSTALLER const to FALSE!");
+
+
+
+require_once BARTLEBY_PUBLIC_FOLDER.'Protected/PostInstaller.php';
+use Bartleby\PostInstaller;
+$postInstaller=new PostInstaller();
+$postInstaller->run($configuration);
 
 <?php /*<- END OF TEMPLATE */?>

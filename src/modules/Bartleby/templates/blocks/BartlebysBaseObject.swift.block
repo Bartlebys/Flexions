@@ -1,0 +1,39 @@
+
+    // A reference to the document that currently holds this Managed Model.
+    // Most of the time set by its collection (with notable exclusion of currentUser, and a few other special cases)
+    public var referentDocument:BartlebyDocument?
+
+    // Set by propagation or when using the document factory
+    // It connects the instance to its collection and document
+    public var collection:CollectibleCollection?{
+        didSet{
+            if let document=collection?.referentDocument{
+                self.referentDocument = document
+                // tag ephemeral instance
+                if Bartleby.ephemeral {
+                    self.ephemeral=true
+                }
+                // And register to Bartleby
+                Bartleby.register(self)
+            }else{
+                glog("Referent document is not set on \(String(describing: collection?.runTimeTypeName()))", file: #file, function: #function, line: #line, category: Default.LOG_FAULT, decorative: false)
+            }
+        }
+    }
+
+    //The supervisers container
+    internal var _supervisers=[String:SupervisionClosure]()
+    // MARK: UniversalType
+
+    // Used to store the type name on serialization
+    fileprivate lazy var _typeName: String = type(of: self).typeName()
+
+    // The Run time Type name (can be different to typeName)
+    internal var _runTimeTypeName: String?
+
+    // The UID is stored in _id to match MongoDB convention so we use a computed property
+    // UID is a dynamic @objc to be available for cocoa bindings
+    @objc open dynamic var UID:String { get{ return self._id } set{  self._id = newValue } }
+
+    // The key value localization proxy (original values are stored in the model, and localized in separate localized datum)
+    lazy open var localized:Localized = Localized(reference:self)

@@ -1,5 +1,5 @@
 <?php
-
+include  FLEXIONS_MODULES_DIR . '/Bartleby/templates/localVariablesBindings.php';
 require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 /* @var $f Flexed */
@@ -8,7 +8,7 @@ require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
 
 if (isset ( $f )) {
     $f->fileName = 'GeneratedConfiguration.php';
-    $f->package = 'php/generated/'.$h->majorVersionPathSegmentString();
+    $f->package =  'php/api/'.$h->majorVersionPathSegmentString().'_generated/';
 }
 /* TEMPLATES STARTS HERE -> */?>
 <?php echo '<?php'?>
@@ -18,45 +18,19 @@ if (isset ( $f )) {
 
 namespace Bartleby;
 
-require_once BARTLEBY_ROOT_FOLDER . 'Mongo/MongoConfiguration.php';
+require_once BARTLEBY_ROOT_FOLDER . 'Commons/_generated/BartlebyCommonsConfiguration.php';
 require_once BARTLEBY_ROOT_FOLDER . 'Core/RoutesAliases.php';
 
 use Bartleby\Core\RoutesAliases;
 use Bartleby\Core\Stages;
 use Bartleby\Mongo\MongoConfiguration;
 
+class GeneratedConfiguration extends BartlebyCommonsConfiguration {
 
-class GeneratedConfiguration extends MongoConfiguration {
 
-    /**
-     * @param $baseDirectory
-     * @param $bartlebysRootDirectory
-     */
-    public function __construct($executionDirectory,$bartlebyRootDirectory){
-        parent::__construct($executionDirectory,$bartlebyRootDirectory);
+    protected function _configurePermissions(){
 
-        $this->_STAGE=Stages::DEVELOPMENT;
-        $this->_VERSION='<?php echo $d->apiVersion; ?>';
-
-        // MONGO DB
-        $this->_MONGO_DB_NAME='<?php echo ucfirst($f->projectName); ?>';
-
-        // APN
-        $this->_APN_PASS_PHRASE='donkeys_also_can_be_good_citizens';
-        $this->_APN_PORT=2195;
-
-        $this->_configurePermissions();
-
-    }
-
-    private function _configurePermissions(){
-
-        $this->_permissionsRules = array(
-        'NotFound->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
-        'Reachable->GET'=> array('level'=> PERMISSION_NO_RESTRICTION),
-        'Auth->POST' => array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'LoginUser#dID'),// (!) do not change
-        'Auth->DELETE' => array('level'  => PERMISSION_NO_RESTRICTION), // (!)
-        'SSETime->GET'=> array('level'=> PERMISSION_IDENTIFIED_BY_COOKIE),
+        $permissionsRules = array(
 <?php
 $permissionHistory=array();
 /* @var $d ProjectRepresentation */
@@ -64,22 +38,22 @@ $permissionHistory=array();
 while ($d->iterateOnActions() ) {
 
     $action=$d->getAction();
-    $shouldBeExlcuded=false;
+    $shouldBeExcluded=false;
     foreach ($h->excludePath as $pathToExclude ) {
         if(strpos($action->class.'.php',$pathToExclude)!==false){
-            $shouldBeExlcuded=true;
+            $shouldBeExcluded=true;
         }
     }
     if (isset($excludeActionsWith)) {
         foreach ($excludeActionsWith as $actionTobeExcluded ) {
             if (strpos($action->class, $actionTobeExcluded) !== false) {
-                $shouldBeExlcuded = true;
+                $shouldBeExcluded = true;
             }
         }
     }
 
 
-    if($shouldBeExlcuded==true){
+    if($shouldBeExcluded==true){
         continue;
     }
 
@@ -89,24 +63,18 @@ while ($d->iterateOnActions() ) {
 
 
     //$string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_TOKEN,TOKEN_CONTEXT=>'$classNameWithoutPrefix#rUID')";
-    $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_IDENTIFIED_BY_COOKIE)";
+    $string= "'".$classNameWithoutPrefix."->call'=>array('level' => PERMISSION_BY_IDENTIFICATION_AND_ACTIVATION)";
 
     if(!$d->lastAction()){
         $string.=',';
     }
     if(!in_array($string,$permissionHistory)){
         $permissionHistory[]=$string;
-        echoIndentCR($string,2);
+        echoIndent($string,2);
     }
 }
 ?>      );
-    }
-
-
-    protected function _getPagesRouteAliases () {
-        $mapping = array(
-        );
-        return new RoutesAliases($mapping);
+        $this->addPermissions($permissionsRules);
     }
 
 /*
@@ -138,25 +106,34 @@ while ($d->iterateOnActions() ) {
 */
 
     protected function _getEndPointsRouteAliases () {
+        $routes=parent::_getEndPointsRouteAliases();
         $mapping = array(
-            '/user/login/' => array('Auth','POST'),
-            '/user/logout/' => array('Auth','DELETE'), // Will call explicitly DELETE (equivalent to explicit call of DELETE login)
 <?php
 $history=array();
 /* @var $d ProjectRepresentation */
 /* @var $action ActionRepresentation */
 
 while ($d->iterateOnActions() ) {
+
     $action=$d->getAction();
-    $shouldBeExlcuded=false;
+    $shouldBeExcluded=false;
     foreach ($h->excludePath as $pathToExclude ) {
         if(strpos($action->class.'.php',$pathToExclude)!==false){
-            $shouldBeExlcuded=true;
+            $shouldBeExcluded=true;
         }
     }
-    if($shouldBeExlcuded==true){
+    if (isset($excludeActionsWith)) {
+        foreach ($excludeActionsWith as $actionTobeExcluded ) {
+            if (strpos($action->class, $actionTobeExcluded) !== false) {
+                $shouldBeExcluded = true;
+            }
+        }
+    }
+
+    if($shouldBeExcluded==true){
         continue;
     }
+
     $path=$action->path;
     $path=ltrim($path,'/');
     $classNameWithoutPrefix=ucfirst(substr($action->class,strlen($d->classPrefix)));
@@ -166,12 +143,45 @@ while ($d->iterateOnActions() ) {
     }
     if(!in_array($string,$history)){
         $history[]=$string;
-        echoIndentCR($string,3);
+        echoIndent($string,3);
     }
+
 }
 ?>
         );
-        return new RoutesAliases($mapping);
+        $routes->addAliasesToMapping($mapping);
+        return $routes;
+    }
+
+
+    /**
+    * Returns the collection name list
+    * @return array
+    */
+    public function getCollectionsNameList(){
+        $list=parent::getCollectionsNameList();
+<?php while ($d->iterateOnEntities() ) {
+    $entity=$d->getEntity();
+    $name=$entity->name;
+    if(isset($prefix)){
+        $name=str_replace($prefix,'',$name);
+    }
+    $shouldBeExcluded = $entity->isUnManagedModel();;
+    if (isset($excludeActionsWith)) {
+        foreach ($excludeActionsWith as $actionTobeExcluded ) {
+            if (strpos(strtolower($name), strtolower($actionTobeExcluded)) !== false) {
+                $shouldBeExcluded = true;
+            }
+        }
+    }
+    if (!isset($name) || $name=="" ||$shouldBeExcluded==true){
+        continue;
+    }else{
+        echoIndent(' $list [] = "'.lcfirst(Pluralization::pluralize($name)).'";',2);
+    }
+}
+?>
+        return $list;
     }
 }
 <?php echo '?>'?><?php /*<- END OF TEMPLATE */?>

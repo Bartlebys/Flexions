@@ -1,0 +1,25 @@
+{
+  "name": "Human",
+  "definition": {
+    "description": "An Human",
+    "type": "object",
+    "explicitType": "Organism",
+    "baseObject":false,
+    "properties": {
+
+      "name": {
+        "description": "Name",
+        "type": "string",
+        "supervisable": false,
+        "required":false
+      }
+    },
+    "metadata": {
+      "urdMode": false,
+      "persistsLocallyOnlyInMemory": false,
+      "persistsDistantly": true,
+      "undoable": false,
+      "groupable": true
+    }
+  }
+}

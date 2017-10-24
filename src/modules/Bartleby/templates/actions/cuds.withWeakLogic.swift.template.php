@@ -1,382 +1,141 @@
-<?php
-
-/*
- * SWIFT 2.X template
- * This weak logic template is compliant with Bartleby 1.0 approach.
- * It allows to update easily very complex templates.
- * It is not logic less but the logic should be as weak as possible
- */
-require_once FLEXIONS_MODULES_DIR . '/Bartleby/templates/Requires.php';
-
-/* @var $flexed Flexed */
-/* @var $actionRepresentation ActionRepresentation*/
-/* @var $hypotypose Hypotypose */
-
-if (isset( $f,$d,$h)) {
-    /* @var $f Flexed */
-    /* @var $d ActionRepresentation*/
-    /* @var $h Hypotypose */
-
-
-    // We use explicit name.
-    $flexed=$f;
-    $actionRepresentation=$d;
-    $actionRepresentation->class=$actionRepresentation->class;
-    $hypotypose=$h;
-
-    $flexed->fileName = $actionRepresentation->class . '.swift';
-    $flexed->package = 'xOS/operations/';
-
-}else{
-    return NULL;
-}
-
-/////////////////
-// EXCLUSIONS
-/////////////////
-
-// Should this Action be excluded ?
-
-$exclusionName = str_replace($h->classPrefix, '', $d->class);
-if (isset($excludeActionsWith)) {
-    foreach ($excludeActionsWith as $exclusionString) {
-        if (strpos($exclusionName, $exclusionString) !== false) {
-            return NULL; // We return null
-        }
-    }
-}
-
-
-// This template cannot be used for GET Methods
-if ($actionRepresentation->httpMethod==='GET'){
-    return NULL;
-}
-
-// We want also to exclude by query
-
-if (!(strpos($d->class,'ByQuery')===false)){
-    return NULL;
-}
-
-/////////////////////////
-// VARIABLES COMPUTATION
-/////////////////////////
-
-// Compute ALL the Variables you need in the template
-
-$httpMethod=$actionRepresentation->httpMethod;
-$pluralizedName=lcfirst($actionRepresentation->collectionName);
-$singularName=lcfirst(Pluralization::singularize($pluralizedName));
-$baseClassName=ucfirst($actionRepresentation->class);
-$ucfSingularName=ucfirst($singularName);
-$ucfPluralizedName=ucfirst($pluralizedName);
-
-$actionString=NULL;
-$localAction=NULL;
-
-if ($httpMethod=="POST"){
-    $actionString='creation';
-    $localAction='upsert';
-}elseif ($httpMethod=="PUT"){
-    $actionString='update';
-    $localAction='upsert';
-}elseif ($httpMethod=="PATCH"){
-    $actionString='update';
-    $localAction='upsert';
-}elseif ($httpMethod=="DELETE"){
-    $actionString=NULL;
-    $localAction=NULL;
-}else{
-    $actionString='NO_FOUND';
-    $localAction='NO_FOUND';
-}
-
-$firstParameterName=NULL;
-$firstParameterTypeString=NULL;
-$varName=NULL;
-$executeArgumentSerializationBlock=NULL;
-
-while($actionRepresentation->iterateOnParameters()){
-    /*@var $parameter PropertyRepresentation*/
-    $parameter=$actionRepresentation->getParameter();
-    // We use the first parameter.
-    if (!isset($varName,$firstParameterName,$firstParameterTypeString)){
-        if ($parameter->type == FlexionsTypes::COLLECTION){
-            $firstParameterName=$parameter->name;
-            if($httpMethod!='DELETE'){
-                $firstParameterTypeString='['.$ucfSingularName.']';
-                $executeArgumentSerializationBlock="
-                var parameters=Dictionary<String, AnyObject>()
-                var collection=[Dictionary<String, AnyObject>]()
-
-                for $singularName in $pluralizedName{
-                    let serializedInstance=Mapper<$ucfSingularName>().toJSON($singularName)
-                    collection.append(serializedInstance)
-                }
-                parameters[\"$pluralizedName\"]=collection".cr();
-            }else{
-                $actionString='deleteByIds';
-                $localAction='deleteByIds';
-                $firstParameterTypeString='[String]';
-                $executeArgumentSerializationBlock="
-                var parameters=Dictionary<String, AnyObject>()
-                parameters[\"ids\"]=ids".cr();
-            }
-            $varName=$pluralizedName;
-        }else{
-            $firstParameterName=$parameter->name;
-            if($httpMethod!='DELETE'){
-                $firstParameterTypeString=$ucfSingularName;
-                $executeArgumentSerializationBlock="
-                var parameters=Dictionary<String, AnyObject>()
-                parameters[\"$singularName\"]=Mapper<$firstParameterTypeString>().toJSON($firstParameterName)".cr();
-            }else{
-                $actionString='deleteById';
-                $localAction='deleteById';
-                $firstParameterTypeString='String';
-                $executeArgumentSerializationBlock="
-                var parameters=Dictionary<String, AnyObject>()
-                parameters[\"".$singularName."Id\"]=".$singularName."Id".cr();
-            }
-            $varName=$singularName;
-        }
-    }
-}
-
-
-/////////////////////////
-// TEMPLATE
-/////////////////////////
-
-/* TEMPLATES STARTS HERE -> */?>
 <?php echo GenerativeHelperForSwift::defaultHeader($flexed,$actionRepresentation); ?>
 
 import Foundation
-import Alamofire
-import ObjectMapper
+#if !USE_EMBEDDED_MODULES
+<?php echo $includeBlock ?>
+#endif
 
-@objc(<?php echo$baseClassName ?>) class <?php echo$baseClassName ?> : JObject,JHTTPCommand{
+@objc public class <?php echo$baseClassName ?> : <?php echo GenerativeHelperForSwift::getBaseClass($actionRepresentation); ?>,BartlebyOperation{
 
-    private var _<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString.cr() ?>
-
-    private var _dID:String
-
-    private var _oID:String?
-
-    private var _operation:Operation=Operation()
-
-    required convenience init(){
-        self.init(<?php echo$firstParameterTypeString ?>(), withinDocument:Default.NO_UID,observableVia:Default.NOT_OBSERVABLE)
+    // Universal type support
+    override open class func typeName() -> String {
+        return "<?php echo $baseClassName ?>"
     }
 
-    required convenience init?(_ map: Map) {
-        self.init()
-        self.mapping(map)
-    }
+    override open class var collectionName:String{ return "embeddedInPushOperations" }
 
-    override func mapping(map: Map) {
-        super.mapping(map)
-        self._dID <- map["_dID"]
-        self._<?php echo$firstParameterName ?> <- map["_<?php echo$firstParameterName ?>"]
-        self._oID <- map["_oID"]
-        self._operation.status <- map ["operation_status"]
-        self._operation.counter <- map ["operation_counter"]
-        self._operation.creationDate <- map ["operation_creationDate"]
-        self._operation.baseUrl <- map ["operation_baseUrl"]
-        // (!) Do not serialize globally the operation
-        // as the operation will serialize this instance in its data dictionary.
-    }
+    override open var d_collectionName:String{ return "embeddedInPushOperations" }
 
-    /**
-    This is the designated constructor.
+    fileprivate var _payload:Data?
 
-    - parameter <?php echo$firstParameterName ?>: the <?php echo$firstParameterName ?> concerned the operation
-    - parameter dID:The document UID
-    - parameter oID: If you want to support distributed execution this action will be propagated to subscribers by this UID
-
-    */
-    init (_ <?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>=<?php echo$firstParameterTypeString."()" ?>, withinDocument dID:String,observableVia oID:String=Default.NOT_OBSERVABLE) {
-        self._<?php echo$firstParameterName ?>=<?php echo$firstParameterName.cr() ?>
-        self._dID=dID
-        self._oID=oID
+    required public init() {
         super.init()
     }
+
+<?php echo $exposedBlock?>
+<?php echo $mappableBlock?>
+<?php echo $secureCodingBlock?>
+<?php echo $codableBlock?>
 
     /**
     Creates the operation and proceeds to commit
 
-    - parameter <?php echo$firstParameterName ?>: the instance
-    - parameter dID:     the document UID
-    - parameter oID:     the observable UID
+    - parameter <?php echo$subjectName ?>: the instance
+    - parameter document:     the document
     */
-    static func commit(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>, withinDocument dID:String,observableVia oID:String){
-        let operationInstance=<?php echo$baseClassName ?>(<?php echo$firstParameterName ?>,withinDocument:dID,observableVia:oID)
-        operationInstance.commit()
+    static func commit(_ <?php echo$subjectName ?>:<?php echo$subjectStringType ?>, <?php echo$registrySyntagm ?> document:BartlebyDocument){
+        // The operation instance is serialized in a pushOperation
+        // That's why we donnot use the document factory to create this instance.
+        let operationInstance = <?php echo$baseClassName ?>()
+        operationInstance.UID = Bartleby.createUID()
+        operationInstance.referentDocument = document
+        let context=Context(code:<?php echo crc32($baseClassName.'.commit') ?>, caller: "\(operationInstance.runTimeTypeName()).commit")
+        do{
+            operationInstance._payload = try JSON.encoder.encode(<?php echo$subjectName ?>.self)
+            let ic:ManagedPushOperations = try document.getCollection()
+            // Create the pushOperation
+            let pushOperation:PushOperation = document.newManagedModel(commit: false, isUndoable: false)
+            pushOperation.quietChanges{
+                pushOperation.commandUID = operationInstance.UID
+                pushOperation.collection = ic
+                pushOperation.counter += 1
+                pushOperation.status = PushOperation.Status.pending
+                pushOperation.creationDate = Date()<?php echo $operationIdentificationBlock ?>
+                pushOperation.creatorUID = document.metadata.currentUserUID
+                operationInstance.creatorUID = document.metadata.currentUserUID
+                <?php echo $operationCommitBlock.cr()?>
+            }
+            pushOperation.operationName = <?php echo$baseClassName ?>.typeName()
+            pushOperation.serialized = operationInstance.serialize()
+        }catch{
+            document.dispatchAdaptiveMessage(context,
+                                             title: "Structural Error",
+                                             body: "Operation collection is missing in \(operationInstance.runTimeTypeName())",
+                onSelectedIndex: { (selectedIndex) -> () in
+            })
+            glog("\(error)", file: #file, function: #function, line: #line, category: Default.LOG_WARNING, decorative: false)
+        }
     }
 
 
-    func commit(){
-        let context=Context(code:<?php echo crc32($baseClassName.'.commit') ?>, caller: "<?php echo$baseClassName ?>.commit")
-        if let registry = Bartleby.sharedInstance.getRegistryByUID(self._dID) {
-            <?php if ($httpMethod!="DELETE") {
-                echo("//if registry.$localAction(self._$firstParameterName){");
-            } else {
-                echo("//if registry.$localAction(self._$firstParameterName, fromCollectionWithName:\"$actionRepresentation->collectionName\"){"); }
-            ?>
-                // Prepare the operation
-                self._operation.counter=0
-                self._operation.status=Operation.Status.Pending
-                self._operation.baseUrl=registry.registryMetadata.collaborationServerURL
-                self._operation.creationDate=NSDate()
-
-                // Provision the operation.
-                do{
-                    let ic:OperationsCollectionController = try registry.getCollection()
-                    ic.add(self._operation)
-                    Bartleby.bprint("\(ic.UID)->OPCOUNT=\(ic.items.count)")
-                }catch{
-                    Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
-                    title: "Structural Error",
-                    body: "Operation collection is missing",
-                    onSelectedIndex: { (selectedIndex) -> () in
-                    })
-                }
-                // The status will mark Operation.hasChanged as true
-                self._operation.data=self.dictionaryRepresentation()
-        <?php
-            if ($httpMethod!="DELETE"){
-                if ($parameter->type == FlexionsTypes::COLLECTION){
-                    echo("
-                for item in self._$firstParameterName{
-                     item.committed=true
-                 }");
+    open func push(sucessHandler success:@escaping (_ context:HTTPContext)->(),
+        failureHandler failure:@escaping (_ context:HTTPContext)->()){
+            do{
+                let <?php echo$subjectName ?> = <?php echo $payloadDeserialization.cr(); ?>
+                // The unitary operation are not always idempotent
+                // so we do not want to push multiple times unintensionnaly.
+                // Check BartlebyDocument+Operations.swift to understand Operation status
+                let pushOperation = try self._getOperation()
+                // Provision the operation
+                if  pushOperation.canBePushed(){
+                    pushOperation.status=PushOperation.Status.inProgress
+                    type(of: self).execute(<?php echo"$subjectName,
+                        $registrySyntagm:self.documentUID,".cr() ?>
+                        sucessHandler: { (context: HTTPContext) -> () in
+                            pushOperation.counter=pushOperation.counter+1
+                            pushOperation.status=PushOperation.Status.completed
+                            pushOperation.responseData = try? JSON.encoder.encode(context)
+                            pushOperation.lastInvocationDate=Date()
+                            let completion=Completion.successStateFromHTTPContext(context)
+                            completion.setResult(context)
+                            pushOperation.completionState=completion
+                            success(context)
+                        },
+                        failureHandler: {(context: HTTPContext) -> () in
+                            pushOperation.counter=pushOperation.counter+1
+                            pushOperation.status=PushOperation.Status.completed
+                            pushOperation.responseData = try? JSON.encoder.encode(context)
+                            pushOperation.lastInvocationDate=Date()
+                            let completion=Completion.failureStateFromHTTPContext(context)
+                            completion.setResult(context)
+                            pushOperation.completionState=completion
+                            failure(context)
+                        }
+                    )
                 }else{
-                    echo("
-                self._$firstParameterName.committed=true".cr());
+                    self.referentDocument?.log("<?php echo$baseClassName ?> can't be pushed \(pushOperation.status)", file: #file, function: #function, line: #line, category: Default.LOG_FAULT, decorative: false)
                 }
+            }catch{
+                let context = HTTPContext( code:3 ,
+                caller: "<?php echo$baseClassName ?>.execute",
+                relatedURL:nil,
+                httpStatusCode:StatusOfCompletion.undefined.rawValue)
+                context.message="\(error)"
+                failure(context)
+                self.referentDocument?.log("\(error)", file: #file, function: #function, line: #line, category: Default.LOG_WARNING, decorative: false)
             }
-        ?>
-        }else{
-            // This registry is not available there is nothing to do.
-            let m=NSLocalizedString("Registry is missing", comment: "Registry is missing")
-            Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
-                    title: NSLocalizedString("Structural error", comment: "Structural error"),
-                    body: "\(m) dID=\(self._dID)",
-                    onSelectedIndex: { (selectedIndex) -> () in
-                    }
-            )
-        }
+
     }
 
-    func push(sucessHandler success:(context:HTTPResponse)->(),
-        failureHandler failure:(context:HTTPResponse)->()){
-        if let <?php if($httpMethod=="POST"){echo("registry");}else{echo("_");} ?> = Bartleby.sharedInstance.getRegistryByUID(self._dID) {
-            // The unitary operation are not always idempotent
-            // so we do not want to push multiple times unintensionnaly.
-            if  self._operation.status==Operation.Status.Pending ||
-                self._operation.status==Operation.Status.Unsucessful {
-                // We try to execute
-                self._operation.status=Operation.Status.InProgress
-                <?php echo$baseClassName ?>.execute(<?php echo"self._$firstParameterName,
-                    withinDocument:self._dID,".cr() ?>
-                    sucessHandler: { (context: JHTTPResponse) -> () in
-                        <?php if ($httpMethod=="POST") {
-                            echo("registry.markAsDistributed(self._$firstParameterName)".cr());
-                        } else {
-                            echo(cr());
-                        }
-                        ?>
-                        self._operation.counter=self._operation.counter!+1
-                        self._operation.status=Operation.Status.Successful
-                        self._operation.responseData=Mapper<JHTTPResponse>().toJSON(context)
-                        self._operation.lastInvocationDate=NSDate()
-                        success(context:context)
-                    },
-                    failureHandler: {(context: JHTTPResponse) -> () in
-                        self._operation.counter=self._operation.counter!+1
-                        self._operation.status=Operation.Status.Unsucessful
-                        self._operation.responseData=Mapper<JHTTPResponse>().toJSON(context)
-                        self._operation.lastInvocationDate=NSDate()
-                        failure(context:context)
-                    }
-                )
-            }else{
-                // This registry is not available there is nothing to do.
-                let context=Context(code:<?php echo crc32($baseClassName.'.push') ?>, caller: "<?php echo$baseClassName ?>.push")
-                Bartleby.sharedInstance.dispatchAdaptiveMessage(context,
-                    title: NSLocalizedString("Push error", comment: "Push error"),
-                    body: "\(NSLocalizedString("Attempt to push an operation with status ==",comment:"Attempt to push an operation with status =="))\(self._operation.status))",
-                    onSelectedIndex: { (selectedIndex) -> () in
-                })
+    internal func _getOperation()throws->PushOperation{
+        if let document = Bartleby.sharedInstance.getDocumentByUID(self.documentUID) {
+            if let idx=document.pushOperations.index(where: { $0.commandUID==self.UID }){
+                return document.pushOperations[idx]
             }
+            throw BartlebyOperationError.operationNotFound(UID:"<?php echo$baseClassName ?>: \(self.UID)")
         }
+        throw BartlebyOperationError.documentNotFound(documentUID:"<?php echo$baseClassName ?>: \(self.documentUID)")
     }
 
-    static func execute(<?php echo$firstParameterName ?>:<?php echo$firstParameterTypeString ?>,
-            withinDocument dID:String,
-            sucessHandler success:(context:JHTTPResponse)->(),
-            failureHandler failure:(context:JHTTPResponse)->()){
-                let pathURL=Configuration.BASE_URL.URLByAppendingPathComponent("/<?php echo$varName ?>")<?php echo $executeArgumentSerializationBlock?>
-                let urlRequest=HTTPManager.mutableRequestWithToken(documentID:dID,withActionName:"<?php echo$baseClassName ?>" ,forMethod:Method.<?php echo$httpMethod?>, and: pathURL)
-                let r:Request=request(ParameterEncoding.JSON.encode(urlRequest, parameters: parameters).0)
-                r.responseString{ response in
-                    // Store the response
-                    let request=response.request
-                    let result=response.result
-                    let response=response.response
+    <?php
 
-                    // Bartleby consignation
+    if ($shouldImplementExecuteBlock) {
+        include __DIR__ . '/cuds.withWeakLogicExecute.swift.block.php';
+    }else{
+        include __DIR__ . '/cuds.withWeakLogicExecutePlaceHolder.swift.block.php';
+    }
 
-                    let context = JHTTPResponse( code: <?php echo crc32($baseClassName.'.execute') ?>,
-                        caller: "<?php echo$baseClassName ?>.execute",
-                        relatedURL:request?.URL,
-                        httpStatusCode: response?.statusCode ?? 0,
-                        response: response )
 
-                    // React according to the situation
-                    var reactions = Array<Bartleby.Reaction> ()
-                    reactions.append(Bartleby.Reaction.Track(result: nil, context: context)) // Tracking
-
-                    if result.isFailure {
-                        let m = NSLocalizedString("<?php echo$actionString ?>  of <?php echo$varName ?>",
-                            comment: "<?php echo$actionString ?> of <?php echo$varName ?> failure description")
-                        let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
-                            context: context,
-                            title: NSLocalizedString("Unsuccessfull attempt result.isFailure is true",
-                            comment: "Unsuccessfull attempt"),
-                            body:"\(m) \n \(response)" ,
-                            trigger:{ (selectedIndex) -> () in
-                            Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
-                        })
-                        reactions.append(failureReaction)
-                        failure(context:context)
-                    }else{
-                        if let statusCode=response?.statusCode {
-                            if 200...299 ~= statusCode {
-                                success(context:context)
-                            }else{
-                                // Bartlby does not currenlty discriminate status codes 100 & 101
-                                // and treats any status code >= 300 the same way
-                                // because we consider that failures differentiations could be done by the caller.
-
-                                let m=NSLocalizedString("<?php echo$actionString ?> of <?php echo$varName ?>",
-                                        comment: "<?php echo$actionString ?> of <?php echo$varName ?> failure description")
-                                let failureReaction =  Bartleby.Reaction.DispatchAdaptiveMessage(
-                                    context: context,
-                                    title: NSLocalizedString("Unsuccessfull attempt",
-                                    comment: "Unsuccessfull attempt"),
-                                    body: "\(m) \n \(response)",
-                                    trigger:{ (selectedIndex) -> () in
-                                    Bartleby.bprint("Post presentation message selectedIndex:\(selectedIndex)")
-                                })
-                                reactions.append(failureReaction)
-                                failure(context:context)
-                            }
-                        }
-                     }
-                    //Let's react according to the context.
-                    Bartleby.sharedInstance.perform(reactions, forContext: context)
-                }
-            }
+    ?>
 }
 <?php /*<- END OF TEMPLATE */?>

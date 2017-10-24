@@ -1,0 +1,110 @@
+{
+  "name": "Organism",
+  "definition": {
+    "description": "An Organism",
+    "type": "object",
+    "explicitType": "NSObject, Codable",
+    "baseObject":true,
+    "properties": {
+
+    "phylum": {
+      "description": "The phylum",
+      "type": "string",
+      "default": "‎chordata",
+      "supervisable": false,
+      "required":true
+    },
+      "domain": {
+        "description": "The biological domain",
+        "type": "enum",
+        "instanceOf": "string",
+        "emumPreciseType": "Organism.Domain",
+        "enum": [
+          "bacteria",
+          "archaea",
+          "eukaryota"
+        ],
+        "default":"Domain.bacteria",
+        "dynamic": false,
+        "supervisable": false,
+        "cryptable": false
+      },
+      "kingdom": {
+        "description": "The kingdom",
+        "type": "String",
+        "default": "‎animalia",
+        "mutable": true,
+        "scope": "public",
+        "method": "instance",
+        "serializable": true,
+        "dynamic": false,
+        "supervisable": false,
+        "cryptable": false
+      },
+      "phylum": {
+        "description": "The phylum",
+        "type": "string",
+        "default": "‎chordata",
+        "supervisable": false
+      },
+      "organismClass": {
+        "description": "The class",
+        "type": "string",
+        "default": "mammalia",
+        "supervisable": false,
+        "dynamic": "false"
+      },
+      "order": {
+        "description": "The Order‎",
+        "type": "string",
+        "supervisable": false,
+        "mutable": false,
+        "default":"primates"
+      },
+      "family": {
+        "description": "The family of the Organism",
+        "type": "string",
+        "supervisable": false,
+        "default":"hominids"
+      },
+      "genus": {
+        "description": "The Genus",
+        "type": "string",
+        "default":"homo",
+        "supervisable": false
+      },
+      "species": {
+        "description": "The species ",
+        "type": "string",
+        "default":"sapiens",
+        "supervisable": false
+      },
+      "extincted": {
+        "description": "Is the organism currently extincted ",
+        "type": "boolean",
+        "supervisable": false,
+        "default":"false"
+      },
+      "age": {
+        "description": "Age of the organism ",
+        "type": "integer",
+        "format": "int64",
+        "default": 0,
+        "supervisable": false,
+        "required":true
+      },
+      "birthdayAsDate": {
+        "description": "Birthday",
+        "type": "date",
+        "supervisable": false
+      }
+    },
+    "metadata": {
+      "urdMode": false,
+      "persistsLocallyOnlyInMemory": false,
+      "persistsDistantly": true,
+      "undoable": false,
+      "groupable": true
+    }
+  }
+}

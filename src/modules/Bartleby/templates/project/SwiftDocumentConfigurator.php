@@ -1,5 +1,4 @@
 <?php
-
 class SwiftDocumentConfigurator{
 
     /**
@@ -10,16 +9,25 @@ class SwiftDocumentConfigurator{
     /**
      * @var array the array of the actions to be used.
      */
-    public $useActionsContainingString=array();
+    public $includeManagedCollectionForEntityContainingString=array();
+
+    /**
+     * @var arrays the array of action name to explicitly exclude
+     */
+    public $excludeManagedCollectionForEntityContainingString=Array();
 
     function getClassName(){
         return str_replace('.swift','',$this->filename);
     }
 
-
-    function actionsShouldBeSupportedForEntity(ProjectRepresentation $project, EntityRepresentation $entity){
+    function managedCollectionShouldBeSupportedForEntity(ProjectRepresentation $project, EntityRepresentation $entity){
         $inclusionName = strtolower(str_replace($project->classPrefix, '', $entity->name));
-        foreach ($this->useActionsContainingString as $inclusion) {
+        foreach ($this->excludeManagedCollectionForEntityContainingString as $exclusion){
+            if ($entity->name===$exclusion){
+                return false;
+            }
+        }
+        foreach ($this->includeManagedCollectionForEntityContainingString as $inclusion) {
             if (!(strpos($inclusionName, strtolower($inclusion)) === false)){
                 return true;
             }
