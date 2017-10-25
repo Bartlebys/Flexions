@@ -27,7 +27,7 @@ Understanding Entity Modeling is essential.
                     "archaea",
                     "eukaryota"
                 ],
-                "mutability":false,
+                "mutable":false,
                 "serializable":false,
                 "dynamic":false
             },
