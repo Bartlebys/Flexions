@@ -99,7 +99,15 @@ class MetaFlexer {
     static public function buildWithConfiguration($path) {
 
         if (file_exists($path)) {
+
+            // Should we include some templates includes
+            $templates_includes_path = dirname(dirname($path))."/App/templates/includes.php";
+            if (file_exists($templates_includes_path)) {
+                include_once $templates_includes_path;
+            }
+
             fLog('Building with configuration file: ' . $path . cr(), true);
+
             $json = file_get_contents($path);
             $configArray = json_decode($json, true);
             $configurationFolderPath = dirname($path);
@@ -444,7 +452,7 @@ class MetaFlexer {
         foreach ($this->allTemplatesDescriptor as $descriptor) {
 
             $this->_storeTheVariablesToTheRegistryIfNecessary($descriptor);
-            $templatePath = $descriptor[BJM_PATH];
+            $templatePath =  $this->entityFlexer->resolve($descriptor[BJM_PATH]);
 
             /*@var EntityRepresentation $entity */
             foreach ($project->entities as $entity) {
@@ -490,7 +498,7 @@ class MetaFlexer {
         foreach ($project->entities as $entity) {
             foreach ($this->entitiesLoopTemplatesDescriptor as $descriptor) {
                 $this->_storeTheVariablesToTheRegistryIfNecessary($descriptor);
-                $templatePath = $descriptor[BJM_PATH];
+                $templatePath = $this->entityFlexer->resolve($descriptor[BJM_PATH]);
                 $flexed = $this->entityFlexer->generateFromRepresentation($entity, $templatePath, $this->_generationFolderPath);
                 Hypotypose::Instance()->addFlexed($flexed);
             }
@@ -506,7 +514,7 @@ class MetaFlexer {
         foreach ($project->actions as $action) {
             foreach ($this->actionsLoopTemplatesDescriptor as $descriptor) {
                 $this->_storeTheVariablesToTheRegistryIfNecessary($descriptor);
-                $templatePath = $descriptor[BJM_PATH];
+                $templatePath = $this->actionFlexer->resolve($descriptor[BJM_PATH]);
                 $flexed = $this->actionFlexer->generateFromRepresentation($action, $templatePath, $this->_generationFolderPath);
                 Hypotypose::Instance()->addFlexed($flexed);
             }
@@ -520,7 +528,7 @@ class MetaFlexer {
     private function _projectLoop(ProjectRepresentation $project) {
         foreach ($this->projectLoopTemplatesDescriptor as $descriptor) {
             $this->_storeTheVariablesToTheRegistryIfNecessary($descriptor);
-            $templatePath = $descriptor[BJM_PATH];
+            $templatePath = $this->projectFlexer->resolve($descriptor[BJM_PATH]);
             $flexed = $this->projectFlexer->generateFromRepresentation($project, $templatePath, $this->_generationFolderPath);
             Hypotypose::Instance()->addFlexed($flexed);
         }

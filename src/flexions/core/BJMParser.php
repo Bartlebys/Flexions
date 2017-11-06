@@ -393,6 +393,9 @@ class BJMParser {
         if (defined('FLEXIONS_ARGS_GENERATED_OUTPUT_PATH_KEY')) {
             $resolved = str_replace('${FLEXIONS_ARGS_GENERATED_OUTPUT_PATH_KEY}', FLEXIONS_ARGS_GENERATED_OUTPUT_PATH_KEY, $resolved);
         }
+        if (defined('TEMPLATES_DIR')) { // Injected dynamically in the MetaFlexer::buildWithConfiguration
+            $resolved = str_replace('${TEMPLATES_DIR}', TEMPLATES_DIR, $resolved);
+        }
 
         $variables=Registry::Instance()->getVariables();
         foreach ($variables as $name=>$value) {
