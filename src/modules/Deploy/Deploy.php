@@ -51,7 +51,7 @@ class Deploy {
      * @param bool|true $removelastpackagecomponent most of the time you want to remove for example the /php/ folder
      * @throws \Exception
      */
-    function copytFilesInPackage($package, $absoluteDestination, $removelastpackagecomponent = true) {
+    function copyFilesInPackage($package, $absoluteDestination, $removelastpackagecomponent = true) {
 
         if (substr($absoluteDestination, -1) != DIRECTORY_SEPARATOR) {
             $absoluteDestination = $absoluteDestination . DIRECTORY_SEPARATOR;
