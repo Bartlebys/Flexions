@@ -17,7 +17,7 @@
         "description": "The biological domain",
         "type": "enum",
         "instanceOf": "string",
-        "emumPreciseType": "Organism.Domain",
+        "enumPreciseType": "Organism.Domain",
         "enum": [
           "bacteria",
           "archaea",
