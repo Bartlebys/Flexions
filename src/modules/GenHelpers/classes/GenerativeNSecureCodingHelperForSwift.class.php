@@ -148,9 +148,9 @@ class GenerativeNSecureCodingHelperForSwift extends GenerativeHelperForSwift {
                 }
 
             case FlexionsTypes::ENUM:
-                // .$asString.' '. ucfirst($property->emumPreciseType)
+                // .$asString.' '. ucfirst($property->enumPreciseType)
                 // User.Status(rawValue:String(describing: decoder.decodeObject(NSString.self, forKey: "status")! as NSString))!
-                return $property->emumPreciseType . '(rawValue:' . GenerativeNSecureCodingHelperForSwift::_decodingFunctionFor($property, $keyName, $property->instanceOf) . ')' . ($isNotOptionnal ? '! ' : ' ');
+                return $property->enumPreciseType . '(rawValue:' . GenerativeNSecureCodingHelperForSwift::_decodingFunctionFor($property, $keyName, $property->instanceOf) . ')' . ($isNotOptionnal ? '! ' : ' ');
             case FlexionsTypes::DICTIONARY;
                 return 'decoder.decodeObject(of: [NSDictionary.classForCoder(),NSString.classForCoder(),NSNumber.classForCoder(),NSObject.classForCoder(),NSSet.classForCoder()], forKey: "' . $keyName . '")';
             case FlexionsTypes::FLOAT:

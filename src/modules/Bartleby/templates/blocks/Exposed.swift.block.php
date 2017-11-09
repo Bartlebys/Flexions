@@ -72,7 +72,7 @@ while ($isEntity?$blockRepresentation->iterateOnProperties():$blockRepresentatio
             if($property->scope==Scope::IS_PUBLIC){
 
                 if($property->type==FlexionsTypes::ENUM){
-                    $typeName=$property->emumPreciseType;
+                    $typeName=$property->enumPreciseType;
                 }else if($property->type==FlexionsTypes::COLLECTION){
                     $instanceOf=FlexionsSwiftLang::nativeTypeFor($property->instanceOf);
                     if ($instanceOf==FlexionsTypes::NOT_SUPPORTED){

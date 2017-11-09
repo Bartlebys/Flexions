@@ -81,7 +81,7 @@ class  PropertyRepresentation {
      *
      * @var  string
      */
-    public $emumPreciseType = NULL;
+    public $enumPreciseType = NULL;
 
     /**
      * When $type is an ENUM you can enumerate the values in an array

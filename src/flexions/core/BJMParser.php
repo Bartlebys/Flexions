@@ -459,10 +459,10 @@ class BJMParser {
             foreach ($enums as $enumerableElement) {
                 $propertyR->enumerations[] = $enumerableElement;
             }
-            if (array_key_exists(BJM_ENUM, $dictionary)) {
-                $propertyR->emumPreciseType = $dictionary[BJM_ENUM_PRECISE_TYPE];
+            if (array_key_exists(BJM_ENUM_PRECISE_TYPE, $dictionary)) {
+                $propertyR->enumPreciseType = $dictionary[BJM_ENUM_PRECISE_TYPE];
             } else {
-                $propertyR->emumPreciseType = "Enum extended type is not defined for property " . $propertyR->name;
+                $propertyR->enumPreciseType = "Enum extended type is not defined for property " . $propertyR->name;
             }
         }
 

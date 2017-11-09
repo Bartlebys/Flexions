@@ -146,7 +146,7 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
 
                 return 'try values.'.GenerativeCodableHelperForSwift::_fDecodeFor($property).'(['.$qualifiedType.'].self,forKey:.'.$keyName.')';
             case FlexionsTypes::ENUM:
-                return $property->emumPreciseType.'(rawValue: try values.'.GenerativeCodableHelperForSwift::_fDecodeFor($property).
+                return $property->enumPreciseType.'(rawValue: try values.'.GenerativeCodableHelperForSwift::_fDecodeFor($property).
                     '('.FlexionsSwiftLang::nativeTypeFor($property->instanceOf).'.self,forKey:.'.$keyName.')) ?? '.$property->default;
             case FlexionsTypes::DICTIONARY;
                 return 'try values.'.GenerativeCodableHelperForSwift::_fDecodeFor($property).'([String:Any].self,forKey:.'.$keyName.')';

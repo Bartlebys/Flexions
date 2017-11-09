@@ -110,7 +110,7 @@ if (!defined('BJM_INFOS')) {
     define('BJM_SERIALIZABLE', 'serializable');
     define('BJM_SUPERVISABLE', 'supervisable');
     define('BJM_CRYPTABLE', 'cryptable');  // Crypted on serialization
-    define('BJM_ENUM_PRECISE_TYPE', 'emumPreciseType');
+    define('BJM_ENUM_PRECISE_TYPE', 'enumPreciseType');
     define('BJM_EXPLICIT_TYPE', 'explicitType'); // used to pass an explicit type we use the explicit value literally
     define('BJM_METADATA', 'metadata');
 }
