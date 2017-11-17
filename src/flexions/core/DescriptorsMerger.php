@@ -41,10 +41,10 @@ class DescriptorsMerger {
                     if (array_key_exists(BJM_NAME, $defArray) && array_key_exists(BJM_DEFINITION, $defArray)) {
                         $consolidatedDescriptor[BJM_DEFINITIONS][$defArray[BJM_NAME]] = $defArray[BJM_DEFINITION];
                     } else {
-                        fLog('$filename is not valid descriptor' .cr(),true);
+                        fLog("$filename is not valid descriptor" .cr(),true);
                     }
                 } else {
-                    fLog('$filename is not valid' . cr(),true);
+                    fLog("$filename is not valid" . cr(),true);
                 }
             }
         }
