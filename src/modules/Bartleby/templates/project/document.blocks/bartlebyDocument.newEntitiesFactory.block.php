@@ -15,10 +15,21 @@
         if T.typeName()=="User"{
             return self._newUser(commit:commit,isUndoable: isUndoable) as! T
         }
-
         // Generated UnaManaged and ManagedModel are supported
         // We prefer to crash if some tries to inject another collectible
         var instance = try! self.dynamics.newInstanceOf(T.typeName()) as! T
+        self.register(instance: &instance, commit: commit, isUndoable: isUndoable)
+        return  instance
+    }
+
+
+    ///  You can register a instance that has been created out of the Document
+    ///
+    /// - Parameters:
+    ///   - instance: the instance
+    ///   - commit: should we commit the entity ?
+    ///   - isUndoable:  is that creation undoable  ?
+    open func register<T:Collectible>(instance:inout T,commit:Bool=true, isUndoable:Bool=true){
         instance.quietChanges{
             instance.UID = Bartleby.createUID()
             // Do we have a collection ?
@@ -36,15 +47,16 @@
             }
         }
         self.didCreate(instance)
-        return  instance
     }
-        /// The user factory
-        ///
-        /// - Parameters:
-        ///   - commit: should we commit the user?
-        ///   - isUndoable: is its creation undoable?
-        /// - Returns: the created user
-        internal func _newUser(commit:Bool=true,isUndoable:Bool) -> User {
+
+
+    /// The user factory
+    ///
+    /// - Parameters:
+    ///   - commit: should we commit the user?
+    ///   - isUndoable: is its creation undoable?
+    /// - Returns: the created user
+    internal func _newUser(commit:Bool=true,isUndoable:Bool) -> User {
         let user=User()
         user.quietChanges {
             user._id = Bartleby.createUID()
