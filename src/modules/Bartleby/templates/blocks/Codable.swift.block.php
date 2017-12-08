@@ -48,7 +48,9 @@ if(!isset($isBaseObject)){
 // VARIABLES DEFINITION
 ////////////////////////
 
-$inheritancePrefix = ($isBaseObject ? '' : 'override ');
+$inheritancePrefix = ('override ');
+
+
 $name = $blockRepresentation->name;
 $codingKeysDeclaration = 'String,CodingKey';
 $codingKeysName=$name.'CodingKeys';
