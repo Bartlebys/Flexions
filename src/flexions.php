@@ -35,7 +35,7 @@ if (is_array($arguments)) {
         // FULL BUILD
         ///////////////
 
-        MetaFlexer::buildWithConfiguration($arguments[CONFIGURATION_ARGUMENT_KEY]);
+        MetaFlexer::buildWithConfiguration(dirname($_SERVER['SCRIPT_NAME']).'/'.$arguments[CONFIGURATION_ARGUMENT_KEY]);
     } else {
 
         //////////////////
