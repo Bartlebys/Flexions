@@ -22,6 +22,7 @@ $unDeletableEntitiesWith = $registry->valueForKey('unDeletableEntitiesWith');
 $unModifiableEntitiesWith = $registry->valueForKey('unModifiableEntitiesWith');
 $doNotGenerate = $registry->valueForKey('doNotGenerate');
 $isIncludeInBartlebysCommons = $registry->valueForKey('isIncludeInBartlebysCommons');
+$isBartlebysCore = $registry->valueForKey('isBartlebysCore');
 $configurator = $registry->valueForKey('configurator');
 
 if(!isset($doNotGenerate)){
