@@ -67,6 +67,7 @@ if (isset($xOSIncludeManagedCollectionForEntityNamed)) {
 // VARIABLES COMPUTATION
 /////////////////////////
 
+
 $entityName=$entityRepresentation->name;
 $pluralizedEntityName=lcfirst(Pluralization::pluralize($entityName));
 $ucfPluralizedEntityName=ucfirst(Pluralization::pluralize($entityName));
@@ -187,12 +188,8 @@ if ($entityRepresentation->isDistantPersistencyOfCollectionAllowed()){
 $commitBlock=$commitBlock.cr();
 
 
-
-
-
-
 // Include block
-include  dirname(__DIR__).'/blocks/BarltebysIncludesBlock.swift.php';
+include  dirname(__DIR__).'/blocks/BarltebysSimpleIncludeBlock.swift.php';
 
 /////////////////////
 // TEMPLATE
