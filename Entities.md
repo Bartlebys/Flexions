@@ -146,6 +146,18 @@ If a property is marked as supervisable any change will mark its parent as chang
 },
 ```
 
+## codingKey
+
+Defines if a property should be serialized using a key that diverges from its name
+
+```json
+	"property": {
+	    ...
+	    "codingKey":"serialized_property_name"
+	},
+```
+
+
 ## cryptable
 
 If a property is marked as cryptable on serialization it should be crypted.

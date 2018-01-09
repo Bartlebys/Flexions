@@ -86,15 +86,16 @@ if (!defined('BJM_INFOS')) {
         define('BJM_PROPERTY_SCOPE_PUBLIC','public');
         define('BJM_PROPERTY_SCOPE_PROTECTED','protected');
         define('BJM_PROPERTY_SCOPE_PRIVATE','private');
-    define('BJS_PROPERTY_METHOD','method');
+    define('BJM_PROPERTY_METHOD','method');
         // For reference Purposes Currently we donnot validate the semantics.
-        define('BJS_PROPERTY_METHOD_CLASS','class');
-        define('BJS_PROPERTY_METHOD_INSTANCE','instance');
-    define('BJS_PROPERTY_MUTABILITY','mutable');
+        define('BJM_PROPERTY_METHOD_CLASS','class');
+        define('BJM_PROPERTY_METHOD_INSTANCE','instance');
+    define('BJM_PROPERTY_MUTABILITY','mutable');
         // For reference Purposes Currently we donnot validate the semantics.
-        define('BJS_PROPERTY_MUTABILITY_VARIABLE','variable');
-        define('BJS_PROPERTY_MUTABILITY_CONSTANT','constant');
-
+        define('BJM_PROPERTY_MUTABILITY_VARIABLE','variable');
+        define('BJM_PROPERTY_MUTABILITY_CONSTANT','constant');
+    // You can Define a codingKey to specify the encoding key
+    define('BJM_PROPERTY_CODING_KEY','codingKey');
 
     define('BJM_LOOP_TEMPLATES', 'templates');
     define('BJM_LOOP_PROJECT', 'project');

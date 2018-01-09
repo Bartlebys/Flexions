@@ -118,6 +118,15 @@ class  PropertyRepresentation {
 
 
     /**
+     * Defined When you want to encode during the serialization with a specific codingKey
+     *
+     * @var string a key that can be used for serialization.
+     *
+     */
+    public $codingKey = NULL;
+
+
+    /**
      * Defines if the property should be serialized.
      * @var bool
      */

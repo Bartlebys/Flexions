@@ -552,17 +552,22 @@ class BJMParser {
             $propertyR->default = $defaultValue;
         }
 
-        if (array_key_exists(BJS_PROPERTY_METHOD, $dictionary)) {
-            $propertyR->method = $dictionary[BJS_PROPERTY_METHOD];
+        if (array_key_exists(BJM_PROPERTY_METHOD, $dictionary)) {
+            $propertyR->method = $dictionary[BJM_PROPERTY_METHOD];
         }
 
-        if (array_key_exists(BJS_PROPERTY_MUTABILITY, $dictionary)) {
-            $propertyR->mutability = ($dictionary[BJS_PROPERTY_MUTABILITY]==true) ? Mutability::IS_VARIABLE : Mutability::IS_CONSTANT ;
+        if (array_key_exists(BJM_PROPERTY_MUTABILITY, $dictionary)) {
+            $propertyR->mutability = ($dictionary[BJM_PROPERTY_MUTABILITY]==true) ? Mutability::IS_VARIABLE : Mutability::IS_CONSTANT ;
         }
 
         if (array_key_exists(BJM_PROPERTY_SCOPE, $dictionary)) {
             $propertyR->scope = $dictionary[BJM_PROPERTY_SCOPE];
         }
+
+        if (array_key_exists(BJM_PROPERTY_CODING_KEY, $dictionary)) {
+            $propertyR->codingKey = $dictionary[BJM_PROPERTY_CODING_KEY];
+        }
+
     }
 
 
