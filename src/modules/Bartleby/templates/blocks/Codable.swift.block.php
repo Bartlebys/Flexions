@@ -73,7 +73,12 @@ while ($isEntity?$blockRepresentation->iterateOnProperties():$blockRepresentatio
     /* @var $property PropertyRepresentation */
     $property = $isEntity?$blockRepresentation->getProperty():$blockRepresentation->getParameter();
     $name = $property->name;
-    echoIndent('case '.$name,2);
+    if (isset($property->codingKey)){
+        echoIndent('case '.$name.' = "'.$property->codingKey.'"' ,2);
+    }else{
+        echoIndent('case '.$name,2);
+    }
+
 }
 if ($entityName == 'ManagedModel') {
     echoIndent('case typeName',2);
