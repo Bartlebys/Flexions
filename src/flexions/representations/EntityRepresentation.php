@@ -185,6 +185,14 @@ class EntityRepresentation {
     }
 
 
+    /**
+     * Advanced usage
+     * Resets the index to enable to re-run iterateOnProperties()
+     */
+    public function resetPropertyIndex(){
+        $this->_propertyIndex = -1;
+    }
+
 
     /**
      * Will be DEPRECATED but still used by XCDDataXMLToFlexionsRepresentation
