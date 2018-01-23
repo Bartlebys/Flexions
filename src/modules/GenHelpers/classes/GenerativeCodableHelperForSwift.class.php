@@ -22,7 +22,26 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
         $isEntity = ($d instanceof EntityRepresentation);
         $codingKeysName = $d->name.'CodingKeys';
 
-        echoIndent('let values = try decoder.container(keyedBy: '.$codingKeysName.'.self)',$increment);
+        // Codable support for entities and parameters classes.
+        // $d may be ActionRepresentation or EntityRepresentation
+        $isEntity = ($d instanceof EntityRepresentation);
+        $codingKeysName = $d->name.'CodingKeys';
+
+        $containerVariableName = 'values';
+        if ($isEntity){
+            $containerVariableName = '_';
+            // may be set to _ if there is no member to encode / decode
+            /* var EntityRepresentation */
+            $entityRepresentation = $d;
+            while ($entityRepresentation->iterateOnProperties() === true ) {
+                $property =  $d->getProperty();
+                if ($property->isSerializable == true){
+                    $containerVariableName = 'values';
+                }
+            }
+        }
+
+        echoIndent('let '.$containerVariableName.' = try decoder.container(keyedBy: '.$codingKeysName.'.self)',$increment);
 
         while ($isEntity ? $d->iterateOnProperties() : $d->iterateOnParameters() === true) {
             $property = $isEntity ? $d->getProperty() : $d->getParameter();
@@ -189,7 +208,21 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
         $isEntity = ($d instanceof EntityRepresentation);
         $codingKeysName = $d->name.'CodingKeys';
 
-        echoIndent('var container = encoder.container(keyedBy: '.$codingKeysName.'.self)',$increment);
+        $containerVariableName = 'container';
+        if ($isEntity){
+            $containerVariableName = '_';
+            // may be set to _ if there is no member to encode / decode
+            /* var EntityRepresentation */
+            $entityRepresentation = $d;
+            while ($entityRepresentation->iterateOnProperties() === true ) {
+                $property =  $d->getProperty();
+                if ($property->isSerializable == true){
+                    $containerVariableName = 'container';
+                }
+            }
+        }
+
+        echoIndent('var '.$containerVariableName.' = encoder.container(keyedBy: '.$codingKeysName.'.self)',$increment);
 
         while ($isEntity ? $d->iterateOnProperties() : $d->iterateOnParameters() === true) {
 
