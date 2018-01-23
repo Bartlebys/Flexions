@@ -952,7 +952,7 @@ echo(
 
     fileprivate var _selectedUIDS:[String]{
         set{
-            Bartleby.syncOnMain {
+            syncOnMain {
                 if let <?php echo lcfirst(Pluralization::pluralize($entityName)); ?> = self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> {
                     let _selectedUIDS:[String]=<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.map({ (<?php echo lcfirst($entityName); ?>) -> String in
                         return <?php echo lcfirst($entityName); ?>.UID
@@ -962,7 +962,7 @@ echo(
             }
         }
         get{
-            return Bartleby.syncOnMainAndReturn{ () -> [String] in
+            return syncOnMainAndReturn{ () -> [String] in
                 return self.referentDocument?.metadata.getStateOf(identified: self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>UIDSKeys) ?? [String]()
             }
         }
@@ -976,7 +976,7 @@ echo(
     // e.g: referentDocument.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.arrayController?.setSelectedObjects(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>)
     @objc dynamic open var selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>:[<?php echo ucfirst($entityName); ?>]?{
         didSet{
-            Bartleby.syncOnMain {
+            syncOnMain {
                 if let <?php echo lcfirst(Pluralization::pluralize($entityName)); ?> = selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> {
                     let UIDS:[String]=<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.map({ (<?php echo lcfirst($entityName); ?>) -> String in
                         return <?php echo lcfirst($entityName); ?>.UID

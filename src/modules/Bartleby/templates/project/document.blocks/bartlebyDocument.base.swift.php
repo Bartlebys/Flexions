@@ -39,7 +39,7 @@ if (!isset($configurator)){
 
     // Perform cleanUp when closing a document
     public func cleanUp(){
-        Bartleby.syncOnMain{
+        syncOnMain{
 
             self.send(DocumentStates.cleanUp)
 
