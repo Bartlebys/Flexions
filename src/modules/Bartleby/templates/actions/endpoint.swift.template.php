@@ -133,6 +133,9 @@ if ($d->containsParametersOutOfPath()) {
     echoIndent('}',1);
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
+        $isOptional = ($parameter->default == NULL) && $parameter->required == false;
+        $optionalSuffix = $isOptional ? "?" : "";
+        $defaultString = ($parameter->default != NULL) ? " = $parameter->default" : "";
         $name = $parameter->name;
 
         if (!$d->parameterIsInPath($name)) {
@@ -150,15 +153,15 @@ if ($d->containsParametersOutOfPath()) {
                     }
                 }
                 echoIndent('}', 1);
-                echoIndent('public var ' . $name . ':' . $enumTypeName . '?', 1);
+                echoIndent('public var ' . $name . ':' . $enumTypeName . $optionalSuffix . $defaultString, 1);
             } else if ($parameter->type == FlexionsTypes::COLLECTION) {
-                echoIndent('public var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']?', 1);
+                echoIndent('public var ' . $name . ':[' . ucfirst($parameter->instanceOf) . ']'.$optionalSuffix . $defaultString, 1);
             } else if ($parameter->type == FlexionsTypes::OBJECT) {
-                echoIndent('public var ' . $name . ':' . ucfirst($parameter->instanceOf) . '?', 1);
+                echoIndent('public var ' . $name . ':' . ucfirst($parameter->instanceOf) . $optionalSuffix . $defaultString, 1);
             } else {
                 $nativeType = FlexionsSwiftLang::nativeTypeFor($parameter->type);
                 if (strpos($nativeType, FlexionsTypes::NOT_SUPPORTED) === false) {
-                    echoIndent('public var ' . $name . ':' . $nativeType . '?', 1);
+                    echoIndent('public var ' . $name . ':' . $nativeType . $optionalSuffix . $defaultString, 1);
                 } else {
                     echoIndent('public var ' . $name . ':Not_Supported = Not_Supported//' . ucfirst($parameter->type), 1);
                 }

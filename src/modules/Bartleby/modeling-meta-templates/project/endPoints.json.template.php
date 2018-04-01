@@ -422,8 +422,10 @@ foreach ($d->entities as $entity ) {
                 "in" : "body",
                 "name" : "sort",
                 "description" : "the sort (MONGO DB)",
-                "required" : false,
-                "type":  "dictionary"
+                "required" : true,
+                "explicitType" :  "[String:Int]",
+                "default": "[String:Int]()"
+                
                }
             ],
             "responses" : {
@@ -590,15 +592,17 @@ foreach ($d->entities as $entity ) {
                         "in" : "body",
                         "name" : "sort",
                         "description" : "the sort (MONGO DB)",
-                        "required" : false,
-                        "type":  "dictionary"
+                        "required" : true, 
+                        "explicitType" :  "[String:Int]",
+                        "default": "[String:Int]()"
                       },
                       {
                         "in" : "body",
                         "name" : "query",
                         "description" : "the query (MONGO DB)",
-                        "required" : false,
-                        "type":  "dictionary"
+                        "required" : true,
+                        "explicitType" :  "[String:String]",
+                        "default": "[String:String]()"
                       }
                   ]
                 ,
