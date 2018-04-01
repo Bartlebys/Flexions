@@ -85,7 +85,7 @@ if ($isIncludeInBartlebysCommons){
 }else{
     echo ('
     // The app dynamic deserializer
-    override open lazy var dynamics:Dynamics=AppDynamics()
+    override open var dynamics:Dynamics = AppDynamics()
 ');
 }
     include __DIR__ . '/document.blocks/documentCollectionInitializer.swift.php';
