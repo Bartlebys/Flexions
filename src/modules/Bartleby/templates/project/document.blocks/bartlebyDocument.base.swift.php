@@ -157,7 +157,7 @@ if (!isset($configurator)){
     // MARK: - Consignation
 
     /// The display duration of volatile messages
-    static open let VOLATILE_DISPLAY_DURATION: Double=3
+    public static let VOLATILE_DISPLAY_DURATION: Double=3
 
     // MARK:  Simple stack management
 

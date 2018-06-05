@@ -968,7 +968,7 @@ echo(
         }
     }
 
-    open let selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>UIDSKeys="selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>UIDSKeys"
+    public let selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>UIDSKeys="selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>UIDSKeys"
 
     // Note :
     // If you use an ArrayController & Bartleby automation
