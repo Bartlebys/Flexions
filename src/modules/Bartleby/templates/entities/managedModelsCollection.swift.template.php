@@ -894,7 +894,7 @@ echo(
 
     // We auto-configure most of the array controller.
     // And set up  indexes selection observation layer.
-    open weak var arrayController:NSArrayController? {
+    open var arrayController:NSArrayController? {
         willSet{
         // Remove observer on previous array Controller
             arrayController?.removeObserver(self, forKeyPath: "selectionIndexes", context: &self._KVOContext)
