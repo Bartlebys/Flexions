@@ -923,8 +923,8 @@ echo(
     // If you use an ArrayController & Bartleby automation
     // to modify the current selection you should use the array controller
     // e.g: referentDocument.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.arrayController?.setSelectedObjects(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>)
-    // Do not use document.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>=<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>
-
+    // Do not use document.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>=<?php echo lcfirst(Pluralization::pluralize($entityName)).cr(); ?>
+    // For universal support use referentDocument.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.setSelected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>)
 
     override open func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &_KVOContext else {
@@ -974,6 +974,7 @@ echo(
     // If you use an ArrayController & Bartleby automation
     // to modify the current selection you should use the array controller
     // e.g: referentDocument.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.arrayController?.setSelectedObjects(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>)
+    // For universal support use referentDocument.<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>.setSelected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?>)
     @objc dynamic open var selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>:[<?php echo ucfirst($entityName); ?>]?{
         didSet{
             syncOnMain {
@@ -990,6 +991,19 @@ echo(
 
     // A facility
     open var firstSelected<?php echo ucfirst($entityName); ?>:<?php echo ucfirst($entityName); ?>? { return self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>?.first }
+
+
+    public func setSelected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?>(_ <?php echo lcfirst(Pluralization::pluralize($entityName)); ?>:[<?php echo ucfirst($entityName); ?>]?){
+        #if os(OSX) && !USE_EMBEDDED_MODULES
+        if self.arrayController != nil{
+            self.arrayController?.setSelectedObjects(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?> ?? [<?php echo ucfirst($entityName); ?>]())
+        }else{
+            self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> = <?php echo lcfirst(Pluralization::pluralize($entityName)); ?>
+        }
+        #else
+            self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> = <?php echo lcfirst(Pluralization::pluralize($entityName)).cr(); ?>
+        #endif
+    }
 
 
 
