@@ -998,7 +998,7 @@ echo(
         if self.arrayController != nil{
             self.arrayController?.setSelectedObjects(<?php echo lcfirst(Pluralization::pluralize($entityName)); ?> ?? [<?php echo ucfirst($entityName); ?>]())
         }else{
-            self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> = <?php echo lcfirst(Pluralization::pluralize($entityName)); ?>
+            self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> = <?php echo lcfirst(Pluralization::pluralize($entityName)).cr(); ?>
         }
         #else
             self.selected<?php echo ucfirst(Pluralization::pluralize($entityName)); ?> = <?php echo lcfirst(Pluralization::pluralize($entityName)).cr(); ?>
