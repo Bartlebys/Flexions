@@ -66,7 +66,7 @@ $isEntity=($blockRepresentation instanceof EntityRepresentation);
 while ($isEntity?$blockRepresentation->iterateOnProperties():$blockRepresentation->iterateOnParameters() === true) {
     /* @var $property PropertyRepresentation */
     $property = $isEntity?$blockRepresentation->getProperty():$blockRepresentation->getParameter();
-    $name = $property->name;
+    $name = isset($property->codingKey) ? $property->codingKey : $property->name;
     if ($property->mutability==Mutability::IS_VARIABLE){
         if ($property->mutability==Mutability::IS_VARIABLE){
             if($property->scope==Scope::IS_PUBLIC){
@@ -92,12 +92,12 @@ while ($isEntity?$blockRepresentation->iterateOnProperties():$blockRepresentatio
                     $exposedKeysString.=',"'.$name.'"';
                 }
                 $setterSwitch.='
-            case "'.$property->name.'":
+            case "'.$name.'":
                 if let casted=value as? '.$typeName.'{
                     self.'.$property->name.'=casted
                 }';
                 $getterSwitch.='
-            case "'.$property->name.'":
+            case "'.$name.'":
                return self.'.$property->name;
             }
         }
