@@ -139,7 +139,7 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
      * @return string
      */
     private static function _decodingFunctionFor($property, $keyName, $flexionsType) {
-        $isNotOptionnal = ($property->required || $property->default != NULL);
+        $isNotOptionnal = $property->required;
         $qualifiedType = FlexionsSwiftLang::nativeTypeFor($property->instanceOf);
         if ($qualifiedType == FlexionsTypes::VOID || $qualifiedType == FlexionsTypes::NOT_SUPPORTED ){
             $qualifiedType = ucfirst($property->instanceOf);
@@ -247,7 +247,7 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
      * @param $increment integer
      */
     static private function _echoPropertyForEncodeToEncoder($property, $increment) {
-        $isNotOptionnal = ($property->required || $property->default != NULL);
+        $isNotOptionnal = $property->required;
         $name = $property->name;
         $currentIncrement = $increment;
         $encodingFunction = NULL;
@@ -283,8 +283,7 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
 
 
     private static function _fDecodeFor($property) {
-        $required = ($property->required === true || $property->default !== NULL);
-        if ($required){
+        if ($property->required) {
             return "decode";
         }else{
             return "decodeIfPresent";
@@ -294,8 +293,7 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
 
 
     private static function _fencodeFor($property) {
-        $required = ($property->required === true || $property->default !== NULL);
-        if ($required){
+        if ($property->required) {
             return "encode";
         }else{
             return "encodeIfPresent";

@@ -44,7 +44,7 @@ class GenerativeNSecureCodingHelperForSwift extends GenerativeHelperForSwift {
     static private function _echoPropertyForIniWithCoder($property, $increment) {
         $name = $property->name;
         $flexionsType = $property->type;
-        $asString = (($property->required || $property->default != NULL) ? 'as!' : 'as?');
+        $asString = $property->required ? 'as!' : 'as?';
         $nativeType = FlexionsSwiftLang::nativeTypeFor($flexionsType);
         if ($property->isSerializable == false) {
             return;
@@ -115,7 +115,7 @@ class GenerativeNSecureCodingHelperForSwift extends GenerativeHelperForSwift {
      * @return string
      */
     private static function _decodingFunctionFor($property, $keyName, $flexionsType) {
-        $isNotOptionnal = ($property->required || $property->default != NULL);
+        $isNotOptionnal = $property->required;
         switch ($flexionsType) {
             case FlexionsTypes::STRING:
                 if ($isNotOptionnal) {
@@ -235,10 +235,7 @@ class GenerativeNSecureCodingHelperForSwift extends GenerativeHelperForSwift {
         $incrementPlusOne = $increment + 1;
         $securizedName = $name;
 
-        $shouldUseIfString = ($property->required === false);
-        if (isset($property->default) && $property->default !== '' && $property->default !== ' ' && $property->required === false) {
-            $shouldUseIfString = false;
-        }
+        $shouldUseIfString = $property->required;
 
         // We may enclose the encoding within a it let ... { ... } expression
         // to unwrap optionnals.
