@@ -99,10 +99,9 @@ class  PropertyRepresentation {
 
     /**
      * Whether or not the property is required
-     * in Swift for example a required property without default value must be instantiated in the constructor
      * @var  bool
      */
-    public $required = false;
+    public $required = true;
 
     /**
      * Default value to use if no value is supplied
