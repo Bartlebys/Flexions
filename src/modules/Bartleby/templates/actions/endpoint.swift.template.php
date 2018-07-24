@@ -103,10 +103,6 @@ $metricsBlock = cr() . $metricsBlock;
 //  TEMPLATE
 /////////////////////////
 
-if ($d->class == "DeleteNodes") {
-    $a = 1;
-}
-
 ?>
 
 <?php echo GenerativeHelperForSwift::defaultHeader($f,$d); ?>
@@ -116,6 +112,8 @@ import Foundation
 <?php echo $includeBlock ?>
 #endif
 <?php
+
+
 
 //////////////////////////////
 /// START OF PARAMETER MODEL

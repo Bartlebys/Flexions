@@ -399,22 +399,23 @@ foreach ($d->entities as $entity ) {
                 "name" : "ids",
                 "in" : "path",
                 "description" : "The IDS of the ' . $pluralizedName . ' to return",
-                "required" : true,
                  "type": "array",
                  "items": {
-                     "type": "string"
+                     "type": "string",
+                     "required" : false
                   }
               },
               {
                 "in" : "body",
                 "name" : "result_fields",
                 "description" : "the result fields (MONGO DB)",
-                "required" : true,
+       
                 "schema": {
                             "type": "array",
                             "items":
                             {
-                                "type": "string"
+                                "type": "string",         
+                                "required" : false
                              }
                          }
               },
@@ -511,10 +512,11 @@ foreach ($d->entities as $entity ) {
                 "name" : "ids",
                 "in" : "path",
                 "description" : "The ids of ' . $pluralizedName . ' to delete",
-                "required" : true,
+          
                  "type": "array",
                  "items": {
-                     "type": "string"
+                     "type": "string",
+                     "required" : false
                   }
               }
             ],
@@ -579,12 +581,13 @@ foreach ($d->entities as $entity ) {
                         "in" : "body",
                         "name" : "result_fields",
                         "description" : "the result fields (MONGO DB)",
-                        "required" : true,
+                     
                         "schema": {
                                     "type": "array",
                                     "items":
                                     {
-                                        "type": "string"
+                                        "type": "string",
+                                        "required" : false
                                      }
                                  }
                       },
