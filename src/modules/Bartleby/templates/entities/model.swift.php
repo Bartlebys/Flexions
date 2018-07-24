@@ -116,6 +116,7 @@ if (!defined('_propertyValueString_DEFINED')){
     define("_propertyValueString_DEFINED",true);
     function _propertyValueString(PropertyRepresentation $property){
 
+
         if ($property->isSupervisable===false){
 
             ////////////////////////////
@@ -134,7 +135,7 @@ if (!defined('_propertyValueString_DEFINED')){
                     return " = $property->default";
                 }
             }
-            return "?";
+            return "";
         }else{
 
             $associatedCondition = $property->type == FlexionsTypes::DICTIONARY? '' :  "&& $property->name != oldValue";
@@ -172,7 +173,7 @@ if (!defined('_propertyValueString_DEFINED')){
 }
 
         }
-        return "? {
+            return " {
     didSet { 
        if !self.wantsQuietChanges $associatedCondition {
             self.provisionChanges(forKey: \"$property->name\",oldValue: oldValue".($property->type==FlexionsTypes::ENUM ? "?.rawValue" : "" ).",newValue: $property->name".( $property->type==FlexionsTypes::ENUM ? "?.rawValue" : "" ) .") 

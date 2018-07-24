@@ -96,7 +96,7 @@ if (!defined('_valueObjectPropertyValueString_DEFINED')){
                 return " = $property->default";
             }
         }
-        return "?";
+        return "";
     }
 }
 

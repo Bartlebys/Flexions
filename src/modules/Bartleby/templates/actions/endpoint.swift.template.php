@@ -133,7 +133,7 @@ if ($d->containsParametersOutOfPath()) {
     echoIndent('}',1);
     while ($d->iterateOnParameters() === true) {
         $parameter = $d->getParameter();
-        $isOptional = ($parameter->default == NULL) && $parameter->required == false;
+        $isOptional = $parameter->required === false;
         $optionalSuffix = $isOptional ? "?" : "";
         $defaultString = ($parameter->default != NULL) ? " = $parameter->default" : "";
         $name = $parameter->name;

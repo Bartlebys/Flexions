@@ -31,11 +31,11 @@ while ( $d ->iterateOnProperties() === true ) {
         $property->isSerializable=false;
     }
 
-    // Dynamism, method, scope, and mutability support
+    // Dynamism, method, scope, optionality and mutability support
 
-    $dynanic=($property->isDynamic ? '@objc dynamic ':'');
-    $method=($property->method==Method::IS_CLASS ? 'static ' : '' );
-    $scope='';
+    $dynanic = ($property->isDynamic ? '@objc dynamic ' : '');
+    $method = ($property->method == Method::IS_CLASS ? 'static ' : '');
+    $scope = '';
     if($property->scope==Scope::IS_PRIVATE){
         $scope='private ';
     }else if ($property->scope==Scope::IS_PROTECTED){
@@ -43,8 +43,9 @@ while ( $d ->iterateOnProperties() === true ) {
     }else{
        $scope='open '; // We could may be switch to public?
     }
-   $mutable=($property->mutability==Mutability::IS_VARIABLE ? 'var ':'let ');
-    $prefix=$dynanic.$method.$scope.$mutable;
+    $optionalSuffix = ($property->required === true ? "" : "?");
+    $mutable = ($property->mutability == Mutability::IS_VARIABLE ? 'var ' : 'let ');
+    $prefix = $dynanic . $method . $scope . $mutable;
 
 
     //Generate the property line
@@ -62,19 +63,19 @@ while ( $d ->iterateOnProperties() === true ) {
             }
         }
         echoIndent('}', 1);
-        echoIndent($prefix. $name .':'.$enumTypeName._valueObjectPropertyValueString($property), 1);
+        echoIndent($prefix . $name . ':' . $enumTypeName . $optionalSuffix . _valueObjectPropertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::COLLECTION){
         $instanceOf=FlexionsSwiftLang::nativeTypeFor($property->instanceOf);
         if ($instanceOf==FlexionsTypes::NOT_SUPPORTED){
             $instanceOf=$property->instanceOf;
         }
-        echoIndent($prefix. $name .':['.ucfirst($instanceOf). ']'._valueObjectPropertyValueString($property), 1);
+        echoIndent($prefix . $name . ':[' . ucfirst($instanceOf) . ']' . $optionalSuffix . _valueObjectPropertyValueString($property), 1);
     }else if($property->type==FlexionsTypes::OBJECT){
-        echoIndent($prefix. $name .':'.ucfirst($property->instanceOf)._valueObjectPropertyValueString($property), 1);
+        echoIndent($prefix . $name . ':' . ucfirst($property->instanceOf) . $optionalSuffix . _valueObjectPropertyValueString($property), 1);
     }else{
         $nativeType=FlexionsSwiftLang::nativeTypeFor($property->type);
         if(strpos($nativeType,FlexionsTypes::NOT_SUPPORTED)===false){
-            echoIndent($prefix. $name .':'.$nativeType._valueObjectPropertyValueString($property), 1);
+            echoIndent($prefix . $name . ':' . $nativeType . $optionalSuffix . _valueObjectPropertyValueString($property), 1);
         }else{
             echoIndent($prefix. $name .':Not_Supported = Not_Supported()//'. ucfirst($property->type), 1);
         }
