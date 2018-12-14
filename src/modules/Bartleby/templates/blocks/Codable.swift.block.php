@@ -53,7 +53,7 @@ $inheritancePrefix = ('override ');
 
 $name = $blockRepresentation->name;
 $codingKeysDeclaration = 'String,CodingKey';
-$codingKeysName= 'CodingKeys';
+$codingKeysName=$name.'CodingKeys';
 
 ////////////////////////
 // BLOCK TEMPLATE LOGIC
