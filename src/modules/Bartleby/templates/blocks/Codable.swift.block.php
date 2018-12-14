@@ -64,7 +64,7 @@ $codingKeysName= 'CodingKeys';
     // MARK: - Codable
 
 
-    public enum <?php echo($codingKeysName)?>: <?php echo $codingKeysDeclaration ?>{
+    fileprivate enum <?php echo($codingKeysName)?>: <?php echo $codingKeysDeclaration ?>{
 <?php
 // Codable support for entities and parameters classes.
 // $d may be ActionRepresentation or EntityRepresentation
