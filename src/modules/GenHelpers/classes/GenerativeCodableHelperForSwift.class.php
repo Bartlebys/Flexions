@@ -20,12 +20,12 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
         // Codable support for entities and parameters classes.
         // $d may be ActionRepresentation or EntityRepresentation
         $isEntity = ($d instanceof EntityRepresentation);
-        $codingKeysName = $d->name.'CodingKeys';
+        $codingKeysName = 'CodingKeys';
 
         // Codable support for entities and parameters classes.
         // $d may be ActionRepresentation or EntityRepresentation
         $isEntity = ($d instanceof EntityRepresentation);
-        $codingKeysName = $d->name.'CodingKeys';
+        $codingKeysName = 'CodingKeys';
 
         $containerVariableName = 'values';
         if ($isEntity){
@@ -206,7 +206,7 @@ class GenerativeCodableHelperForSwift extends GenerativeHelperForSwift {
         // NSCoding support for entities and parameters classes.
         // $d may be ActionRepresentation or EntityRepresentation
         $isEntity = ($d instanceof EntityRepresentation);
-        $codingKeysName = $d->name.'CodingKeys';
+        $codingKeysName = 'CodingKeys';
 
         $containerVariableName = 'container';
         if ($isEntity){
